@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1034290158398",
+    "firebase_url": "https://scenekey-174b9.firebaseio.com",
+    "project_id": "scenekey-174b9",
+    "storage_bucket": "scenekey-174b9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1034290158398:android:af43a191dfb40db6",
+        "android_client_info": {
+          "package_name": "com.scenekey"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1034290158398-9ro94ddu92jg34i3pdr0ng0vpji6muqb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.scenekey",
+            "certificate_hash": "88d42c4d341634461ffe57661746fecb89109fb5"
+          }
+        },
+        {
+          "client_id": "1034290158398-m340eq5u4b2or7niuqup1fjs8o3aensb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXrcBF_T_oZkOMwOmvq6knqGImKwiotw0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1034290158398-m340eq5u4b2or7niuqup1fjs8o3aensb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

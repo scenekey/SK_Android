@@ -1,0 +1,110 @@
+package com.scenekey.adapter;
+
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.Marker;
+import com.scenekey.R;
+import com.scenekey.Utility.Font;
+import com.scenekey.Utility.ImageUtil;
+import com.scenekey.models.Events;
+import com.squareup.picasso.Picasso;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+
+/**
+ * Created by mindiii on 27/4/17.
+ */
+
+public class MapInfoAdapter implements GoogleMap.InfoWindowAdapter {
+    Activity activity;
+    ArrayList<Events> eventArrayList;
+    private View myContentsView;
+
+    public MapInfoAdapter(Activity activity, ArrayList<Events> eventArrayList) {
+        this.activity = activity;
+        this.eventArrayList = eventArrayList;
+        for (Events events : eventArrayList) {
+            Picasso.with(activity).load(events.getEvent().getImage()).into(new ImageView(activity));
+        }
+
+    }
+
+    @Override
+    public View getInfoWindow(Marker marker) {
+        int position = Integer.parseInt(marker.getId().replace("m", ""));
+        final Events events = eventArrayList.get(position);
+        myContentsView = activity.getLayoutInflater().inflate(R.layout.z_custom_map_info, null);
+        ImageView img_event = (ImageView) myContentsView.findViewById(R.id.img_event);
+        int radius = (int) activity.getResources().getDimension(R.dimen._8sdp);
+
+        //The marker with the info at start
+        /*if (position == (eventArrayList.size() - 1)) {
+            Bitmap bitmap = ImageUtil.getBitmapByUrl(events.getEvent().getImage());
+
+            //bitmap = (new RoundedTransformation(radius,1).transform(bitmap));
+            img_event.setImageBitmap(bitmap);
+        }
+        else Picasso.with(activity).load(events.getEvent().getImage()).placeholder(R.color.white).into(img_event);*/
+        try {
+
+            Bitmap bitmap = ImageUtil.getBitmapByUrl(events.getEvent().getImage());
+
+            //bitmap = (new RoundedTransformation(radius,1).transform(bitmap));
+            img_event.setImageBitmap(bitmap);
+        } catch (Exception e) {
+            Picasso.with(activity).load(events.getEvent().getImage()).placeholder(R.drawable.scene1).into(img_event);
+        }
+
+
+        // Picasso.with(activity).load(events.getEvent().getImage()).transform(new RoundedTransformation(radius,1)).into(img_event);
+        Log.e("map", events.getEvent().getEvent_name() + " : " + events.getEvent().getImage());
+        TextView txt_name = ((TextView) myContentsView.findViewById(R.id.txt_name));
+        TextView txt_time = ((TextView) myContentsView.findViewById(R.id.txt_time));
+        TextView txt_distance = ((TextView) myContentsView.findViewById(R.id.txt_distance));
+        txt_name.setText(events.getEvent().getEvent_name());
+        Font font = new Font(activity);
+        txt_distance.setText(events.getEvent().getDistance());
+        try {
+            txt_time.setText(convertTime(events.getEvent().getEvent_time()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        font.setFontFrankBookReg(txt_name, txt_time, txt_distance);
+        /*img_event.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("Clicked","map iNFO");
+                Event_Fragment frg = new Event_Fragment();
+                frg.setEventId(events.getEvent().getEvent_id());
+                ((HomeActivity) activity).addFragment(frg);
+            }
+        });*/
+        return myContentsView;
+
+    }
+
+    String convertTime(String time) throws ParseException {
+        Log.e("Time ", time);
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+        Date date1 = format.parse(time);
+        Date date2 = new Date();
+        int milis = Math.abs(date2.getHours() - date1.getHours());
+        return milis + " hr";
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        return null;
+    }
+
+
+}
