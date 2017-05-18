@@ -35,6 +35,7 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.scenekey.R;
 import com.scenekey.Utility.CircleTransform;
+import com.scenekey.Utility.CustomToastDialog;
 import com.scenekey.Utility.Font;
 import com.scenekey.Utility.ImageUtil;
 import com.scenekey.Utility.Permission;
@@ -77,6 +78,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
     static String FEED_TYPE_PICTURE = "Picture";
     static String FEED_TYPE_COMMENT = "Comment";
     public boolean canCallWebservice;
+    public boolean inLocation, inTime;
     String EventId;
     TextView txt_discipI_f2;
     double latitude;
@@ -102,7 +104,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
     TextView txt_message, txt_timer;
     TextView txt_nudge, txt_reply, txt_view_pro;
     TextView txt_title;
-    private ImageView image_map;
+    private ImageView image_map, img_reply_img;
     private FloatingActionMenu menu_blue;
     private TextView txt_hide_all_one;
     private TextView txt_hide_all_two;
@@ -161,6 +163,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         super.onViewCreated(view, savedInstanceState);
         fabMenu1_like = (FloatingActionButton) view.findViewById(R.id.fabMenu1_like);
         fabMenu2_picture = (FloatingActionButton) view.findViewById(R.id.fabMenu2_picture);
+        RelativeLayout mainlayout = (RelativeLayout) view.findViewById(R.id.mainlayout);
         FloatingActionButton fabMenu3_comment = (FloatingActionButton) view.findViewById(R.id.fabMenu3_comment);
         fabMenu1_like.setTextView(new TextView[]{txt_hide_all_one, txt_hide_all_two});
         font = new Font(activity());
@@ -169,11 +172,15 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         if (timerHttp == null) setDataTimer();
         isInfoVisible = false;
         rclv_grid.hasFixedSize();
-
-        setOnClick(scrl_all, rtlv_top, img_infoget_f2, img_f10_back, fabMenu1_like, fabMenu2_picture, fabMenu3_comment, img_notif, txt_hide_all_one, txt_hide_all_two, txt_event_name);
+        txt_event_name.setText("");
+        setOnClick(mainlayout, scrl_all, rtlv_top, img_infoget_f2, img_f10_back, fabMenu1_like, fabMenu2_picture, fabMenu3_comment, img_notif, txt_hide_all_one, txt_hide_all_two, txt_event_name);
         cardslist = new ArrayList<>();
         info_view.setVisibility(View.GONE);
         nudge = new NotificationData();
+        font.setFontFranklinRegular(txt_hide_all_one);
+        font.setFontFrankBookReg(txt_event_name, txt_calender_i1, txt_address_i1);
+        font.setFontEuphemia(txt_discrp, txt_room);
+        font.setFontRailRegular(txt_discipI_f2);
     }
 
     /******************************
@@ -196,46 +203,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         super.onDestroy();
     }
 
-    /*********************************************************************/
-    void getAlldata() {
-        VolleyGetPost volleyGetPost = new VolleyGetPost(activity(), HomeActivity.instance, WebService.LISTEVENTFEED, false) {
-            @Override
-            public void onVolleyResponse(String response) {
-                Log.e(TAG, "response volley :" + response);
-                try {
-                    getResponse(response);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
 
-            @Override
-            public void onVolleyError(VolleyError error) {
-
-            }
-
-            @Override
-            public void onNetError() {
-
-            }
-
-            @Override
-            public Map<String, String> setParams(Map<String, String> params) {
-
-                params.put("event_id", getEventId());
-                params.put("user_id", userInfo().getUserID());
-                return params;
-            }
-
-            @NotNull
-            @Override
-            public Map<String, String> setHeaders(Map<String, String> params) {
-                return params;
-            }
-        };
-
-        volleyGetPost.execute();
-    }
 
     @Override
     public void onStart() {
@@ -376,7 +344,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.img_notif:
                 if (noNotify > 0) getNudges();
-                else ; //TODO show popUp here
+                else noNotification();
                 break;
             case R.id.txt_event_name:
 
@@ -390,10 +358,10 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    /********************************************
-     * Getting and setting the response
-     **********************************/
-
+    /**
+     * @param response the responce provided by getAlldata()
+     * @throws JSONException
+     */
     void getResponse(String response) throws JSONException {
         JSONObject obj1 = new JSONObject(response);
         if (eventDetails == null) eventDetails = new EventDetails();
@@ -424,7 +392,20 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         String url = "http://maps.google.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=12&size=" + width + "x" + height + "&sensor=false";
         Log.e(TAG, "URL" + url + "Lat lin" + latitude + " : " + longitude);
         Picasso.with(activity()).load(url).into(image_map);
+        inLocation = (activity().phpDistance(new Double[]{latitude, longitude, Double.valueOf(eventDetails.profile_rating.getVenue_lat()), Double.valueOf(eventDetails.profile_rating.getVenue_long())}) <= Constants.MAXIMUM_DISTANCE);
+        try {
+            inTime = checkWithTime(eventDetails.profile_rating.getEvent_date());
+        } catch (Exception e) {
 
+        }
+        try {
+            setDateTime(eventDetails.getProfile_rating().getEvent_date());
+        } catch (ParseException e) {
+            String[] dateSplit;
+            dateSplit = eventDetails.getProfile_rating().getEvent_date().replace("TO", "T").split("T");
+            txt_calender_i1.setText(dateSplit[0] + " " + dateSplit[1] + " " + dateSplit[2]);
+            e.printStackTrace();
+        }
 
     }
 
@@ -437,7 +418,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         if (rclv_grid.getLayoutManager() == null)
             rclv_grid.setLayoutManager(new GridLayoutManager(activity(), 3));
         if (rclv_grid.getAdapter() == null) {
-            DataAdapter dataAdapter = new DataAdapter(activity(), list, activity(), font, new String[]{getEventId(), userInfo().getUserID()});
+            DataAdapter dataAdapter = new DataAdapter(activity(), list, activity(), font, new String[]{getEventId(), userInfo().getUserID()}, this);
             rclv_grid.setAdapter(dataAdapter);
         } else {
             rclv_grid.getAdapter().notifyDataSetChanged();
@@ -500,58 +481,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    void getNudges() {
-        ;
-        VolleyGetPost volleyGetPost2 = new VolleyGetPost(activity(), activity(), WebService.GET_NUDGE, false) {
-            @Override
-            public void onVolleyResponse(String response) {
 
-                Log.e(TAG, "Nudge" + response);
-                try {
-                    JSONObject nudgeJson = new JSONObject(response);
-                    if (nudgeJson.has("nudges")) nudge.setNudges(nudgeJson.getString("nudges"));
-                    if (nudgeJson.has("user_id")) nudge.setUser_id(nudgeJson.getString("user_id"));
-                    if (nudgeJson.has("facebook_id"))
-                        nudge.setFacebook_id(nudgeJson.getString("facebook_id"));
-                    if (nudgeJson.has("username"))
-                        nudge.setUsername(nudgeJson.getString("username"));
-                    if (nudgeJson.has("userimage"))
-                        nudge.setUserimage(nudgeJson.getString("userimage"));
-                    if (nudge.getNudges().equals(Constants.NUDGE_YOUR)) nudge.setMessage(false);
-                    popupNotification();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onVolleyError(VolleyError error) {
-                Log.e(TAG, "Nudge" + error);
-            }
-
-            @Override
-            public void onNetError() {
-
-            }
-
-            @Override
-            public Map<String, String> setParams(Map<String, String> params) {
-                params.put("user_id", userInfo().getUserID());
-                params.put("event_id", EventId);
-                params.put("nudges_no", noNotify + "");
-                Log.e(TAG, params.toString());
-                return params;
-            }
-
-            @NotNull
-            @Override
-            public Map<String, String> setHeaders(Map<String, String> params) {
-                return params;
-            }
-        };
-        volleyGetPost2.execute();
-
-    }
 
     void setDataTimer() {
         timerHttp = new Timer();
@@ -569,9 +499,6 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
 
                                                   }
                                               });
-
-
-                                              //Called each time when 1000 milliseconds (1 second) (the period parameter)
                                           }
 
                                       },
@@ -579,49 +506,6 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
                 0,
                 //Set the amount of time between each execution (in milliseconds)
                 60000);
-    }
-
-    /***************************************
-     * Event Like Comment and post  picture
-     ************/
-
-    void likeEvent() {
-        activity().showProgDilog(false);
-        VolleyGetPost volleyGetPost = new VolleyGetPost(activity(), activity(), WebService.EVENT_LIKE, false) {
-            @Override
-            public void onVolleyResponse(String response) {
-                Log.e(TAG, " volleyResponse " + response);
-                activity().dismissProgDailog();
-                getAlldata();
-            }
-
-            @Override
-            public void onVolleyError(VolleyError error) {
-
-                activity().dismissProgDailog();
-                Log.e(TAG, " Volley Error " + error);
-            }
-
-            @Override
-            public void onNetError() {
-                activity().dismissProgDailog();
-            }
-
-            @Override
-            public Map<String, String> setParams(Map<String, String> params) {
-
-                params.put("user_id", 163 + "");
-                params.put("event_id", EventId);
-                return params;
-            }
-
-            @NotNull
-            @Override
-            public Map<String, String> setHeaders(Map<String, String> params) {
-                return params;
-            }
-        };
-        volleyGetPost.execute();
     }
 
     /******************************************************************************************/
@@ -646,9 +530,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    /*************************************************
-     * On Activity Result
-     *********************************************/
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -658,6 +540,8 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
 
             if (requestCode == Constants.INTENT_CAMERA && data != null) {
                 final Bitmap eventImg = (Bitmap) data.getExtras().get("data");
+                /*final Bitmap eventImg = BitmapFactory.decodeResource(getResources(),
+                        R.drawable.scene2);*/
                 if (eventDetails.profile_rating.getKey_in().equals(Constants.KEY_NOTEXIST))
                     addUserIntoEvent(1, eventImg);
                 else sendPicture(eventImg);
@@ -678,12 +562,14 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
 
     }
 
-    /******************************************
-     * sending the Image
-     *****************************************************/
 
+
+    /**
+     *
+     * @param bitmap the bitmap return by the activity result
+     */
     void sendPicture(final Bitmap bitmap) {
-        VolleyGetPost volleyGetPost = new VolleyGetPost(activity(), activity(), WebService.EVENT_POST_PIC, false) {
+        VolleyGetPost sendPictureVolley = new VolleyGetPost(activity(), activity(), WebService.EVENT_POST_PIC, false) {
             @Override
             public void onVolleyResponse(String response) {
                 Log.e(TAG, "Response" + response);
@@ -718,61 +604,40 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
                 return params;
             }
         };
-        volleyGetPost.execute();
+        sendPictureVolley.execute();
     }
 
-    /****
-     * This method is used when The user is not exist in the event to first time key in th user
-     *
-     * @param type must be 0 or 1
-     */
-    void addUserIntoEvent(final int type, @Nullable final Bitmap bitmap) {
-        activity().showProgDilog(false);
-        VolleyGetPost volleyGetPost = new VolleyGetPost(activity(), activity(), WebService.ADD_EVENT, false) {
-            @Override
-            public void onVolleyResponse(String response) {
-                Log.e(TAG, " : " + WebService.ADD_EVENT + response);
-                if (type == 0) likeEvent();
-                else if (type == 1) sendPicture(bitmap);
-
-            }
-
-            @Override
-            public void onVolleyError(VolleyError error) {
-                activity().dismissProgDailog();
-            }
-
-            @Override
-            public void onNetError() {
-                activity().dismissProgDailog();
-            }
-
-            @Override
-            public Map<String, String> setParams(Map<String, String> params) {
-                params.put("userid", userInfo().getUserID());
-                params.put("eventname", userInfo().getUserID());
-                params.put("eventid", EventId);
-                params.put("Eventdate", userInfo().getUserID());
-                Log.e(TAG, params.toString());
-                return params;
-            }
-
-            @NotNull
-            @Override
-            public Map<String, String> setHeaders(Map<String, String> params) {
-                return params;
-            }
-        };
-        volleyGetPost.execute();
-    }
 
     /**
      * The dialogue use to show if user is not in the range of the event and evneet is not started yet
      */
     void cantJoinDialogue() {
-        Toast.makeText(activity(), "You can'timerHttp join the event", Toast.LENGTH_LONG).show();
+        CustomToastDialog customToastDialog = new CustomToastDialog(activity());
+        customToastDialog.setMessage(getResources().getString(R.string.sorryEvent));
+        customToastDialog.show();
+        // Toast.makeText(activity(), getResources().getString(R.string.sorryEvent), Toast.LENGTH_LONG).show();
     }
 
+    public void cantInteract() {
+        CustomToastDialog customToastDialog = new CustomToastDialog(activity());
+        customToastDialog.setMessage(getResources().getString(R.string.sorryEvent));
+        customToastDialog.show();
+        //Toast.makeText(activity(), getResources().getString(R.string.noNotification), Toast.LENGTH_LONG).show();
+    }
+
+    public void noNotification() {
+        CustomToastDialog customToastDialog = new CustomToastDialog(activity());
+        customToastDialog.setMessage(getResources().getString(R.string.noNotification));
+        customToastDialog.show();
+        //Toast.makeText(activity(),getResources().getString(R.string.noNotification),Toast.LENGTH_SHORT).show();
+    }
+
+
+    /**
+     * @param date date of the event check format before use tie
+     * @return
+     * @throws ParseException
+     */
     public boolean checkWithTime(final String date) throws ParseException {
         String[] dateSplit = (date.replace("TO", "T")).replace(" ", "T").split("T");
         Date startTime = (new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).parse(dateSplit[0] + " " + dateSplit[1]);
@@ -784,17 +649,25 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         return false;
     }
 
+
+    /**
+     * text badge count from 15 to 0 sec.
+     */
     void setTextbadge() {
 
         txt_f2_badge.setText(noNotify + "");
-        if (noNotify > 0)
+        if (noNotify > 0) {
             txt_f2_badge.setBackground(getResources().getDrawable(R.drawable.bg_circle_red_badge));
-        else
+            if (noNotify > 99) txt_f2_badge.setText("99+");
+        } else {
+            txt_f2_badge.setText("0");
             txt_f2_badge.setBackground(getResources().getDrawable(R.drawable.bg_circle_gray_badge));
+        }
     }
 
+
     /***
-     *
+     *nottification popup shown on clcik of bell icon
      */
     void popupNotification() {
 
@@ -808,47 +681,78 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
             img_p2_profile = (ImageView) popupview.findViewById(R.id.img_p2_profile);
         if (img_p2_profile2 == null)
             img_p2_profile2 = (ImageView) popupview.findViewById(R.id.img_p2_profile2);
-        if (txt_message == null) txt_message = (TextView) popupview.findViewById(R.id.txt_message);
+        if (txt_message == null) {
+            txt_message = (TextView) popupview.findViewById(R.id.txt_message);
+            txt_message.setText(nudge.getNudges());
+
+        } else {
+            txt_message.setText("");
+            txt_message.setText(nudge.getNudges());
+            Animation animation = AnimationUtils.loadAnimation(activity(), R.anim.slide_left);
+            txt_message.startAnimation(animation);
+
+        }
         if (txt_timer == null) txt_timer = (TextView) popupview.findViewById(R.id.txt_timer);
         if (txt_nudge == null) txt_nudge = (TextView) popupview.findViewById(R.id.txt_nudge);
         if (txt_reply == null) txt_reply = (TextView) popupview.findViewById(R.id.txt_reply);
         if (txt_title == null) txt_title = (TextView) popupview.findViewById(R.id.txt_title);
+        if (img_reply_img == null)
+            img_reply_img = (ImageView) popupview.findViewById(R.id.img_reply_img);
+        if (txt_message.getText().toString().equals(Constants.NUDGE_YOUR)) {
+            txt_nudge.setText(getResources().getString(R.string.nudgeBack));
+        } else txt_nudge.setText(getResources().getString(R.string.Nudge));
+        txt_reply.setText(getResources().getString(R.string.Reply));
         if (txt_view_pro == null)
             txt_view_pro = (TextView) popupview.findViewById(R.id.txt_view_pro);
         if (next == null) next = (ImageView) popupview.findViewById(R.id.next);
         Picasso.with(activity()).load(nudge.getUserimage()).transform(new CircleTransform()).into(img_p2_profile);
         Picasso.with(activity()).load(nudge.getUserimage()).transform(new CircleTransform()).into(img_p2_profile2);
-        txt_message.setText(nudge.getNudges());
-        font.setFontFranklinRegular(txt_message);
+
 
         dialog.setCanceledOnTouchOutside(true);
-        dialog.setContentView(popupview);
-        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-        lp.copyFrom(dialog.getWindow().getAttributes());
-        lp.gravity = Gravity.CENTER;
-        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        lp.width = HomeActivity.ActivityWidth - ((int) activity().getResources().getDimension(R.dimen._30sdp));
-        dialog.getWindow().setAttributes(lp);
-        dialog.show();
+
+
+
+
+        if (!dialog.isShowing()) {
+            font.setFontFranklinRegular(txt_message);
+            dialog.setContentView(popupview);
+            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+            lp.copyFrom(dialog.getWindow().getAttributes());
+            lp.gravity = Gravity.CENTER;
+            lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+            lp.width = HomeActivity.ActivityWidth - ((int) activity().getResources().getDimension(R.dimen._30sdp));
+            dialog.getWindow().setAttributes(lp);
+            dialog.show();
+        }
+
         noNotify--;
         setTextbadge();
+        /***
+         * Handling all the Click of pop up here
+         */
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (noNotify > 0) {
-                    txt_message.setText("");
-                    getNudges();
-                    Animation animation = AnimationUtils.loadAnimation(activity(), R.anim.slide_left);
-                    txt_message.setAnimation(animation);
-                    Picasso.with(activity()).load(nudge.getUserimage()).transform(new CircleTransform()).into(img_p2_profile);
-                    Picasso.with(activity()).load(nudge.getUserimage()).transform(new CircleTransform()).into(img_p2_profile2);
-                    txt_message.setText(nudge.getNudges());
-                    noNotify--;
-                    setTextbadge();
-                    timerNudge.cancel();
+                    if (timerNudge != null) timerNudge.cancel();
                     timerNudge = null;
-                    popUptimer(txt_timer);
+                    getNudges();
                 } else dialog.dismiss();
+            }
+        });
+        img_reply_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                EventAttendy attendy = new EventAttendy();
+                attendy.setUserid(nudge.getUser_id());
+                attendy.setUserFacebookId(nudge.getFacebook_id());
+                attendy.setUserimage(nudge.getUserimage());
+                attendy.setUsername(nudge.getUsername());
+                Message_Fargment message_fargment = new Message_Fargment();
+                activity().addFragment(message_fargment, 1);
+                message_fargment.setData(EventId, userInfo().getUserID(), attendy, Event_Fragment.this);
             }
         });
         //popupview.setBackgroundColor(0);
@@ -860,7 +764,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                timerNudge.cancel();
+                if (timerNudge != null) timerNudge.cancel();
                 timerNudge = null;
             }
         });
@@ -897,6 +801,219 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
                 1000);
     }
 
+
+    void setDateTime(String eventDate) throws ParseException {
+        String[] dateSplit;
+        dateSplit = eventDate.replace("TO", "T").split("T");
+
+        Date date1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateSplit[0] + " " + dateSplit[1]);
+        Date date2 = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateSplit[0] + " " + dateSplit[2]));
+        txt_calender_i1.setText(new SimpleDateFormat("MMMM dd,yyyy hh:mm aa").format(date1) + "-" + new SimpleDateFormat("hh:mm aa").format(date2));
+    }
+
+    /**
+     * GetALl the data for that event
+     */
+    void getAlldata() {
+        VolleyGetPost volleyGetPost = new VolleyGetPost(activity(), HomeActivity.instance, WebService.LISTEVENTFEED, false) {
+            @Override
+            public void onVolleyResponse(String response) {
+                Log.e(TAG, "response volley :" + response);
+                try {
+                    getResponse(response);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onVolleyError(VolleyError error) {
+                Toast.makeText(activity(), getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNetError() {
+
+            }
+
+            @Override
+            public Map<String, String> setParams(Map<String, String> params) {
+
+                params.put("event_id", getEventId());
+                params.put("user_id", userInfo().getUserID());
+                return params;
+            }
+
+            @NotNull
+            @Override
+            public Map<String, String> setHeaders(Map<String, String> params) {
+                return params;
+            }
+        };
+
+        volleyGetPost.execute();
+    }
+
+    /***
+     * Event like volley
+     */
+    void likeEvent() {
+        activity().showProgDilog(false);
+        VolleyGetPost likeEventVolley = new VolleyGetPost(activity(), activity(), WebService.EVENT_LIKE, false) {
+            @Override
+            public void onVolleyResponse(String response) {
+                Log.e(TAG, " volleyResponse " + response);
+                activity().dismissProgDailog();
+                try {
+                    JSONObject object = new JSONObject(response);
+                    if (object.has("success")) if (object.getInt("success") == 1) {
+                        getAlldata();
+                        //if("":1,"msg":"your have liked the event."})
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+
+            @Override
+            public void onVolleyError(VolleyError error) {
+
+                activity().dismissProgDailog();
+                Log.e(TAG, " Volley Error " + error);
+                Toast.makeText(activity(), getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNetError() {
+                activity().dismissProgDailog();
+            }
+
+            @Override
+            public Map<String, String> setParams(Map<String, String> params) {
+
+                params.put("user_id", userInfo().getUserID());
+                params.put("event_id", EventId);
+                return params;
+            }
+
+            @NotNull
+            @Override
+            public Map<String, String> setHeaders(Map<String, String> params) {
+                return params;
+            }
+        };
+        likeEventVolley.execute();
+    }
+
+    /***
+     * For getting the nudge at notification popUp and show on it
+     */
+    void getNudges() {
+        ;
+        VolleyGetPost volleyGetPost2 = new VolleyGetPost(activity(), activity(), WebService.GET_NUDGE, false) {
+            @Override
+            public void onVolleyResponse(String response) {
+
+                Log.e(TAG, "Nudge" + response);
+                try {
+                    JSONObject nudgeJson = new JSONObject(response);
+                    if (nudgeJson.has("nudges")) nudge.setNudges(nudgeJson.getString("nudges"));
+                    if (nudgeJson.has("user_id")) nudge.setUser_id(nudgeJson.getString("user_id"));
+                    if (nudgeJson.has("facebook_id"))
+                        nudge.setFacebook_id(nudgeJson.getString("facebook_id"));
+                    if (nudgeJson.has("username"))
+                        nudge.setUsername(nudgeJson.getString("username"));
+                    if (nudgeJson.has("userimage"))
+                        nudge.setUserimage(nudgeJson.getString("userimage"));
+                    if (nudge.getNudges().equals(Constants.NUDGE_YOUR)) nudge.setMessage(false);
+                    popupNotification();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onVolleyError(VolleyError error) {
+                Log.e(TAG, "Nudge" + error);
+                Toast.makeText(activity(), getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onNetError() {
+
+            }
+
+            @Override
+            public Map<String, String> setParams(Map<String, String> params) {
+                params.put("user_id", userInfo().getUserID());
+                params.put("event_id", EventId);
+                params.put("nudges_no", noNotify + "");
+                Log.e(TAG, params.toString());
+                return params;
+            }
+
+            @NotNull
+            @Override
+            public Map<String, String> setHeaders(Map<String, String> params) {
+                return params;
+            }
+        };
+        volleyGetPost2.execute();
+
+    }
+
+    /****
+     * This method is used when The user is not exist in the event to first time key in the user
+     *
+     * @param type must be 0 or 1
+     */
+    void addUserIntoEvent(final int type, @Nullable final Bitmap bitmap) {
+        activity().showProgDilog(false);
+        VolleyGetPost adduserVolley = new VolleyGetPost(activity(), activity(), WebService.ADD_EVENT, false) {
+            @Override
+            public void onVolleyResponse(String response) {
+                Log.e(TAG, " : " + WebService.ADD_EVENT + response);
+                if (type == 0) likeEvent();
+                else if (type == 1) sendPicture(bitmap);
+
+            }
+
+            @Override
+            public void onVolleyError(VolleyError error) {
+                activity().dismissProgDailog();
+                Toast.makeText(activity(), getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNetError() {
+                activity().dismissProgDailog();
+            }
+
+            @Override
+            public Map<String, String> setParams(Map<String, String> params) {
+                params.put("userid", userInfo().getUserID());
+                params.put("eventname", userInfo().getUserID());
+                params.put("eventid", EventId);
+                params.put("Eventdate", userInfo().getUserID());
+                Log.e(TAG, params.toString());
+                return params;
+            }
+
+            @NotNull
+            @Override
+            public Map<String, String> setHeaders(Map<String, String> params) {
+                return params;
+            }
+        };
+        adduserVolley.execute();
+    }
+
+    /**
+     * Inner class to get Data as object
+     */
     class EventDetails {
         ArrayList<Feeds> feedlist;
         ArrayList<EventAttendy> attendylist;
