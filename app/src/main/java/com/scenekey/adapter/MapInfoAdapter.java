@@ -40,7 +40,8 @@ public class MapInfoAdapter implements GoogleMap.InfoWindowAdapter {
 
     @Override
     public View getInfoWindow(Marker marker) {
-        int position = Integer.parseInt(marker.getId().replace("m", ""));
+        try {
+            int position = Integer.parseInt(marker.getId().replace("m", ""));
         final Events events = eventArrayList.get(position);
         myContentsView = activity.getLayoutInflater().inflate(R.layout.z_custom_map_info, null);
         ImageView img_event = (ImageView) myContentsView.findViewById(R.id.img_event);
@@ -88,7 +89,10 @@ public class MapInfoAdapter implements GoogleMap.InfoWindowAdapter {
                 ((HomeActivity) activity).addFragment(frg);
             }
         });*/
-        return myContentsView;
+            return myContentsView;
+        } catch (Exception e) {
+            return null;
+        }
 
     }
 
@@ -107,4 +111,11 @@ public class MapInfoAdapter implements GoogleMap.InfoWindowAdapter {
     }
 
 
+    public ArrayList<Events> getEventArrayList() {
+        return eventArrayList;
+    }
+
+    public void setEventArrayList(ArrayList<Events> eventArrayList) {
+        this.eventArrayList = eventArrayList;
+    }
 }

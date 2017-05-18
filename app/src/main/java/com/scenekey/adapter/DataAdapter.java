@@ -23,6 +23,8 @@ import com.scenekey.Utility.Font;
 import com.scenekey.Utility.VolleyGetPost;
 import com.scenekey.Utility.WebService;
 import com.scenekey.activity.HomeActivity;
+import com.scenekey.fragments.Event_Fragment;
+import com.scenekey.fragments.Message_Fargment;
 import com.scenekey.helper.Constants;
 import com.scenekey.models.EventAttendy;
 import com.squareup.picasso.Picasso;
@@ -38,6 +40,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
     Dialog dialog;
     View popupview;
     String data[];
+    Event_Fragment fragment;
     private ArrayList<EventAttendy> roomPersons;
     private Context context;
 
@@ -48,12 +51,13 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
      * @param font
      * @param data     eventId , userId ,userFacebookID
      */
-    public DataAdapter(Context context, ArrayList<EventAttendy> android, Activity activity, Font font, String[] data) {
+    public DataAdapter(Context context, ArrayList<EventAttendy> android, Activity activity, Font font, String[] data, Event_Fragment fragment) {
         this.roomPersons = android;
         this.context = context;
         this.activity = activity;
         this.font = font;
         this.data = data;
+        this.fragment = fragment;
     }
 
     @Override
@@ -80,7 +84,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
                 viewHolder.img_profile_gvb1.setBackgroundResource(R.drawable.bg_red_ring);
                 break;
             default:
-                viewHolder.img_profile_gvb1.setBackgroundResource(R.drawable.bg_green_ring);
+                viewHolder.img_profile_gvb1.setBackgroundResource(R.drawable.bg_red_ring);
                 break;
         }
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +93,8 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
                 if (attendy.getUserid().equals(HomeActivity.instance.getSessionManager().getUserInfo().getUserID())) {
                     popUpMy(position);
                 } else {
-                    popupRoom(position);
+                    if (fragment.inTime && fragment.inLocation) popupRoom(position);
+                    else fragment.cantInteract();
                 }
             }
         });
@@ -150,6 +155,9 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
             case "avilable":
                 img_green.setImageResource(R.drawable.bg_green_ring_accept);
                 break;
+            default:
+                img_red.setImageResource(R.drawable.bg_red_ring_accept);
+                break;
         }
 
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -172,7 +180,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
 
     void popupRoom(int i) {
         final EventAttendy attendy = roomPersons.get(i);
-        ImageView img_p2_profile2, img_p2_profile, next;
+        ImageView img_p2_profile2, img_p2_profile, next, img_reply_img;
         final TextView txt_message, txt_timer;
         final TextView txt_nudge, txt_reply, txt_view_pro;
         final TextView txt_title;
@@ -181,6 +189,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
         popupview = LayoutInflater.from(activity).inflate(R.layout.pop_my_room, null);
         img_p2_profile = (ImageView) popupview.findViewById(R.id.img_p2_profile);
         img_p2_profile2 = (ImageView) popupview.findViewById(R.id.img_p2_profile2);
+        img_reply_img = (ImageView) popupview.findViewById(R.id.img_reply_img);
         next = (ImageView) popupview.findViewById(R.id.next);
         txt_timer = (TextView) popupview.findViewById(R.id.txt_timer);
         txt_nudge = (TextView) popupview.findViewById(R.id.txt_nudge);
@@ -215,6 +224,17 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
         lp.width = HomeActivity.ActivityWidth - ((int) activity.getResources().getDimension(R.dimen._30sdp));
         dialog.getWindow().setAttributes(lp);
         dialog.show();
+        img_reply_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+
+
+                Message_Fargment message_fargment = new Message_Fargment();
+                ((HomeActivity) activity).addFragment(message_fargment, 1);
+                message_fargment.setData(data[0], data[1], attendy, fragment);
+            }
+        });
         //popupview.setBackgroundColor(0);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         nudge.setOnClickListener(new View.OnClickListener() {

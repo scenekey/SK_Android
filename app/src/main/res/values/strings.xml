@@ -43,6 +43,7 @@
     <string name="Alert"> Alert</string>
     <string name="Nudge"> Nudge</string>
     <string name="Reply"> Reply</string>
+    <string name="message"> Message</string>
     <string name="DetailMy"> My Details</string>
     <string name="View"> View Profile</string>
     <string name="notification1"> Welcome to Scenester! </string>
@@ -53,6 +54,8 @@
     <string name="AlertMsg1"> Please turn on your GPS </string>
     <string name="EventAndExib"> Events &amp; Exhibition </string>
     <string name="enterhint"> Enter nudge message here </string>
+    <string name="nudgeBack"> Nudge back </string>
+    <string name="send"> Send </string>
 
     <string name="startTime"> Start Time </string>
     <string name="EndTime"> End Time </string>
@@ -96,6 +99,8 @@
     <string name="searchvenue"> Search venue </string>
     <string name="searchtag"> Search tag </string>
     <string name="somethingwentwrong"> Something went wrong </string>
+    <string name="sorryEvent"> Sorry!! you have to be at this event to interact </string>
+    <string name="noNotification"> You have no notification at this time </string>
     <string name="cancel"> Cancel </string>
     <string name="ok"> Ok </string>
     <string name="charectersremain"> characters remaining </string>

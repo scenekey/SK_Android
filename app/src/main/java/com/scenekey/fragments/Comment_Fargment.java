@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.android.volley.VolleyError;
 import com.scenekey.R;
 import com.scenekey.Utility.CircleTransform;
+import com.scenekey.Utility.Font;
 import com.scenekey.Utility.VolleyGetPost;
 import com.scenekey.Utility.WebService;
 import com.scenekey.activity.HomeActivity;
@@ -50,9 +51,15 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
         edt_comment = (EditText) view.findViewById(R.id.edt_comment);
         ImageView img_profile = (ImageView) view.findViewById(R.id.img_profile);
         TextView txt_post_comment = (TextView) view.findViewById(R.id.txt_post_comment);
+        TextView txt_f1_title = (TextView) view.findViewById(R.id.txt_f1_title);
         ImageView img_f3_back = (ImageView) view.findViewById(R.id.img_f3_back);
+        TextView txt_char1 = (TextView) view.findViewById(R.id.txt_char1);
+        txt_char.setText(maxNumber + " ");
         img_f3_back.setOnClickListener(this);
         txt_post_comment.setOnClickListener(this);
+        Font font = new Font(activity());
+        font.setFontFrankBookReg(txt_post_comment, txt_f1_title, edt_comment);
+        font.setFontRailRegularLight(txt_char, txt_char1);
         Picasso.with(activity()).load(userInfo().getUserImage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile);
         edt_comment.addTextChangedListener(new TextWatcher() {
             @Override
@@ -94,12 +101,14 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
             public void onVolleyResponse(String response) {
                 Log.e(TAG, " volleyResponse " + response);
                 activity().dismissProgDailog();
+                activity().onBackPressed();
             }
 
             @Override
             public void onVolleyError(VolleyError error) {
-
+                Log.e(TAG, " volleyResponse " + error);
                 activity().dismissProgDailog();
+                activity().onBackPressed();//TODO handle after implementing notification from server side
             }
 
             @Override
@@ -130,7 +139,7 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
                 return params;
             }
         };
-        volleyGetPost.setRetryTime(15000);
+        volleyGetPost.setRetryTime(20000);
         volleyGetPost.execute();
     }
 
@@ -162,13 +171,13 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
      * This method is used when The user is not exist in the event to first time key in th user
      */
     void addUserIntoEvent() {
-        VolleyGetPost volleyGetPost = new VolleyGetPost(activity(), activity(), WebService.ADD_EVENT, false) {
+        VolleyGetPost volleyaddUser = new VolleyGetPost(activity(), activity(), WebService.ADD_EVENT, false) {
             @Override
             public void onVolleyResponse(String response) {
                 Log.e(TAG, " : " + WebService.ADD_EVENT + response);
-                activity().dismissProgDailog();
+
                 commentEvent();
-                activity().onBackPressed();
+
 
             }
 
@@ -198,7 +207,7 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
                 return params;
             }
         };
-        volleyGetPost.execute();
+        volleyaddUser.execute();
     }
 
     /***

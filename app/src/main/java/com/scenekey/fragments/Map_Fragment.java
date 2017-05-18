@@ -39,6 +39,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
     HomeActivity activity;
     private MapView mMapView;
     private GoogleMap googleMap;
+    private MapInfoAdapter adapter;
 
     @Nullable
     @Override
@@ -133,7 +134,8 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
                         Log.e(TAG, " Size 0");
 
                     } else {
-                        googleMap.setInfoWindowAdapter(new MapInfoAdapter(activity, markersArray));
+                        adapter = new MapInfoAdapter(activity, markersArray);
+                        googleMap.setInfoWindowAdapter(adapter);
                         for (int i = 0; i < markersArray.size(); i++) {
                             Log.e(TAG, markersArray.get(i).getEvent().getEvent_name() + " : " + markersArray.get(i).getEvent().getEvent_id() + " : " + markersArray.get(i).getVenue().getLatitude() + " : " + markersArray.get(i).getVenue().getLongitude());
                             if (i == (markersArray.size() - 1)) {
@@ -149,7 +151,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
                     e.printStackTrace();
                 }
 
-                sydney = new LatLng(38.222046D, -122.144755D);
+                //sydney = new LatLng(38.222046D, -122.144755D);
                 // For zooming automatically to the location of the marker
                 CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
@@ -197,5 +199,11 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
         Log.e(TAG, "Info window clicked" + marker.getId() + ":" + marker.getZIndex());
         marker.showInfoWindow();
         return false;
+    }
+
+    public void notifyAdapter() {
+        if (adapter != null) {
+            adapter.setEventArrayList(activity.getEventsArrayList());
+        }
     }
 }

@@ -50,8 +50,6 @@ public class Trending_Fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.f1_trending_one, null);
         rclv_f3_trending = (RecyclerView) v.findViewById(R.id.rclv_f3_trending);
-
-
         activity = HomeActivity.instance;
         activity.setTitleVisibality(View.VISIBLE);
         activity.showProgDilog(false);
@@ -68,6 +66,19 @@ public class Trending_Fragment extends Fragment {
 
         getTrending();
 
+    }
+
+    void setRecyclerView() {
+        if (treandingAdapter == null) {
+            treandingAdapter = new TreandingAdapter(activity, eventsArrayList);
+            layoutManager = new LinearLayoutManager(activity);
+            rclv_f3_trending.setLayoutManager(layoutManager);
+            rclv_f3_trending.setAdapter(treandingAdapter);
+            treandingAdapter.notifyDataSetChanged();
+            rclv_f3_trending.setHasFixedSize(true);
+        } else {
+            treandingAdapter.notifyDataSetChanged();
+        }
     }
 
     void getTrending() {
@@ -117,6 +128,7 @@ public class Trending_Fragment extends Fragment {
             @Override
             public void onVolleyError(VolleyError error) {
                 activity.dismissProgDailog();
+                Toast.makeText(activity, getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
                 Log.e(TAG, error + "");
             }
 
@@ -144,20 +156,6 @@ public class Trending_Fragment extends Fragment {
             }
         };
         volleyGetPost.execute();
-    }
-
-
-    void setRecyclerView() {
-        if (treandingAdapter == null) {
-            treandingAdapter = new TreandingAdapter(activity, eventsArrayList);
-            layoutManager = new LinearLayoutManager(activity);
-            rclv_f3_trending.setLayoutManager(layoutManager);
-            rclv_f3_trending.setAdapter(treandingAdapter);
-            treandingAdapter.notifyDataSetChanged();
-            rclv_f3_trending.setHasFixedSize(true);
-        } else {
-            treandingAdapter.notifyDataSetChanged();
-        }
     }
 
 

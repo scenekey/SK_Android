@@ -121,6 +121,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/message"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginRight="@dimen/_1sdp"
@@ -135,6 +136,7 @@
                 android:background="@drawable/circle_white" />
 
             <ImageView
+                android:id="@+id/img_reply_img"
                 android:layout_width="@dimen/profilepic"
                 android:layout_height="@dimen/profilepic"
                 android:layout_centerHorizontal="true"
@@ -149,7 +151,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/img_reply"
-                android:text="@string/Reply" />
+                android:text="@string/message" />
 
         </RelativeLayout>
 

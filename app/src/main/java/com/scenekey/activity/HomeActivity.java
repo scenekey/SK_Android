@@ -85,6 +85,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     ArrayList<Events> eventsNearbyList;
     boolean eventAvailable;
     CircleImageView img_f1_profile;
+    Map_Fragment map_fragment;
     private Font font;
     private CusDialogProg cusDialogProg;
     private double latitude, longiude;
@@ -226,7 +227,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.rtlv_two:
                 setBottombar((RelativeLayout) v, lastclicked);
-                replaceFragment(new Map_Fragment());
+                if (map_fragment == null) map_fragment = new Map_Fragment();
+                replaceFragment(map_fragment);
                 break;
             case R.id.rtlv_three:
                 setBottombar((RelativeLayout) v, lastclicked);
@@ -544,6 +546,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                                 eventsArrayList.add(events);
                                 //Log.e("Size",eventsArrayList.size()+"");
                             }
+                            try {
+                                for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                                    if (fragment instanceof Map_Fragment)
+                                        if (map_fragment != null) map_fragment.notifyAdapter();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             checkedEventtoJoint();
                             if (showProgress) rtlv_three.callOnClick();
                         }
@@ -629,16 +639,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             myLocation.setLatitude(38.222046D);
             myLocation.setLongitude(-122.144755D);
             double distance = location.distanceTo(myLocation);
-            //Log.e(TAG,events.getEvent().getDistance()+" + "+distance+" PHP DISTNACE "+phpDistance(new Double[]{myLocation.getLatitude(),myLocation.getLongitude(),location.getLatitude(),location.getLongitude()}));
-            //Log.e(TAG,"LATLONG "+location.getLatitude()+ " : "+location.getLongitude());
             try {
                 if (distance <= Constants.MAXIMUM_DISTANCE && checkWithTime(events.getEvent().getEvent_date())) {
                     eventsNearbyList.add(events);
 
                 }
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(this, getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_LONG).show();
             }
         }
 
@@ -650,7 +658,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
      ******************************************************/
 
     public boolean checkWithTime(final String date) throws ParseException {
-        String[] dateSplit = date.replace(" ", "TO").split("TO");
+        Log.e(TAG, date);
+        String[] dateSplit;
+        if (date.contains("T")) dateSplit = (date.replace("TO", " ")).replace("T", " ").split(" ");
+        else {
+            String date2 = date.replace("TO", " ");
+            Log.e(TAG, date2);
+            dateSplit = date2.split("\\s?");
+        }
 
         Date startTime = (new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).parse(dateSplit[0] + " " + dateSplit[1]);
 

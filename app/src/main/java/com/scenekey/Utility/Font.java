@@ -39,24 +39,33 @@ public class Font {
     }
 
     public void setFont(TextView text) {
-        //text.setTextColor(Color.parseColor("#FFFFFF"));
         text.setTypeface(Raleway_Light);
     }
 
 
     public void setFontBold(TextView text) {
-        //text.setTextColor(Color.parseColor("#FFFFFF"));
+
         text.setTypeface(Raleway_Bold);
     }
 
+    public void setFontBold(TextView... texts) {
+        for (TextView text : texts) {
+            text.setTypeface(Raleway_Bold);
+        }
+    }
+
     public void setFontRailMedium(TextView text) {
-        //text.setTextColor(Color.parseColor("#FFFFFF"));
         text.setTypeface(Raleway_Medium);
     }
 
     public void setFontRailRegular(TextView text) {
-        //text.setTextColor(Color.parseColor("#FFFFFF"));
         text.setTypeface(Raleway_Regular);
+    }
+
+    public void setFontRailRegularLight(TextView... texts) {
+        for (TextView text : texts) {
+            text.setTypeface(Raleway_Light);
+        }
     }
 
     public void setFontSGS(TextView text) {

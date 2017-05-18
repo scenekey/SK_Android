@@ -53,15 +53,13 @@ public class TreandingAdapter extends RecyclerView.Adapter<TreandingAdapter.Hold
         Font font = new Font(activity);
         font.setFontFrankBookReg(holder.txt_eventAdress, holder.txt_eventDate, holder.txt_eventName, holder.txt_time);
         try {
-            //int width = holder.img_event.getWidth();
-            //int height =holder.img_event.getHeight();
-            //.resize(width,height).onlyScaleDown()
             Picasso.with(activity).load(event.getImage()).placeholder(R.drawable.scene3).into(holder.img_event);
         } catch (Exception e) {
 
         }
         try {
-            holder.txt_time.setText(convertTime(event.getEvent_time()));
+            if (checkWithTime(event.getEvent_date())) holder.txt_time.setText("");
+            else holder.txt_time.setText(convertTime(event.getEvent_time()));
             holder.txt_time.setTypeface(font.FrankBookRegular());
         } catch (ParseException e) {
             e.printStackTrace();
@@ -103,22 +101,8 @@ public class TreandingAdapter extends RecyclerView.Adapter<TreandingAdapter.Hold
     }
 
     String convertDate(String date) {
-        //2017-04-26 21:00:00TO01:00:00
-        /*Log.e("Date",date +" ");
-        String[] str = (((date.replace("TO"," ")).replace("-"," ")).replace(":"," ")).replace("T"," ").split(" ");
-
-        for(String s: str){
-            Log.e("Date",s +" : ");
-        }
-        Date date1 = new Date();
-        date1.setMonth(Integer.parseInt(str[1])-1);
-        date1.setYear(Integer.parseInt(str[0]));
-        date1.setDate(Integer.parseInt(str[2]));
-        date1.setHours(Integer.parseInt(str[3]));
-        date1.setMinutes(Integer.parseInt(str[4]));
-        return new SimpleDateFormat("MMMM dd,yyyy HH:mm aa").format(date1);*/
-        String[] str = date.split("TO");
-        //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        String[] str;
+        str = date.split("TO");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         try {
             Date date1 = format.parse(str[0]);
@@ -126,7 +110,7 @@ public class TreandingAdapter extends RecyclerView.Adapter<TreandingAdapter.Hold
 
         } catch (ParseException e) {
             e.printStackTrace();
-            return "";
+            return date;
         }
 
     }
@@ -138,6 +122,24 @@ public class TreandingAdapter extends RecyclerView.Adapter<TreandingAdapter.Hold
         Date date2 = new Date();
         int milis = Math.abs(date2.getHours() - date1.getHours());
         return milis + " hr";
+    }
+
+    /**
+     * @param date date of the event check format before use tie
+     * @return
+     * @throws ParseException
+     */
+    public boolean checkWithTime(final String date) throws ParseException {
+        String[] dateSplit;
+        if (date.contains("T")) dateSplit = date.replace("TO", "T").split("T");
+        else dateSplit = (date.replace("TO", "T")).replace(" ", "T").split("T");
+        Date startTime = (new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).parse(dateSplit[0] + " " + dateSplit[1]);
+        Date endTime = (new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).parse(dateSplit[0] + " " + dateSplit[2]);
+        long currentTime = java.util.Calendar.getInstance().getTime().getTime();
+        if (currentTime < endTime.getTime() && currentTime > startTime.getTime()) {
+            return true;
+        }
+        return false;
     }
 
     public class Holder extends RecyclerView.ViewHolder {
