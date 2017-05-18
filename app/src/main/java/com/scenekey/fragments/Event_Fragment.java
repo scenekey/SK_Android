@@ -563,9 +563,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
     }
 
 
-
     /**
-     *
      * @param bitmap the bitmap return by the activity result
      */
     void sendPicture(final Bitmap bitmap) {
@@ -710,8 +708,6 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
 
 
         dialog.setCanceledOnTouchOutside(true);
-
-
 
 
         if (!dialog.isShowing()) {
