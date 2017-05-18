@@ -55,6 +55,7 @@
     <string name="EventAndExib"> Events &amp; Exhibition </string>
     <string name="enterhint"> Enter nudge message here </string>
     <string name="nudgeBack"> Nudge back </string>
+    <string name="goodNudge"> Good nudge </string>
     <string name="send"> Send </string>
 
     <string name="startTime"> Start Time </string>

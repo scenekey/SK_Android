@@ -26,11 +26,13 @@ public class WebService {
     public final static String EVENT_LIKE = BASE_URL + "webservices/addEventLike";
     public final static String EVENT_COMMENT = BASE_URL + "webservices/addeventcomment";
     public final static String EVENT_POST_PIC = BASE_URL + "webservices/addeventpicture";
-
     public final static String ADD_EVENT = BASE_URL + "webservices/addevent";
 
     public final static String ADD_NUDGE = BASE_URL + "webservices/addnudges";
     public final static String GET_NUDGE = BASE_URL + "webservices/getnudges";
+
+
+    public final static String LISTATTENDEDEVENT = BASE_URL + "webservices/listofuserattendedevent";
 
 
 }

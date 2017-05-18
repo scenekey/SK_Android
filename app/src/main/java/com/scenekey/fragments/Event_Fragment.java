@@ -100,7 +100,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
     Timer timerHttp, timerNudge;
     NotificationData nudge;
     FloatingActionButton fabMenu1_like;
-    ImageView img_p2_profile2, img_p2_profile, next;
+    ImageView img_p2_profile2, img_p2_profile, next, img_nudge;
     TextView txt_message, txt_timer;
     TextView txt_nudge, txt_reply, txt_view_pro;
     TextView txt_title;
@@ -627,7 +627,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         CustomToastDialog customToastDialog = new CustomToastDialog(activity());
         customToastDialog.setMessage(getResources().getString(R.string.noNotification));
         customToastDialog.show();
-        //Toast.makeText(activity(),getResources().getString(R.string.noNotification),Toast.LENGTH_SHORT).show();
+        //Toast.makcaeText(activity(),getResources().getString(R.string.noNotification),Toast.LENGTH_SHORT).show();
     }
 
 
@@ -679,6 +679,8 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
             img_p2_profile = (ImageView) popupview.findViewById(R.id.img_p2_profile);
         if (img_p2_profile2 == null)
             img_p2_profile2 = (ImageView) popupview.findViewById(R.id.img_p2_profile2);
+        if (img_nudge == null)
+            img_nudge = (ImageView) popupview.findViewById(R.id.img_nudge);
         if (txt_message == null) {
             txt_message = (TextView) popupview.findViewById(R.id.txt_message);
             txt_message.setText(nudge.getNudges());
@@ -708,7 +710,19 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
 
 
         dialog.setCanceledOnTouchOutside(true);
+        img_nudge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addNudge(nudge.getUser_id(), nudge.getFacebook_id());
+            }
+        });
 
+        txt_nudge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addNudge(nudge.getUser_id(), nudge.getFacebook_id());
+            }
+        });
 
         if (!dialog.isShowing()) {
             font.setFontFranklinRegular(txt_message);
@@ -749,6 +763,30 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
                 Message_Fargment message_fargment = new Message_Fargment();
                 activity().addFragment(message_fargment, 1);
                 message_fargment.setData(EventId, userInfo().getUserID(), attendy, Event_Fragment.this);
+            }
+        });
+
+        img_p2_profile2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventAttendy attendy = new EventAttendy();
+                attendy.setUserid(nudge.getUser_id());
+                attendy.setUserFacebookId(nudge.getFacebook_id());
+                attendy.setUserimage(nudge.getUserimage());
+                attendy.setUsername(nudge.getUsername());
+                callProfile(attendy);
+            }
+        });
+
+        txt_view_pro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventAttendy attendy = new EventAttendy();
+                attendy.setUserid(nudge.getUser_id());
+                attendy.setUserFacebookId(nudge.getFacebook_id());
+                attendy.setUserimage(nudge.getUserimage());
+                attendy.setUsername(nudge.getUsername());
+                callProfile(attendy);
             }
         });
         //popupview.setBackgroundColor(0);
@@ -800,7 +838,8 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
 
     void setDateTime(String eventDate) throws ParseException {
         String[] dateSplit;
-        dateSplit = eventDate.replace("TO", "T").split("T");
+        Log.e(TAG, " " + eventDate);
+        dateSplit = (eventDate.replace("TO", " ").replace("T", " ")).split(" ");
 
         Date date1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateSplit[0] + " " + dateSplit[1]);
         Date date2 = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateSplit[0] + " " + dateSplit[2]));
@@ -1007,6 +1046,56 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         adduserVolley.execute();
     }
 
+    void addNudge(final String attendyId, final String attendyFBID) {
+        (activity()).showProgDilog(false);
+        VolleyGetPost volleyGetPost = new VolleyGetPost(activity(), HomeActivity.instance, WebService.ADD_NUDGE, false) {
+            @Override
+            public void onVolleyResponse(String response) {
+                Log.e("VolleyRespnce", " Data Adapter " + response);
+                activity().dismissProgDailog();
+
+                CustomToastDialog customToastDialogA = new CustomToastDialog(activity());
+                customToastDialogA.setMessage(getResources().getString(R.string.goodNudge));
+                customToastDialogA.show();
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onVolleyError(VolleyError error) {
+                activity().dismissProgDailog();
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onNetError() {
+                activity().dismissProgDailog();
+                dialog.dismiss();
+            }
+
+            @Override
+            public Map<String, String> setParams(Map<String, String> params) {
+                params.put("event_id", getEventId());
+                params.put("nudges_to", attendyId);
+                params.put("nudges_by", userInfo().getUserID());
+                params.put("facebook_id", attendyFBID);
+                params.put("nudges", Constants.NUDGE_YOUR);
+                return params;
+            }
+
+            @NotNull
+            @Override
+            public Map<String, String> setHeaders(Map<String, String> params) {
+                return params;
+            }
+        };
+        volleyGetPost.execute();
+    }
+
+    void callProfile(EventAttendy attendy) {
+        dialog.dismiss();
+        activity().addFragment(new Profile_Fragment().setData(attendy, false), 1);
+    }
+
     /**
      * Inner class to get Data as object
      */
@@ -1142,4 +1231,5 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
             this.nudges_count = nudges_count;
         }
     }
+
 }

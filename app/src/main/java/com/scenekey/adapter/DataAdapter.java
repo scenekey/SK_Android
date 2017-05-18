@@ -19,12 +19,14 @@ import android.widget.TextView;
 import com.android.volley.VolleyError;
 import com.scenekey.R;
 import com.scenekey.Utility.CircleTransform;
+import com.scenekey.Utility.CustomToastDialog;
 import com.scenekey.Utility.Font;
 import com.scenekey.Utility.VolleyGetPost;
 import com.scenekey.Utility.WebService;
 import com.scenekey.activity.HomeActivity;
 import com.scenekey.fragments.Event_Fragment;
 import com.scenekey.fragments.Message_Fargment;
+import com.scenekey.fragments.Profile_Fragment;
 import com.scenekey.helper.Constants;
 import com.scenekey.models.EventAttendy;
 import com.squareup.picasso.Picasso;
@@ -235,6 +237,21 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
                 message_fargment.setData(data[0], data[1], attendy, fragment);
             }
         });
+
+        img_p2_profile2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callProfile(attendy);
+            }
+        });
+
+        txt_view_pro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callProfile(attendy);
+            }
+        });
+
         //popupview.setBackgroundColor(0);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         nudge.setOnClickListener(new View.OnClickListener() {
@@ -248,6 +265,9 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
                         Log.e("VolleyRespnce", " Data Adapter " + response);
                         ((HomeActivity) activity).dismissProgDailog();
                         dialog.dismiss();
+                        CustomToastDialog customToastDialogA = new CustomToastDialog(activity);
+                        customToastDialogA.setMessage(activity.getResources().getString(R.string.goodNudge));
+                        customToastDialogA.show();
 
                     }
 
@@ -285,6 +305,11 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
 
     }
 
+    void callProfile(EventAttendy attendy) {
+        dialog.dismiss();
+        ((HomeActivity) activity).addFragment(new Profile_Fragment(), 1);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView txt_name_gvb1;
         private ImageView img_profile_gvb1;
@@ -296,6 +321,5 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
             img_profile_gvb1 = (ImageView) view.findViewById(R.id.img_profile_gvb1);
         }
     }
-
 
 }

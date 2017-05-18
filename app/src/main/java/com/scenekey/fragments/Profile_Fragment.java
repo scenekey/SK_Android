@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.scenekey.R;
 import com.scenekey.Utility.Font;
 import com.scenekey.activity.HomeActivity;
+import com.scenekey.models.EventAttendy;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -25,7 +26,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class Profile_Fragment extends Fragment implements View.OnClickListener {
     public static final String TAG = Profile_Fragment.class.toString();
     CircleImageView img_profile_pic2;
-    HomeActivity activity;
+    EventAttendy attendy;
+    boolean myProfile;
     private ImageView img_profile_pic, img_cross, img_left, img_right;
     private TextView txt_event_count, txt_dimmer;
 
@@ -33,7 +35,6 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.f2_profile_own, null);
-        activity = (HomeActivity) getActivity();
         img_profile_pic = (ImageView) v.findViewById(R.id.img_profile_pic);
         img_left = (ImageView) v.findViewById(R.id.img_left);
         img_right = (ImageView) v.findViewById(R.id.img_right);
@@ -55,7 +56,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
         img_profile_pic2.setVisibility(View.INVISIBLE);
 
 
-        Font font = new Font(activity);
+        Font font = new Font(activity());
         //TODO : Seeting the fonts
         //TODO :Setting the Event count to 99+ if greter then 99
 
@@ -143,5 +144,21 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
         });
 
         img_profile_pic2.startAnimation(animation);
+    }
+
+    HomeActivity activity() {
+        return HomeActivity.instance;
+    }
+
+
+    /**
+     * @param attendy   if do not Eventattendy object just create one , set userId URL and pass it.
+     * @param myProfile if user comming to show his own profile then true otherwise false.
+     * @return
+     */
+    Profile_Fragment setData(EventAttendy attendy, boolean myProfile) {
+        this.attendy = attendy;
+        this.myProfile = myProfile;
+        return this;
     }
 }
