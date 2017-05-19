@@ -307,7 +307,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
 
     void callProfile(EventAttendy attendy) {
         dialog.dismiss();
-        ((HomeActivity) activity).addFragment(new Profile_Fragment(), 1);
+        ((HomeActivity) activity).addFragment(new Profile_Fragment().setData(attendy, false, fragment), 1);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

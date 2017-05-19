@@ -18,6 +18,13 @@ public class Feeds implements Serializable {
     private String date;
     private String feed;
 
+
+    /**
+     * In list of user attended event
+     */
+    private String event_name;
+
+
     public String getUsername() {
         return username;
     }
@@ -96,5 +103,13 @@ public class Feeds implements Serializable {
 
     public void setFeed(String feed) {
         this.feed = feed;
+    }
+
+    public String getEvent_name() {
+        return event_name;
+    }
+
+    public void setEvent_name(String event_name) {
+        this.event_name = event_name;
     }
 }

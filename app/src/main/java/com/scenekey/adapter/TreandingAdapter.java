@@ -3,7 +3,6 @@ package com.scenekey.adapter;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -116,7 +115,7 @@ public class TreandingAdapter extends RecyclerView.Adapter<TreandingAdapter.Hold
     }
 
     String convertTime(String time) throws ParseException {
-        Log.e("Time ", time);
+        //Log.e("Time ", time);
         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
         Date date1 = format.parse(time);
         Date date2 = new Date();

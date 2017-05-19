@@ -75,8 +75,7 @@ import java.util.TimerTask;
 
 public class Event_Fragment extends Fragment implements View.OnClickListener {
     public static final String TAG = Event_Fragment.class.toString();
-    static String FEED_TYPE_PICTURE = "Picture";
-    static String FEED_TYPE_COMMENT = "Comment";
+
     public boolean canCallWebservice;
     public boolean inLocation, inTime;
     String EventId;
@@ -121,6 +120,8 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
     private ArrayList<Card> cardslist;
     private Font font;
     private EventDetails eventDetails;
+
+    //TODO  if event is more then a day
 
     @Nullable
     @Override
@@ -794,6 +795,8 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
 
         //Declare the timer
         popUptimer(txt_timer);
+        Animation animation = AnimationUtils.loadAnimation(activity(), R.anim.beat_animation);
+        txt_timer.startAnimation(animation);
 
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
@@ -1093,7 +1096,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
 
     void callProfile(EventAttendy attendy) {
         dialog.dismiss();
-        activity().addFragment(new Profile_Fragment().setData(attendy, false), 1);
+        activity().addFragment(new Profile_Fragment().setData(attendy, false, Event_Fragment.this), 1);
     }
 
     /**
@@ -1150,7 +1153,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
                 if (feedsJson.has("location")) feeds.setLocation(feedsJson.getString("location"));
                 if (feedsJson.has("date")) feeds.setDate(feedsJson.getString("date"));
                 if (feedsJson.has("feed")) feeds.setFeed(feedsJson.getString("feed"));
-                if (feeds.getType().equals(FEED_TYPE_PICTURE)) {
+                if (feeds.getType().equals(Constants.FEED_TYPE_PICTURE)) {
                     Card card = new Card();
                     card.imageUrl = feeds.getFeed();
                     cardslist.add(card);

@@ -39,5 +39,8 @@ public class Constants {
     public static final String KEY_NOTEXIST = "no exist";
     public static final String KEY_EXIST = "exist";
 
+    public static String FEED_TYPE_PICTURE = "Picture";
+    public static String FEED_TYPE_COMMENT = "Comment";
+
 
 }

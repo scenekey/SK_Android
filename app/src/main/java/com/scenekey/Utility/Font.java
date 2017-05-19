@@ -18,6 +18,8 @@ public class Font {
     Typeface Seaguisym;
     Typeface euphemia;
     Typeface Arial_Regular;
+    Typeface Franklin_Gothic_Bold;
+    Typeface LibreFranklin_SemiBold;
 
     public Font(Context context) {
 
@@ -35,6 +37,8 @@ public class Font {
         this.Frank_Book = Typeface.createFromAsset(context.getResources().getAssets(), "fonts/Frank_Book.ttf");
         this.euphemia = Typeface.createFromAsset(context.getResources().getAssets(), "fonts/euphemia.ttf");
         this.Arial_Regular = Typeface.createFromAsset(context.getResources().getAssets(), "fonts/Arial_Regular.ttf");
+        this.Franklin_Gothic_Bold = Typeface.createFromAsset(context.getResources().getAssets(), "fonts/Franklin_Gothic_Bold.ttf");
+        this.LibreFranklin_SemiBold = Typeface.createFromAsset(context.getResources().getAssets(), "fonts/LibreFranklin_SemiBold.ttf");
 
     }
 
@@ -108,6 +112,9 @@ public class Font {
         return Arial_Regular;
     }
 
+    /***
+     * @param textViews will become with typw face Franklin Gothic Book Regular
+     */
     public void setFontFranklinRegular(TextView... textViews) {
         for (TextView t : textViews) {
             t.setTypeface(Franklin_Gothic_Reg);
@@ -147,6 +154,18 @@ public class Font {
     public void setFontFrank_Heavy_Reg(TextView... textViews) {
         for (TextView t : textViews) {
             t.setTypeface(Frank_Heavy_Reg);
+        }
+    }
+
+    public void setFontFranklin_Gothic_Bold(TextView... textViews) {
+        for (TextView t : textViews) {
+            t.setTypeface(Franklin_Gothic_Bold);
+        }
+    }
+
+    public void setFontLibreFranklin_SemiBold(TextView... textViews) {
+        for (TextView t : textViews) {
+            t.setTypeface(LibreFranklin_SemiBold);
         }
     }
 
