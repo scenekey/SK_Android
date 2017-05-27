@@ -1,11 +1,16 @@
 package com.scenekey.models;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by mindiii on 24/4/17.
@@ -15,6 +20,11 @@ public class Events implements Serializable {
     Venue venue;
     ArrayList<Artists> artistsArrayList;
     Event event;
+
+    //For Teranding Adapter
+    public String timeFormat;
+    public String remainingTime;
+    public boolean isOngoing;
 
     public Venue getVenue() {
         return venue;
@@ -83,5 +93,67 @@ public class Events implements Serializable {
 
     public Event getEvent() {
         return this.event;
+    }
+
+
+    //For trending Adapter
+
+    public void setOngoing(boolean ongoing) {
+        isOngoing = ongoing;
+    }
+
+    public void settimeFormat(){
+       timeFormat = convertDate(event.getEvent_date());
+    }
+    public void setRemainingTime(){
+        try {
+            remainingTime = convertTime(event.getEvent_time());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * @param date date of the event check format before use tie
+     * @return
+     * @throws ParseException
+     */
+    public boolean checkWithTime(final String date , int interval) throws ParseException {
+        String[] dateSplit = (date.replace("TO", "T")).replace(" ", "T").split("T");
+        Date startTime = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).parse(dateSplit[0] + " " + dateSplit[1]);
+        Date endTime = new Date(startTime.getTime()+(interval* 60 * 60 * 1000));
+        Log.e("TrendingAdapter ",startTime +"  : "+endTime);
+        long currentTime = java.util.Calendar.getInstance().getTime().getTime();
+        /*if (currentTime < endTime.getTime() && currentTime > startTime.getTime()) {
+            return true;
+        }*/
+        if (currentTime > startTime.getTime() ) {
+            return true;
+        }
+        return false;
+    }
+
+    String convertDate(String date) {
+        String[] str;
+        str = date.split("TO");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        try {
+            Date date1 = format.parse(str[0]);
+            return new SimpleDateFormat("MMMM dd,yyyy hh:mm aa").format(date1);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return date;
+        }
+
+    }
+
+    String convertTime(String time) throws ParseException {
+        //Log.e("Time ", time);
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+        Date date1 = format.parse(time);
+        Date date2 = new Date();
+        int milis = Math.abs(date2.getHours() - date1.getHours());
+        return milis + " hr";
     }
 }

@@ -1,5 +1,7 @@
 package com.scenekey.models;
 
+import com.facebook.AccessToken;
+
 import java.io.Serializable;
 
 /**
@@ -20,6 +22,9 @@ public class UserInfo implements Serializable {
     private String artisttype;
     private String firstname;
     private String lastname;
+    private String facebookId;
+    private String makeAdmin;
+    private AccessToken userAccessToken;
 
 
     public String getUserID() {
@@ -124,5 +129,29 @@ public class UserInfo implements Serializable {
 
     public void setVenuName(String venuName) {
         this.venuName = venuName;
+    }
+
+    public String getFacebookId() {
+        return facebookId;
+    }
+
+    public void setFacebookId(String facebookId) {
+        this.facebookId = facebookId;
+    }
+
+    public String getMakeAdmin() {
+        return makeAdmin;
+    }
+
+    public void setMakeAdmin(String makeAdmin) {
+        this.makeAdmin = makeAdmin;
+    }
+
+    public AccessToken getUserAccessToken() {
+        return userAccessToken;
+    }
+
+    public void setUserAccessToken(AccessToken userAccessToken) {
+        this.userAccessToken = userAccessToken;
     }
 }
