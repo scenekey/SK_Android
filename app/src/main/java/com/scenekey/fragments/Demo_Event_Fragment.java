@@ -29,6 +29,7 @@ import com.scenekey.Utility.CircleTransform;
 import com.scenekey.Utility.Font;
 import com.scenekey.Utility.Util;
 import com.scenekey.activity.HomeActivity;
+import com.scenekey.adapter.DataAdapter;
 import com.scenekey.adapter.DataAdapter_Demo;
 import com.scenekey.helper.SessionManager;
 import com.scenekey.lib_sources.Floting_menuAction.FloatingActionButton;
@@ -122,6 +123,8 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
 
         card_stack_view = (SwipeCardView) view.findViewById(R.id.card_stack_view);//TinderSwipe
         rtlv2_animate_f2 = (RelativeLayout) view.findViewById(R.id.rtlv2_animate_f2);
+        LinearLayout no_one = (LinearLayout) view.findViewById(R.id.no_one);
+        no_one.setVisibility(View.GONE);
 
 
         latitude = 34.0430175;
@@ -413,41 +416,6 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
 
         getDemoData2();
 
-        /*new AsyncTask<Void, Integer, Integer>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
-
-            int i =0;
-
-            @Override
-            protected Integer doInBackground(Void... params) {
-                while (true){
-                    roomPersons.add(new RoomPerson(android_version_names[i],android_image_urls[i],staus[i]));
-                    publishProgress(i);
-                    if(i==8) break;
-                    i++;
-
-                }
-                return i;
-            }
-
-            @Override
-            protected void onProgressUpdate(Integer... values) {
-                super.onProgressUpdate(values);
-
-            }
-
-            @Override
-            protected void onPostExecute(Integer integer) {
-                super.onPostExecute(integer);
-
-
-
-            }
-        }.execute();*/
-
 
     }
 
@@ -483,7 +451,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
 
         Card card2 = new Card();
         card2.name = "Card2";
-        card2.imageId = R.drawable.demo_2;
+        card2.text  = getResources().getString(R.string.omg__smooth);
         card2.imageint = R.drawable.room_2;
         al.add(card2);
 
@@ -495,39 +463,66 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
     void getDemoData2() {
         Card card3 = new Card();
         card3.name = "Card3";
-        card3.imageId = R.drawable.demo_3;
+        card3.imageId = R.drawable.demo_2;
         card3.imageint = R.drawable.room_3;
         al.add(card3);
+
         Card card4 = new Card();
         card4.name = "Card4";
-        card4.imageId = R.drawable.demo_4;
+        card4.text = getResources().getString(R.string.ihavebest);
         card4.imageint = R.drawable.room_4;
         al.add(card4);
+
         Card card5 = new Card();
-        card5.name = "Card4";
-        card5.imageId = R.drawable.demo_5;
+        card5.name = "Card5";
+        card5.imageId = R.drawable.demo_3;
         card5.imageint = R.drawable.room_5;
         al.add(card5);
+
         Card card6 = new Card();
-        card6.name = "Card4";
-        card6.imageId = R.drawable.demo_6;
+        card6.name = "Card6";
+        card6.imageId = R.drawable.demo_4;
         card6.imageint = R.drawable.room_6;
         al.add(card6);
+
         Card card7 = new Card();
-        card7.name = "Card4";
-        card7.imageId = R.drawable.demo_7;
+        card7.name = "Card7";
+        card7.text = getResources().getString(R.string.omg__smooth);
         card7.imageint = R.drawable.room_7;
         al.add(card7);
+
         Card card8 = new Card();
-        card8.name = "Card4";
-        card8.imageId = R.drawable.demo_8;
+        card8.name = "Card8";
+        card8.imageId =R.drawable.demo_5;
         card8.imageint = R.drawable.room_8;
         al.add(card8);
+
         Card card9 = new Card();
-        card9.name = "Card4";
-        //card9.imageId = R.drawable.room_1;
-        card9.text = getResources().getString(R.string.sample_welcome);
+        card9.name = "card9";
+        card9.text = getResources().getString(R.string.ihavebest);
+        card9.imageint = R.drawable.room_1;
         al.add(card9);
+
+        Card card10 = new Card();
+        card10.name = "card10";
+        card10.imageId =R.drawable.demo_6;
+        card10.imageint = R.drawable.room_2;
+        al.add(card10);
+
+        Card card11 = new Card();
+        card11.name = "Card8";
+        card11.imageId =R.drawable.demo_7;
+        card11.imageint = R.drawable.room_3;
+        al.add(card11);
+
+        Card card12 = new Card();
+        card12.name = "card9";
+        card12.text = getResources().getString(R.string.ilovemike);
+        card12.imageint = R.drawable.room_5;
+        al.add(card12);
+
+
+
         arrayAdapter.notifyDataSetChanged();
     }
 
@@ -543,6 +538,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         final TextView txt_message, txt_timer;
         final TextView txt_nudge, txt_reply, txt_view_pro;
         final TextView txt_title;
+        RelativeLayout nudge;
         NotificationData person = nlist.get(noNotify - 1);
         dialog = new Dialog(activity);
         popupview = LayoutInflater.from(activity).inflate(R.layout.pop_my_room, null);
@@ -558,6 +554,13 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         Picasso.with(activity).load(person.getImg()).transform(new CircleTransform()).into(img_p2_profile);
         Picasso.with(activity).load(person.getImg()).transform(new CircleTransform()).into(img_p2_profile2);
         txt_message.setText(person.getNudges());
+        nudge = (RelativeLayout) popupview.findViewById(R.id.nudge);
+        nudge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((DataAdapter_Demo) rclv_grid.getAdapter()).goodNudge();
+            }
+        });
         //font.setFontFranklinRegular(txt_message);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCanceledOnTouchOutside(true);
@@ -571,6 +574,8 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         dialog.show();
         noNotify--;
         setTextbadge();
+        Animation animation = AnimationUtils.loadAnimation(activity, R.anim.beat_animation);
+        txt_timer.startAnimation(animation);
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
