@@ -33,6 +33,8 @@
     <color name="picker_Divider2">#23C2FC</color>
     <color name="picker_Dim">#808080</color>
     <color name="blueToastTxt">#FF0140C4</color>
+    <color name="txt_discrip">#FF5B5B5B</color>
+    <color name="txt_no_one">#FF565656</color>
 
 
     <!--    100% — FF
