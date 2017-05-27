@@ -13,7 +13,7 @@
         android:id="@+id/rtlv_top"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_180sdp"
-        android:background="@drawable/background_event_green">
+        android:background="@drawable/bg_event_card">
 
 
         <com.scenekey.lib_sources.SwipeCard.SwipeCardView
@@ -255,9 +255,40 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/_15sdp"
+                    android:textColor="@color/txt_discrip"
                     android:minHeight="@dimen/_50sdp"
                     android:paddingTop="@dimen/_5sdp" />
 
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/no_one"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rtlv2_animate_f2"
+                android:minHeight="@dimen/_120sdp"
+                android:layout_marginLeft="@dimen/_25sdp"
+                android:layout_marginRight="@dimen/_25sdp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_100sdp"
+                    android:src="@drawable/img_no_event"
+                    android:scaleType="fitCenter" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/txt_no_one"
+                    android:textSize="@dimen/_12sdp"
+                    android:text="@string/no_one"/>
+
+                <TextView
+                    android:id="@+id/txt_not_started"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/txt_no_one"
+                    android:textSize="@dimen/_12sdp"
+                    android:text="@string/not_start"/>
             </LinearLayout>
 
             <android.support.v7.widget.RecyclerView
@@ -266,7 +297,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/rtlv2_animate_f2"
                 android:minHeight="@dimen/_120sdp"
-                android:nestedScrollingEnabled="false"></android.support.v7.widget.RecyclerView>
+                android:nestedScrollingEnabled="false">
+
+            </android.support.v7.widget.RecyclerView>
 
 
             <RelativeLayout

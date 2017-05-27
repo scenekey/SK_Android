@@ -9,7 +9,8 @@
     <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        card_view:cardElevation="0.0dp">
+        card_view:cardElevation="0.0dp"
+        android:background="@drawable/bg_event_card">
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
@@ -24,56 +25,47 @@
                 android:layout_height="match_parent"
                 android:scaleType="fitXY" />
 
+
             <TextView
-                android:id="@+id/helloText"
+                android:id="@+id/card_text"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:background="@android:color/white"
-                android:padding="15.0dp"
-                android:textColor="@android:color/black"
-                android:textSize="16.0sp" />
-            <!--<ImageView
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_event_card"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_18sdp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <ImageView
                 android:id="@+id/img_user"
                 android:layout_width="@dimen/_35sdp"
                 android:layout_height="@dimen/_35sdp"
                 android:padding="@dimen/_4sdp"
                 android:layout_alignParentEnd="true"
                 android:background="@drawable/bg_blue_ring"
+                android:scaleType="centerInside"
+                android:src="@drawable/image_defult_profile"
                 android:layout_marginRight="@dimen/right_margin_event"
                 android:layout_marginTop="@dimen/right_margin_event"
-                android:layout_alignParentRight="true" />-->
+                android:layout_alignParentRight="true" />
+
             <TextView
-                android:id="@+id/card_text"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/background_event_green"
+                android:id="@+id/txt_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/img_user"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:textSize="@dimen/_8sdp"
                 android:gravity="center"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_18sdp"
-                android:textStyle="bold"
-                android:visibility="gone" />
-            <!--<View-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="2.0dp"-->
-            <!--android:background="@drawable/shadow"/>-->
+                android:layout_marginRight="@dimen/right_margin_event"
+                android:layout_alignLeft="@+id/img_user"
+                android:layout_alignStart="@+id/img_user" />
+
         </RelativeLayout>
 
-        <!--<View-->
-        <!--android:id="@+id/item_swipe_left_indicator"-->
-        <!--android:alpha="0"-->
-        <!--android:layout_width="20dp"-->
-        <!--android:layout_height="20dp"-->
-        <!--android:layout_margin="10dp"-->
-        <!--android:background="#A5F" />-->
 
-        <!--<View-->
-        <!--android:id="@+id/item_swipe_right_indicator"-->
-        <!--android:alpha="0"-->
-        <!--android:layout_width="20dp"-->
-        <!--android:layout_height="20dp"-->
-        <!--android:layout_margin="10dp"-->
-        <!--android:layout_gravity="right"-->
-        <!--android:background="#5AF" />-->
 
     </android.support.v7.widget.CardView>
 

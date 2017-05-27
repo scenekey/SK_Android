@@ -13,7 +13,7 @@
             android:id="@+id/img_event"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
+            android:scaleType="fitXY"
             android:src="@drawable/scene1" />
 
         <TextView
@@ -23,7 +23,7 @@
             android:layout_above="@+id/txt_eventAdress"
             android:layout_marginBottom="@dimen/_5sdp"
             android:layout_marginLeft="@dimen/_10sdp"
-            android:text="Bottom Dewellers"
+
             android:textColor="@color/white"
             android:textSize="@dimen/_18sdp" />
 
@@ -34,7 +34,6 @@
             android:layout_above="@+id/txt_eventDate"
             android:layout_marginBottom="@dimen/_5sdp"
             android:layout_marginLeft="@dimen/_10sdp"
-            android:text="8785 Windfall st. Whitehall, PA 18052"
             android:textColor="@color/white"
             android:textSize="@dimen/_12sdp" />
 
@@ -45,11 +44,11 @@
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="@dimen/_5sdp"
             android:layout_marginLeft="@dimen/_10sdp"
-            android:text="April 7,2017 07:30 PM"
             android:textColor="@color/white"
             android:textSize="@dimen/_12sdp" />
 
         <LinearLayout
+            android:id="@+id/hour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -68,8 +67,34 @@
                 android:id="@+id/txt_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="6hr"
                 android:textColor="@color/white"
+                android:layout_marginLeft="@dimen/_2sdp"
+                android:textSize="@dimen/_12sdp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/like"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="@dimen/_25sdp"
+                android:layout_height="@dimen/_25sdp"
+                android:padding="@dimen/_2sdp"
+                android:src="@drawable/ic_heart" />
+
+            <TextView
+                android:id="@+id/txt_like"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:gravity="top"
+                android:layout_marginLeft="@dimen/_2sdp"
                 android:textSize="@dimen/_12sdp" />
         </LinearLayout>
 
