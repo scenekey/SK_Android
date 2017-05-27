@@ -43,6 +43,7 @@ import com.scenekey.Utility.VolleyGetPost;
 import com.scenekey.Utility.WebService;
 import com.scenekey.activity.HomeActivity;
 import com.scenekey.adapter.DataAdapter;
+import com.scenekey.adapter.DataAdapter_Key_IN;
 import com.scenekey.helper.Constants;
 import com.scenekey.lib_sources.Floting_menuAction.FloatingActionButton;
 import com.scenekey.lib_sources.Floting_menuAction.FloatingActionMenu;
@@ -73,8 +74,8 @@ import java.util.TimerTask;
  * Created by mindiii on 2/5/17.
  */
 
-public class Event_Fragment extends Fragment implements View.OnClickListener {
-    public static final String TAG = Event_Fragment.class.toString();
+public class Key_In_Event_Fragment extends Fragment implements View.OnClickListener {
+    public static final String TAG = Key_In_Event_Fragment.class.toString();
 
     public boolean canCallWebservice;
     public boolean inLocation, inTime;
@@ -137,6 +138,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
 
         }
         txt_discipI_f2 = (TextView) view.findViewById(R.id.txt_discipI_f2);
+        txt_not_started = (TextView) view.findViewById(R.id.txt_not_started);
         txt_calender_i1 = (TextView) view.findViewById(R.id.txt_calender_i1);
         info_view = (LinearLayout) view.findViewById(R.id.info_view);
         img_infoget_f2 = (ImageView) view.findViewById(R.id.img_infoget_f2);
@@ -150,15 +152,14 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         scrl_all = (ScrollView) view.findViewById(R.id.scrl_all);
         image_map = (ImageView) view.findViewById(R.id.image_map);
         rtlv_top = (RelativeLayout) view.findViewById(R.id.rtlv_top);
+        no_one = (LinearLayout) view.findViewById(R.id.no_one);
         menu_blue = (FloatingActionMenu) view.findViewById(R.id.menu_blue);
-        txt_not_started = (TextView) view.findViewById(R.id.txt_not_started);
 
         img_notif = (ImageView) view.findViewById(R.id.img_notif);
         card_stack_view = (SwipeCardView) view.findViewById(R.id.card_stack_view);//TinderSwipe
         rtlv2_animate_f2 = (RelativeLayout) view.findViewById(R.id.rtlv2_animate_f2);
         txt_hide_all_one = (TextView) view.findViewById(R.id.txt_hide_all_one);
         txt_hide_all_two = (TextView) view.findViewById(R.id.txt_hide_all_two);
-        no_one = (LinearLayout) view.findViewById(R.id.no_one);
 
 
         return view;
@@ -187,6 +188,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         font.setFontFrankBookReg(txt_event_name, txt_calender_i1, txt_address_i1);
         font.setFontEuphemia(txt_discrp, txt_room);
         font.setFontRailRegular(txt_discipI_f2);
+        addUserIntoEvent(-1, null);
     }
 
     /******************************
@@ -195,7 +197,6 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
     HomeActivity activity() {
         return HomeActivity.instance;
     }
-
     UserInfo userInfo() {
         return activity().getSessionManager().getUserInfo();
     }
@@ -235,7 +236,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         return EventId;
     }
 
-    public Event_Fragment setData(String eventId , String venueName) {
+    public Key_In_Event_Fragment setData(String eventId , String venueName) {
         EventId = eventId;
         venuename = venueName;
         return this;
@@ -426,31 +427,18 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
                 }
 
                 setCardAdapter(cardslist);
-        }{
-            if(eventDetails.getAttendylist()!=null){if(eventDetails.getAttendylist().size()<=0){
-                no_one.setVisibility(View.VISIBLE);
-                try {
-                    if(checkWithTime_No_Attendy(eventDetails.profile_rating.getEvent_date() , Integer.parseInt(eventDetails.getProfile_rating().getInterval() )))
-                    txt_not_started.setText(getString(R.string.dontBore));
-                    else txt_not_started.setText(getString(R.string.not_start));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
-            }
-            else {
-                no_one.setVisibility(View.GONE);
-            }}
-            else {
-                try {
-                    if(checkWithTime_No_Attendy(eventDetails.profile_rating.getEvent_date() , Integer.parseInt(eventDetails.getProfile_rating().getInterval() )))
-                        txt_not_started.setText(getString(R.string.dontBore));
-                    else txt_not_started.setText(getString(R.string.not_start));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
         }
+        if(eventDetails.getAttendylist()!=null){if(eventDetails.getAttendylist().size()<=0){
+            no_one.setVisibility(View.VISIBLE);
+
+
+            txt_not_started.setText(getString(R.string.dontBore));
+
+
+        }
+        else {
+            no_one.setVisibility(View.GONE);
+        }}
 
 
     }
@@ -464,7 +452,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         if (rclv_grid.getLayoutManager() == null)
             rclv_grid.setLayoutManager(new GridLayoutManager(activity(), 3));
         if (rclv_grid.getAdapter() == null) {
-            DataAdapter dataAdapter = new DataAdapter(activity(), list, activity(), font, new String[]{getEventId(), userInfo().getUserID()}, this);
+            DataAdapter_Key_IN dataAdapter = new DataAdapter_Key_IN(activity(), list, activity(), font, new String[]{getEventId(), userInfo().getUserID()}, this);
             rclv_grid.setAdapter(dataAdapter);
         } else {
             rclv_grid.getAdapter().notifyDataSetChanged();
@@ -710,18 +698,6 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         return false;
     }
 
-    public boolean checkWithTime_No_Attendy(final String date , int interval) throws ParseException {
-        String[] dateSplit = (date.replace("TO", "T")).replace(" ", "T").split("T");
-        Date startTime = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).parse(dateSplit[0] + " " + dateSplit[1]);
-        Date endTime = new Date(startTime.getTime()+(interval* 60 * 60 * 1000));
-        Log.e(TAG, " Date "+startTime+" : "+endTime);
-        long currentTime = java.util.Calendar.getInstance().getTime().getTime();
-        if (currentTime > startTime.getTime()) {
-            return true;
-        }
-        return false;
-    }
-
 
     /**
      * text badge count from 15 to 0 sec.
@@ -837,7 +813,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
                 attendy.setUsername(nudge.getUsername());
                 Message_Fargment message_fargment = new Message_Fargment();
                 activity().addFragment(message_fargment, 1);
-                message_fargment.setData(EventId, userInfo().getUserID(), attendy, Event_Fragment.this);
+                message_fargment.setData(EventId, userInfo().getUserID(), attendy, Key_In_Event_Fragment.this);
             }
         });
 
@@ -1172,7 +1148,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
 
     void callProfile(EventAttendy attendy) {
         dialog.dismiss();
-        activity().addFragment(new Profile_Fragment().setData(attendy, false, Event_Fragment.this), 1);
+        activity().addFragment(new Profile_Fragment().setData(attendy, false, Key_In_Event_Fragment.this), 1);
     }
 
     /**
@@ -1206,6 +1182,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
                     attendy.setUserimage(attendyJosn.getString("userimage"));
                 attendylist.add(attendy);
             }
+
             setRecyclerView(attendylist);
 
         }

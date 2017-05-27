@@ -62,8 +62,6 @@ public class Trending_Fragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         sessionManager = activity.getSessionManager();
         activity.setTitle(activity.getResources().getString(R.string.Trending));
-
-
         getTrending();
 
     }
@@ -78,6 +76,7 @@ public class Trending_Fragment extends Fragment {
             rclv_f3_trending.setHasFixedSize(true);
         } else {
             treandingAdapter.notifyDataSetChanged();
+            rclv_f3_trending.setHasFixedSize(true);
         }
     }
 
@@ -107,6 +106,22 @@ public class Trending_Fragment extends Fragment {
                                     events.setArtistsArray(object.getJSONArray("artists"));
                                 if (object.has("events"))
                                     events.setEventJson(object.getJSONObject("events"));
+                                try{
+                                    events.setOngoing(events.checkWithTime(events.getEvent().getEvent_date() , events.getEvent().getInterval() ));
+                                }catch (Exception e){
+
+                                }
+                                try {
+                                    events.settimeFormat();
+                                }catch (Exception e){
+
+                                }
+                                try {
+                                    events.setRemainingTime();
+                                }
+                                catch (Exception e){
+
+                                }
                                 eventsArrayList.add(events);
                                 //Log.e("Result",events.toString());
                             }
@@ -120,6 +135,7 @@ public class Trending_Fragment extends Fragment {
                     }
                 } catch (Exception e) {
                     activity.dismissProgDailog();
+                    Toast.makeText(activity,getString(R.string.somethingwentwrong),Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "" + e);
                     //TODO Showing Toast on any Exception or error
                 }

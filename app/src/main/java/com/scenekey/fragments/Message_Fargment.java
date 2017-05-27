@@ -42,6 +42,7 @@ public class Message_Fargment extends Fragment implements View.OnClickListener {
     String EventId, nudgeBy;
     EventAttendy attendy;
     Event_Fragment event_fragment;
+    Key_In_Event_Fragment key_in_event_fragment;
     int count = 0;
     private TextView txt_char;
     private EditText edt_comment;
@@ -49,6 +50,8 @@ public class Message_Fargment extends Fragment implements View.OnClickListener {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if(event_fragment !=null) event_fragment.canCallWebservice = false;
+        if(key_in_event_fragment !=null) key_in_event_fragment.canCallWebservice = false;
         View view = inflater.inflate(R.layout.f3_comment, null);
         txt_char = (TextView) view.findViewById(R.id.txt_char);
         edt_comment = (EditText) view.findViewById(R.id.edt_comment);
@@ -144,7 +147,8 @@ public class Message_Fargment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onDestroy() {
-        event_fragment.canCallWebservice = true;
+       if(event_fragment !=null) event_fragment.canCallWebservice = true;
+       if(key_in_event_fragment !=null) key_in_event_fragment.canCallWebservice = true;
         super.onDestroy();
     }
 
@@ -221,9 +225,21 @@ public class Message_Fargment extends Fragment implements View.OnClickListener {
         this.attendy = attendy;
         this.event_fragment = event_fragment;
     }
+    /***
+     * @param eventId
+     * @param nudgeBy
+     * @param attendy
+     * @param key_in_event_fragment
+     */
+    public void setData(String eventId, String nudgeBy, EventAttendy attendy, Key_In_Event_Fragment key_in_event_fragment) {
+        this.nudgeBy = nudgeBy;
+        this.EventId = eventId;
+        this.attendy = attendy;
+        this.key_in_event_fragment = key_in_event_fragment;
+    }
 
     String getCutrrentTimeinFormat() {
-        return (new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).format(new Date(System.currentTimeMillis()));
+        return (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date(System.currentTimeMillis()));
     }
 
 

@@ -161,7 +161,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
                         //Log.e(TAG,"Info window clicked"+marker.getId()+":"+marker.getZIndex());
                         Events events = markersArray.get(Integer.parseInt(marker.getId().replace("m", "")));
                         Event_Fragment frg = new Event_Fragment();
-                        frg.setEventId(events.getEvent().getEvent_id());
+                        frg.setData(events.getEvent().getEvent_id(),events.getVenue().getVenue_name());
                         activity.addFragment(frg, 0);
                         activity.setBBvisiblity(View.GONE);
                     }

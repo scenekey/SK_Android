@@ -39,6 +39,7 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
     int maxNumber = 120;
     String EventId, kyeInStatus, eventDate, eventName;
     Event_Fragment event_fragment;
+    Key_In_Event_Fragment key_in_event_fragment;
     int count = 0;
     private TextView txt_char;
     private EditText edt_comment;
@@ -47,6 +48,8 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.f3_comment, null);
+        if(event_fragment !=null) event_fragment.canCallWebservice = false;
+        if(key_in_event_fragment !=null) key_in_event_fragment.canCallWebservice = false;
         txt_char = (TextView) view.findViewById(R.id.txt_char);
         edt_comment = (EditText) view.findViewById(R.id.edt_comment);
         ImageView img_profile = (ImageView) view.findViewById(R.id.img_profile);
@@ -124,7 +127,7 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
                 params.put("event_id", EventId);
                 params.put("location", "Fairfield,CA");
                 params.put("comment", edt_comment.getText() + "");
-                params.put("Ratingtime", getCutrrentTimeinFormat());
+                params.put("ratingtime", getCutrrentTimeinFormat());
 
                 /*location:india
                 comment:welcome
@@ -145,7 +148,8 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onDestroy() {
-        event_fragment.canCallWebservice = true;
+       if(event_fragment !=null) event_fragment.canCallWebservice = true;
+       if(key_in_event_fragment !=null) key_in_event_fragment.canCallWebservice = true;
         super.onDestroy();
     }
 
@@ -223,9 +227,22 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
         this.EventId = eventId;
         this.event_fragment = event_fragment;
     }
+    /***
+     * @param kyeInStatus set the key in status this must be "exists" or "not exists"
+     * @param eventId     event Id
+     * @param eventDate   date of Event ;
+     * @param eventName   event Name;
+     */
+    void setData(String kyeInStatus, String eventId, String eventDate, String eventName, Key_In_Event_Fragment key_in_event_fragment) {
+        this.kyeInStatus = kyeInStatus;
+        this.eventDate = ((eventDate.replace(" ", "T")).replace("TO", "T").split("TO"))[0];
+        this.eventName = eventName;
+        this.EventId = eventId;
+        this.key_in_event_fragment = key_in_event_fragment;
+    }
 
     String getCutrrentTimeinFormat() {
-        return (new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).format(new Date(System.currentTimeMillis()));
+        return (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date(System.currentTimeMillis()));
     }
 
 

@@ -54,6 +54,8 @@ public class NearEvent_Fargment extends Fragment {
         this.eventsList = eventsList;
     }
 
+
+
     void setRecyclerView() {
         if (rclv_f3_trending.getAdapter() == null) {
             NearEventAdapter treandingAdapter = new NearEventAdapter(activity, eventsList);
