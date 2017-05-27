@@ -34,6 +34,7 @@ public class Constants {
     public static final String ARTIST_TYPE = "ARTIST_TYPE";
     public static final String FIRST_NAME = "FIRST_NAME";
     public static final String LAST_NAME = "LAST_NAME";
+    public static final String FACEBOOK_ID = "FACEBOOK_ID";
     public static final String NUDGE_YOUR = "You have been nudged";
 
     public static final String KEY_NOTEXIST = "no exist";

@@ -7,12 +7,15 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.scenekey.R;
 import com.scenekey.Utility.Font;
 import com.scenekey.activity.HomeActivity;
+import com.scenekey.fragments.Event_Fragment;
+import com.scenekey.fragments.Key_In_Event_Fragment;
 import com.scenekey.models.Event;
 import com.scenekey.models.Events;
 import com.scenekey.models.Venue;
@@ -55,27 +58,45 @@ public class NearEventAdapter extends RecyclerView.Adapter<NearEventAdapter.Hold
             //int width = holder.img_event.getWidth();
             //int height =holder.img_event.getHeight();
             //.resize(width,height).onlyScaleDown()
-            Picasso.with(activity).load(event.getImage()).placeholder(R.drawable.scene3).into(holder.img_event);
+            Picasso.with(activity).load(event.getImage()).placeholder(R.drawable.def_scene).into(holder.img_event);
         } catch (Exception e) {
 
         }
-        try {
+        /*try {
             holder.txt_time.setText(convertTime(event.getEvent_time()));
             holder.txt_time.setTypeface(font.FrankBookRegular());
         } catch (ParseException e) {
             e.printStackTrace();
+        }*/
+        if (object.isOngoing) {
+            holder.hour.setVisibility(View.GONE);
+            holder.like.setVisibility(View.VISIBLE);
+            try{
+                if(Integer.parseInt(event.getRating())==0)holder.txt_like.setText("--");
+                else holder.txt_like.setText(event.getRating());
+            }
+            catch (Exception e){
+
+            }
+              /*  if(event.getRating()!=null)holder.txt_like.setText(event.getRating());
+                if(event.getRating()==null)holder.txt_like.setText("--");*/
+        }
+        else {
+            holder.hour.setVisibility(View.VISIBLE);
+            holder.like.setVisibility(View.GONE);
+            holder.txt_time.setText(object.remainingTime);
         }
         holder.txt_eventName.setText(event.getEvent_name());
-        holder.txt_eventAdress.setText(venue.getAddress());
+        holder.txt_eventAdress.setText(venue.getAddress()+" "+activity.getDistanceMile(new Double[]{Double.valueOf(venue.getLatitude()), Double.valueOf(venue.getLongitude()),38.222046D,-122.144755D})+" M");
         holder.txt_eventDate.setText(convertDate(event.getEvent_date()));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 v.setClickable(false);
                 if (!clicked) {
-                    /*Event_Fragment frg = new Event_Fragment();
-                frg.setEventId(event.getEvent_id());
-                activity.addFragment(frg,0);*/
+                    Key_In_Event_Fragment frg = new Key_In_Event_Fragment();
+                    frg.setData(event.getEvent_id(),venue.getVenue_name());
+                    activity.addFragment(frg, 0);
                     clicked = true;
                 }
                 try {
@@ -141,8 +162,9 @@ public class NearEventAdapter extends RecyclerView.Adapter<NearEventAdapter.Hold
 
     public class Holder extends RecyclerView.ViewHolder {
         ImageView img_event;
-        TextView txt_eventName, txt_eventAdress, txt_eventDate, txt_time;
-        RelativeLayout rtv_all;
+        TextView txt_eventName, txt_eventAdress, txt_eventDate, txt_time ,txt_like;
+        RelativeLayout rtv_all ;
+        LinearLayout like, hour;
 
         public Holder(View itemView) {
             super(itemView);
@@ -152,6 +174,9 @@ public class NearEventAdapter extends RecyclerView.Adapter<NearEventAdapter.Hold
             txt_eventAdress = (TextView) itemView.findViewById(R.id.txt_eventAdress);
             txt_eventDate = (TextView) itemView.findViewById(R.id.txt_eventDate);
             txt_time = (TextView) itemView.findViewById(R.id.txt_time);
+            txt_like = (TextView) itemView.findViewById(R.id.txt_like);
+            like = (LinearLayout) itemView.findViewById(R.id.like);
+            hour = (LinearLayout) itemView.findViewById(R.id.hour);
             RelativeLayout.LayoutParams parameters = (RelativeLayout.LayoutParams) rtv_all.getLayoutParams();
             DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
             int width = metrics.widthPixels;

@@ -7,7 +7,10 @@ package com.scenekey.Utility;
 public class WebService {
 
     //Devlopment
-    public final static String BASE_URL = "http://mindiii.com/scenekeyNew/scenekey/index.php/event/";
+     public final static String BASE_URL = "http://mindiii.com/scenekeyNew/scenekey/index.php/event/";
+
+    //Final
+   // public final static String BASE_URL = "http://scenekey.com/scenekey/index.php/event/";
 
     public final static String Login = BASE_URL + "webservices/facebookLogin";
     public final static String CHK_LOGIN = BASE_URL + "webservices/chkLogin";
@@ -30,6 +33,8 @@ public class WebService {
 
     public final static String ADD_NUDGE = BASE_URL + "webservices/addnudges";
     public final static String GET_NUDGE = BASE_URL + "webservices/getnudges";
+
+    public final static String SET_STATUS = BASE_URL + "webservices/SetUserStatus";
 
 
     public final static String LISTATTENDEDEVENT = BASE_URL + "webservices/listofuserattendedevent";

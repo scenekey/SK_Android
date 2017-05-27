@@ -8,5 +8,7 @@ public class Card {
     public int imageId;
     public String text;
     public String imageUrl;
+    public String userImage;
     public int imageint;
+    public String date;
 }

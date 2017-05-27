@@ -25,7 +25,7 @@ import com.scenekey.Utility.VolleyGetPost;
 import com.scenekey.Utility.WebService;
 import com.scenekey.activity.HomeActivity;
 import com.scenekey.fragments.Event_Fragment;
-import com.scenekey.fragments.Home_no_Event;
+import com.scenekey.fragments.Key_In_Event_Fragment;
 import com.scenekey.fragments.Message_Fargment;
 import com.scenekey.fragments.Profile_Fragment;
 import com.scenekey.helper.Constants;
@@ -37,13 +37,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
+public class DataAdapter_Key_IN extends RecyclerView.Adapter<DataAdapter_Key_IN.ViewHolder> {
     HomeActivity activity;
     Font font;
     Dialog dialog;
     View popupview;
     String data[];
-    Event_Fragment fragment;
+    Key_In_Event_Fragment fragment;
     private ArrayList<EventAttendy> roomPersons;
     private Context context;
 
@@ -54,7 +54,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
      * @param font
      * @param data     eventId , userId ,userFacebookID
      */
-    public DataAdapter(Context context, ArrayList<EventAttendy> android, Activity activity, Font font, String[] data, Event_Fragment fragment) {
+    public DataAdapter_Key_IN(Context context, ArrayList<EventAttendy> android, Activity activity, Font font, String[] data, Key_In_Event_Fragment fragment) {
         this.roomPersons = android;
         this.context = context;
         this.activity = (HomeActivity) activity;
@@ -64,13 +64,13 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
     }
 
     @Override
-    public DataAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public DataAdapter_Key_IN.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.gva1_room_people, viewGroup, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(DataAdapter.ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(DataAdapter_Key_IN.ViewHolder viewHolder, int i) {
         final EventAttendy attendy = roomPersons.get(i);
         final int position = i;
         viewHolder.txt_name_gvb1.setText(roomPersons.get(i).getUsername());

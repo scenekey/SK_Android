@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -171,7 +172,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         if (Util.isConnectingToInternet(getApplicationContext())) {
             LoginManager.getInstance().logOut();
-            LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile", "email"));
+            //LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile", "email"));
+            LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile","email","user_birthday","user_friends"));
             callbackManager = CallbackManager.Factory.create();
             CALLBACK = Constants.CALL_BACK_FB;
             LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -204,6 +206,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                         Log.e("ID", FBid);
                                         Log.e("Name", FBname);
                                         Log.e("Fb Image", FBimageurl);
+                                        try{
+                                            Log.e("Fb BirthDay", object.getString("birthday"));
+                                        }catch (Exception e){
+
+                                        }
                                         socialRegistrationBean.setFullname(FBname);
                                         socialRegistrationBean.setSocialId(FBid);
                                         socialRegistrationBean.setImage(FBimageurl);
@@ -216,6 +223,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                         user.setDevicetoken(FirebaseInstanceId.getInstance().getToken());
                                         user.setFbusername(FBname);
                                         user.setUserType("Social User");
+                                        user.setGender(FBgender);
 
                                         SendfeedbackJob sendfeedbackJob = new SendfeedbackJob();
                                         sendfeedbackJob.execute(user);
@@ -230,7 +238,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 }
                             });
                     Bundle parameters = new Bundle();
-                    parameters.putString("fields", "id,name,email,gender, birthday,age_range,location");
+                    //parameters.putString("fields", "id,name,email,gender,user_birthday,age_range,location");
+                    parameters.putString("fields", "id,name,email,gender,age_range,location");
                     request.setParameters(parameters);
                     request.executeAsync();
                 }
@@ -270,7 +279,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             JSONObject jsonObject = new JSONObject(response);
                             int status = jsonObject.getInt("success");
                             if (status == 1) {
-                                createSession(jsonObject.getJSONObject("userinfo"));
+                                if(createSession(jsonObject.getJSONObject("userinfo"),user))
                                 callIntent(txt_fb_login_a1.getId());
                             } else {
                                 //TODO : Handle the staus != 1
@@ -299,6 +308,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         params.put("usertype", user.getUserType());
                         params.put("fullname", user.getFullName());
                         params.put("device_token", user.getDevicetoken());
+                        params.put("deviceType", "2");
+                        params.put("gender",user.getGender());
                         params.put("ProfileImage", user.getProfileImage());
                         Log.e("Login params", params.toString());
                         return params;
@@ -315,7 +326,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
             //"success":0,"msg":"Facebook user Already Added"
             if (status == 0) {
-                createSession(jsonObject.getJSONObject("userinfo"));
+                if(createSession(jsonObject.getJSONObject("userinfo"),user))
                 callIntent(txt_fb_login_a1.getId());
             } else {
                 //TODO : Handle the staus != 1 or 0
@@ -344,12 +355,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    void tost(String s) {
+    void toast(String s) {
         Toast.makeText(LoginActivity.this, s, Toast.LENGTH_SHORT).show();
     }
 
 
-    boolean createSession(JSONObject jsonObject) {
+    boolean createSession(JSONObject jsonObject,LoginUser loginUser) {
         try {
             UserInfo userInfo = new UserInfo();
             userInfo.setUserID(jsonObject.getString("userID"));
@@ -364,6 +375,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             userInfo.setArtisttype(jsonObject.getString("artisttype"));
             userInfo.setFirstname(jsonObject.getString("firstname"));
             userInfo.setLastname(jsonObject.getString("lastname"));
+            userInfo.setFacebookId(loginUser.getFacebookid());
+            userInfo.setUserAccessToken(AccessToken.getCurrentAccessToken());
+            userInfo.setMakeAdmin(jsonObject.getString("makeAdmin"));
             sessionManager.createSession(userInfo);
             return true;
         } catch (Exception e) {
@@ -426,6 +440,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             VolleyGetPost volleyGetPost = new VolleyGetPost(LoginActivity.this, getApplicationContext(), WebService.CHK_LOGIN, false) {
                 @Override
                 public void onVolleyResponse(String response) {
+                    Log.e(TAG," response"+response);
                     volleyCheckResponse(response, user);
 
                 }
@@ -446,7 +461,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     params.put("facebook_id", user.getFacebookid());
                     params.put("Fullname", user.getFullName());
                     params.put("device_token", user.getDevicetoken());
+                    params.put("deviceType", "2");
                     params.put("ProfileImage", user.getProfileImage());
+                    params.put("gender",user.getGender());
+                    Log.e("Login Params",params.toString());
                     return params;
                 }
 
@@ -471,6 +489,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         private String fullName;
         private String devicetoken;
         private String profileImage;
+        private String gender;
 
         public String getEmail() {
             return email;
@@ -526,6 +545,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         public void setProfileImage(String profileImage) {
             this.profileImage = profileImage;
+        }
+
+        public String getGender() {
+            return gender;
+        }
+
+        public void setGender(String gender) {
+            this.gender = gender;
         }
     }
 }

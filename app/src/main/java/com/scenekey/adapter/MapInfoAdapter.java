@@ -85,7 +85,7 @@ public class MapInfoAdapter implements GoogleMap.InfoWindowAdapter {
             public void onClick(View v) {
                 Log.e("Clicked","map iNFO");
                 Event_Fragment frg = new Event_Fragment();
-                frg.setEventId(events.getEvent().getEvent_id());
+                frg.setData(events.getEvent().getEvent_id());
                 ((HomeActivity) activity).addFragment(frg);
             }
         });*/

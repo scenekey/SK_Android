@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.facebook.FacebookSdk;
 import com.scenekey.R;
 import com.scenekey.Services.TrackGPS;
 import com.scenekey.Utility.CusDialogProg;
@@ -41,11 +42,13 @@ import com.scenekey.fragments.Event_Fragment;
 import com.scenekey.fragments.Home_no_Event;
 import com.scenekey.fragments.Map_Fragment;
 import com.scenekey.fragments.NearEvent_Fargment;
+import com.scenekey.fragments.Profile_Fragment;
 import com.scenekey.fragments.Trending_Fragment;
 import com.scenekey.helper.Constants;
 import com.scenekey.helper.SessionManager;
 import com.scenekey.lib_sources.arc_menu.ArcMenu;
 import com.scenekey.lib_sources.arc_menu.widget.FloatingActionButton;
+import com.scenekey.models.EventAttendy;
 import com.scenekey.models.Events;
 import com.scenekey.models.UserInfo;
 import com.squareup.picasso.Picasso;
@@ -55,6 +58,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -96,6 +100,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //FacebookSdk.sdkInitialize(activity().getApplicationContext());
         overridePendingTransition(0, R.anim.fade_out);
         setContentView(R.layout.a3_home_activity);
         Util.setStatusBarColor(this, R.color.colorPrimary);
@@ -111,10 +116,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         cusDialogProg = new CusDialogProg(this, R.layout.custom_progress_dialog_layout);
 
         /*************************** Arc Menu *****************************************/
-        ArcMenu arcMenu = (ArcMenu) findViewById(R.id.arcMenuX);/*
+        ArcMenu arcMenu = (ArcMenu) findViewById(R.id.arcMenuX);
+        /*
         RelativeLayout.LayoutParams layoutParams= (RelativeLayout.LayoutParams) arcMenu.getLayoutParams();
         layoutParams.setMargins(0,0,-(width/2),-(height/2));
-        arcMenu.setLayoutParams(layoutParams);*/
+        arcMenu.setLayoutParams(layoutParams);
+        */
         arcMenu.setToolTipTextSize(14);
         arcMenu.setMinRadius(((width - ((int) getResources().getDimension(R.dimen.fab_size_normal2))) / 4));
         arcMenu.setArc(177, 273);
@@ -164,6 +171,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+
+    public UserInfo userInfo(){
+        return userInfo;
+    }
     /********************************************************************************/
 
     @Override
@@ -190,8 +201,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mytask.execute("");
         //TODO setting the page according events
         //TODO progress bar for trending and till getting the list.
+        replaceFragment(new Home_no_Event());
         rtlv_three.callOnClick();
-        checkEventAvailablity(true);
+        //checkEventAvailablity(true);
 
     }
 
@@ -232,21 +244,29 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.rtlv_three:
                 setBottombar((RelativeLayout) v, lastclicked);
-                try {
-                    if (eventsNearbyList.size() <= 0) replaceFragment(new Home_no_Event());
-                    else onNearByEventFound();
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                }
-                ;
+                if(eventsArrayList != null)eventsArrayList.clear();
+                if(eventsNearbyList != null)eventsNearbyList.clear();
+                checkEventAvailablity(true);
+
                 break;
             case R.id.rtlv_four:
                 setBottombar((RelativeLayout) v, lastclicked);
+                // TODO delete temp Chekcing the profile
+                /*try {
 
+                    EventAttendy attendy = new EventAttendy();
+                    attendy.setUserid("163");
+                    attendy.setUserFacebookId("45678");
+                    attendy.setUserimage(userInfo.getUserImage());
+                    attendy.setUsername(userInfo.getUserGender());
+                    addFragment(new Profile_Fragment().setData(attendy, false, new Event_Fragment()), 1);
+                }catch (Exception e){
+
+                }*/
                 break;
             case R.id.rtlv_five:
                 setBottombar((RelativeLayout) v, lastclicked);
-                replaceFragment(new Add_Event_Fragmet());
+                //replaceFragment(new Add_Event_Fragmet());
                 break;
         }
 
@@ -555,7 +575,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                                 e.printStackTrace();
                             }
                             checkedEventtoJoint();
-                            if (showProgress) rtlv_three.callOnClick();
+                            try {
+                                if (eventsNearbyList.size() <= 0) replaceFragment(new Home_no_Event());
+                                else onNearByEventFound();
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
+                                replaceFragment(new Home_no_Event());
+                            }
+                            //if (showProgress) rtlv_three.callOnClick();
                         }
                     }
                     if (cusDialogProg != null) cusDialogProg.dismiss();
@@ -563,6 +590,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 } catch (JSONException e) {
                     e.printStackTrace();
                     if (cusDialogProg != null) cusDialogProg.dismiss();
+                    if(showProgress)Toast.makeText(HomeActivity.this,getString(R.string.somethingwentwrong),Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -570,6 +598,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onVolleyError(VolleyError error) {
                 if (cusDialogProg != null) cusDialogProg.dismiss();
+                if(showProgress)Toast.makeText(HomeActivity.this,getString(R.string.somethingwentwrong),Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "" + error);
             }
 
@@ -608,7 +637,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public String[] getlatlong() {
-        return new String[]{latitude + "", longiude + ""};
+        //TODO remove constant
+        //return new String[]{latitude + "", longiude + ""};
+        return new String[]{38.222046+"",-122.144755+""};
     }
 
     public SessionManager getSessionManager() {
@@ -636,11 +667,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             location.setLatitude(Double.parseDouble(events.getVenue().getLatitude()));
             location.setLongitude(Double.parseDouble(events.getVenue().getLongitude()));
             Location myLocation = new Location("Location My");
+            //TODO remove constant
             myLocation.setLatitude(38.222046D);
             myLocation.setLongitude(-122.144755D);
             double distance = location.distanceTo(myLocation);
             try {
-                if (distance <= Constants.MAXIMUM_DISTANCE && checkWithTime(events.getEvent().getEvent_date())) {
+                if (distance <= Constants.MAXIMUM_DISTANCE && checkWithTime(events.getEvent().getEvent_date() , events.getEvent().getInterval() )) {
+                    events.setOngoing(true);
                     eventsNearbyList.add(events);
 
                 }
@@ -657,32 +690,18 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
      * Chekcing the Events
      ******************************************************/
 
-    public boolean checkWithTime(final String date) throws ParseException {
-        Log.e(TAG, date);
-        String[] dateSplit;
-        if (date.contains("T")) dateSplit = (date.replace("TO", " ")).replace("T", " ").split(" ");
-        else {
-            String date2 = date.replace("TO", " ");
-            Log.e(TAG, date2);
-            dateSplit = date2.split("\\s?");
-        }
-
-        Date startTime = (new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).parse(dateSplit[0] + " " + dateSplit[1]);
-
-        Date endTime = (new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")).parse(dateSplit[0] + " " + dateSplit[2]);
+    public boolean checkWithTime(final String date , int interval) throws ParseException {
+        String[] dateSplit = (date.replace("TO", "T")).replace(" ", "T").split("T");
+        Date startTime = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).parse(dateSplit[0] + " " + dateSplit[1]);
+        Date endTime = new Date(startTime.getTime()+(interval* 60 * 60 * 1000));
+        Log.e(TAG, " Date "+date+" : "+startTime+" : "+endTime);
         long currentTime = java.util.Calendar.getInstance().getTime().getTime();
-
-        //if(dateSplit[0].equals(new SimpleDateFormat("yyyy-MM-dd").format(java.util.Calendar.getInstance().getTime()))  ){
-        //  Log.e(TAG," Time current"+ new SimpleDateFormat("yyyy-MM-dd").format(java.util.Calendar.getInstance().getTime())+" : "+timeStart+" : "+endTime);
-            /*checkTime(timeStart,endTime);*/
-        //}
-        //return checkTime(timeStart,endTime,EventIdandName);
-
         if (currentTime < endTime.getTime() && currentTime > startTime.getTime()) {
             return true;
         }
         return false;
     }
+
 
     boolean onNearByEventFound() {
         Log.e(TAG, eventsNearbyList.size() + " : ");
@@ -709,7 +728,37 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     /******************************************************************************************************************************/
 
     public double phpDistance(Double[] LL) {
+        Log.e(TAG, " Distance " + 6371000 * (Math.acos(Math.cos(Math.toRadians(LL[0])) * Math.cos(Math.toRadians(LL[2])) * Math.cos(Math.toRadians(LL[3]) - Math.toRadians(LL[1])) + Math.sin(Math.toRadians(LL[0])) * Math.sin(Math.toRadians(LL[2])))) );
         return 6371000 * (Math.acos(Math.cos(Math.toRadians(LL[0])) * Math.cos(Math.toRadians(LL[2])) * Math.cos(Math.toRadians(LL[3]) - Math.toRadians(LL[1])) + Math.sin(Math.toRadians(LL[0])) * Math.sin(Math.toRadians(LL[2]))));
+    }
+
+    public int getDistance(Double[] LL){
+        Log.e("LAT LONG ", LL[0]+" "+LL[1]+" "+LL[2]+" "+LL[3]  );
+        Location startPoint=new Location("locationA");
+        startPoint.setLatitude(LL[0]);
+        startPoint.setLongitude(LL[1]);
+
+        Location endPoint=new Location("locationA");
+        endPoint.setLatitude(LL[2]);
+        endPoint.setLongitude(LL[3]);
+
+        double distance=startPoint.distanceTo(endPoint);
+
+        return (int)distance;
+    }
+    public double getDistanceMile(Double[] LL){
+        Log.e("LAT LONG ", LL[0]+" "+LL[1]+" "+LL[2]+" "+LL[3]  );
+        Location startPoint=new Location("locationA");
+        startPoint.setLatitude(LL[0]);
+        startPoint.setLongitude(LL[1]);
+
+        Location endPoint=new Location("locationA");
+        endPoint.setLatitude(LL[2]);
+        endPoint.setLongitude(LL[3]);
+
+        double distance=(startPoint.distanceTo(endPoint))*0.00062137;
+        return new BigDecimal(distance ).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+
     }
 
     class Mytask extends AsyncTask<String, Void, double[]> {

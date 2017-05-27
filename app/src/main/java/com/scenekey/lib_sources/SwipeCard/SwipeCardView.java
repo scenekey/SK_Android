@@ -172,7 +172,11 @@ public class SwipeCardView extends BaseFlingAdapterView {
         //Scenekey
 
         if (currentAdapterCount <= MIN_ADAPTER_STACK)
-            mFlingListener.onAdapterAboutToEmpty(currentAdapterCount);
+try{
+    mFlingListener.onAdapterAboutToEmpty(currentAdapterCount);
+}catch (Exception e){
+
+}
         //if(currentAdapterCount <= MIN_ADAPTER_STACK) mFlingListener.onAdapterAboutToEmpty(currentAdapterCount);
     }
 
@@ -318,12 +322,19 @@ public class SwipeCardView extends BaseFlingAdapterView {
 
                     @Override
                     public void leftExit(Object dataObject) {
-                        mFlingListener.onCardExitLeft(dataObject);
+                       try {
+                           mFlingListener.onCardExitLeft(dataObject);
+                       }catch (Exception e){
+
+                       }
                     }
 
                     @Override
                     public void rightExit(Object dataObject) {
-                        mFlingListener.onCardExitRight(dataObject);
+                        try {mFlingListener.onCardExitRight(dataObject);
+                        }catch (Exception e){
+
+                        }
                     }
 
                     @Override

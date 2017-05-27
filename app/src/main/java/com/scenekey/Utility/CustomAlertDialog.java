@@ -28,10 +28,10 @@ public abstract class CustomAlertDialog extends Dialog {
         txt_pop10_message = (TextView) pop_up_view.findViewById(R.id.txt_pop10_message);
         txt_pop_title = (TextView) pop_up_view.findViewById(R.id.txt_pop_title);
         Font font = new Font(activity);
-        txt_pop10_One.setTypeface(font.FrankRegular());
-        txt_pop10_Two.setTypeface(font.FrankRegular());
-        txt_pop10_message.setTypeface(font.FrankRegular());
-        txt_pop_title.setTypeface(font.FrankRegular());
+        txt_pop10_One.setTypeface(font.Arial_Regular());
+        txt_pop10_Two.setTypeface(font.Arial_Regular());
+        txt_pop10_message.setTypeface(font.Arial_Regular());
+        txt_pop_title.setTypeface(font.Arial_Regular());
         //this.context = context;
         // This is the layout XML file that describes your Dialog layout
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);

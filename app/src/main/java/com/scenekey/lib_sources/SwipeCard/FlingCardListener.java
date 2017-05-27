@@ -114,7 +114,11 @@ public class FlingCardListener implements View.OnTouchListener {
 
             case MotionEvent.ACTION_UP:
                 mActivePointerId = INVALID_POINTER_ID;
-                resetCardViewOnStack();
+try {
+    resetCardViewOnStack();
+}catch (Exception e){
+
+}
                 view.getParent().requestDisallowInterceptTouchEvent(false);
                 break;
 
@@ -154,7 +158,10 @@ public class FlingCardListener implements View.OnTouchListener {
                 frame.setX(aPosX);
                 frame.setY(aPosY);
                 frame.setRotation(rotation);
-                mFlingListener.onScroll(getScrollProgressPercent());
+                try{                mFlingListener.onScroll(getScrollProgressPercent());}
+                catch (Exception e){
+
+                }
                 break;
 
             case MotionEvent.ACTION_CANCEL: {

@@ -13,10 +13,12 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.scenekey.R;
 import com.scenekey.Utility.CircleTransform;
+import com.scenekey.Utility.CustomToastDialog;
 import com.scenekey.Utility.Font;
 import com.scenekey.activity.HomeActivity;
 import com.scenekey.fragments.Home_no_Event;
@@ -196,6 +198,7 @@ public class DataAdapter_Demo extends RecyclerView.Adapter<DataAdapter_Demo.View
     void popupRoom(int i) {
         RoomPerson person = roomPersons.get(i);
         ImageView img_p2_profile2, img_p2_profile, next;
+        RelativeLayout nudge;
         final TextView txt_message, txt_timer;
         final TextView txt_nudge, txt_reply, txt_view_pro;
         final TextView txt_title;
@@ -210,6 +213,13 @@ public class DataAdapter_Demo extends RecyclerView.Adapter<DataAdapter_Demo.View
         txt_title = (TextView) popupview.findViewById(R.id.txt_title);
         txt_view_pro = (TextView) popupview.findViewById(R.id.txt_view_pro);
         txt_message = (TextView) popupview.findViewById(R.id.txt_message);
+        nudge = (RelativeLayout) popupview.findViewById(R.id.nudge);
+        nudge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goodNudge();
+            }
+        });
         txt_timer.setVisibility(View.GONE);
         img_p2_profile.setImageBitmap(imageArray[i]);
         img_p2_profile2.setImageBitmap(imageArray[i]);
@@ -269,6 +279,12 @@ public class DataAdapter_Demo extends RecyclerView.Adapter<DataAdapter_Demo.View
         }
 
 
+    }
+
+    public void goodNudge(){
+        CustomToastDialog customToastDialogA = new CustomToastDialog(activity);
+        customToastDialogA.setMessage(activity.getResources().getString(R.string.goodNudge));
+        customToastDialogA.show();
     }
 
 }
