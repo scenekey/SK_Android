@@ -156,6 +156,7 @@
             android:padding="@dimen/_4sdp" />
 
         <TextView
+            android:id="@+id/txt_my_details"
             style="@style/popUpbottomtext"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
