@@ -25,11 +25,13 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.LoggingBehavior;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.scenekey.R;
+import com.scenekey.Services.TrackGPS;
 import com.scenekey.Utility.CusDialogProg;
 import com.scenekey.Utility.Font;
 import com.scenekey.Utility.Permission;
@@ -70,11 +72,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     CusDialogProg dialogProg;
     SessionManager sessionManager;
     private Permission permission;
+    private double latitude, longiude;
+    private TrackGPS gps;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FacebookSdk.sdkInitialize(getApplicationContext());//Facebook
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        FacebookSdk.setIsDebugEnabled(true);
+        FacebookSdk.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
+        //Facebook
         //AppEventsLogger.activateApp(this);//Facebook
         FirebaseApp.initializeApp(getApplicationContext());
 
@@ -97,6 +104,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         permission = new Permission(LoginActivity.this, LoginActivity.this);
         sessionManager = new SessionManager(LoginActivity.this);
 
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        gps = new TrackGPS(LoginActivity.this) {
+            @Override
+            public String[] onLocationUpdate(double latitude, double longitude) {
+                LoginActivity.this.latitude = latitude;
+                LoginActivity.this.longiude = longitude;
+                Log.e(TAG, "Lat " + latitude + " Long" + longitude);
+                return new String[0];
+            }
+        };
+        Log.e(TAG, " : " + gps.getLongitude() + " : " + gps.getLatitude());
     }
 
     void setViews() {
@@ -200,6 +222,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                         JSONObject age = object.getJSONObject("age_range");
                                         final String FBimageurl = "https://graph.facebook.com/" + FBid + "/picture?type=large";
 
+                                        AccessToken token = AccessToken.getCurrentAccessToken();
+                                        Log.d("access only Token is", String.valueOf(token.getToken()));
                                         Log.e("image", FBimageurl);
                                         Log.e("response", response.toString());
                                         Log.e("Email", FBemail);
@@ -224,6 +248,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                         user.setFbusername(FBname);
                                         user.setUserType("Social User");
                                         user.setGender(FBgender);
+                                        user.setAccessToken(String.valueOf(token.getToken()));
 
                                         SendfeedbackJob sendfeedbackJob = new SendfeedbackJob();
                                         sendfeedbackJob.execute(user);
@@ -311,7 +336,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         params.put("deviceType", "2");
                         params.put("gender",user.getGender());
                         params.put("ProfileImage", user.getProfileImage());
-                        Log.e("Login params", params.toString());
+                        params.put("latitude",getlatlong()[0]+"");
+                        params.put("longitude",getlatlong()[1]+"");
+                        Util.printBigLogcat( TAG , params.toString());
                         return params;
                     }
 
@@ -360,7 +387,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
 
-    boolean createSession(JSONObject jsonObject,LoginUser loginUser) {
+    boolean createSession(JSONObject jsonObject,final LoginUser loginUser) {
         try {
             UserInfo userInfo = new UserInfo();
             userInfo.setUserID(jsonObject.getString("userID"));
@@ -376,12 +403,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             userInfo.setFirstname(jsonObject.getString("firstname"));
             userInfo.setLastname(jsonObject.getString("lastname"));
             userInfo.setFacebookId(loginUser.getFacebookid());
-            userInfo.setUserAccessToken(AccessToken.getCurrentAccessToken());
-            userInfo.setMakeAdmin(jsonObject.getString("makeAdmin"));
+            try {
+                userInfo.setUserAccessToken(loginUser.getAccessToken());
+            }catch (Exception e){
+
+            }
+            try {userInfo.setMakeAdmin(jsonObject.getString("makeAdmin"));
+            }catch (Exception e){
+
+            }
+            userInfo.setFirstTimeDemo(true);
             sessionManager.createSession(userInfo);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
+            dialogProg.dismiss();
+            toast(getResources().getString(R.string.somethingwentwrong));
             return false;
         }
 
@@ -464,7 +501,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     params.put("deviceType", "2");
                     params.put("ProfileImage", user.getProfileImage());
                     params.put("gender",user.getGender());
-                    Log.e("Login Params",params.toString());
+                    params.put("latitude",getlatlong()[0]+"");
+                    params.put("longitude",getlatlong()[1]+"");
+                    Util.printBigLogcat( TAG , params.toString());
                     return params;
                 }
 
@@ -490,6 +529,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         private String devicetoken;
         private String profileImage;
         private String gender;
+        private String accessToken;
 
         public String getEmail() {
             return email;
@@ -554,5 +594,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         public void setGender(String gender) {
             this.gender = gender;
         }
+
+        public String getAccessToken() {
+            return accessToken;
+        }
+
+        public void setAccessToken(String accessToken) {
+            this.accessToken = accessToken;
+        }
+    }
+
+    public String[] getlatlong() {
+        //TODO remove constant Before LIVE
+       /* if(latitude == 0.0D && longiude == 0.0D){
+           *//*CustomToastDialog customToastDialog = new CustomToastDialog(HomeActivity.this);
+            customToastDialog.setMessage();*//*
+            Toast.makeText(HomeActivity.this,"There was an error getting your location",Toast.LENGTH_SHORT).show();
+        }*/
+        //return new String[]{latitude + "", longiude + ""};
+        return new String[]{38.222046+"",-122.144755+""};
     }
 }
