@@ -19,7 +19,7 @@ public class Constants {
     /***
      * this is the maximum distance from user location to event location in meters
      */
-    public static final int MAXIMUM_DISTANCE = 200;
+    public static final int MAXIMUM_DISTANCE = 2000000000;
 
 
     public static final String USER_ID = "USER_ID";
@@ -35,6 +35,9 @@ public class Constants {
     public static final String FIRST_NAME = "FIRST_NAME";
     public static final String LAST_NAME = "LAST_NAME";
     public static final String FACEBOOK_ID = "FACEBOOK_ID";
+    public static final String TRYDEMO_FIRST = "TRYDEMO_FIRST";
+    public static final String ACCESSTOEKN = "ACCESSTOEKN";
+
     public static final String NUDGE_YOUR = "You have been nudged";
 
     public static final String KEY_NOTEXIST = "no exist";

@@ -12,6 +12,7 @@ import com.scenekey.R;
 import com.scenekey.Utility.CircleTransform;
 import com.scenekey.Utility.Font;
 import com.scenekey.Utility.RoundedTransformation;
+import com.scenekey.Utility.WebService;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class CardsAdapter extends ArrayAdapter<Card> {
         // ImageView img= (ImageView) view.findViewById(R.id.img_user);
         if (card.imageUrl != null) {
             try {
-                Picasso.with(getContext()).load("http://mindiii.com/scenekeyNew/scenekey/" + card.imageUrl).into((ImageView) view.findViewById(R.id.card_image));
+                Picasso.with(getContext()).load(WebService.BASE_IMAGE_URL+card.imageUrl).into((ImageView) view.findViewById(R.id.card_image));
             } catch (Exception e) {
 
             }

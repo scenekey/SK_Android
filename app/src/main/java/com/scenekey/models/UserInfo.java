@@ -24,7 +24,8 @@ public class UserInfo implements Serializable {
     private String lastname;
     private String facebookId;
     private String makeAdmin;
-    private AccessToken userAccessToken;
+    private String userAccessToken;
+    private boolean firstTimeDemo;
 
 
     public String getUserID() {
@@ -147,11 +148,19 @@ public class UserInfo implements Serializable {
         this.makeAdmin = makeAdmin;
     }
 
-    public AccessToken getUserAccessToken() {
+    public String getUserAccessToken() {
         return userAccessToken;
     }
 
-    public void setUserAccessToken(AccessToken userAccessToken) {
+    public void setUserAccessToken(String userAccessToken) {
         this.userAccessToken = userAccessToken;
+    }
+
+    public boolean isFirstTimeDemo() {
+        return firstTimeDemo;
+    }
+
+    public void setFirstTimeDemo(boolean firstTimeDemo) {
+        this.firstTimeDemo = firstTimeDemo;
     }
 }

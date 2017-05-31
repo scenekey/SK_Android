@@ -1,5 +1,7 @@
 package com.scenekey.models;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 
 public class RoomPerson implements Serializable {
@@ -7,6 +9,7 @@ public class RoomPerson implements Serializable {
     private String android_version_name;
     private String android_image_url;
     private String staus;
+    private int resorceId;
 
     public RoomPerson(String android_version_name, String android_image_url, String staus) {
         this.android_version_name = android_version_name;
@@ -40,4 +43,12 @@ public class RoomPerson implements Serializable {
     public void setStaus(String staus) {
         this.staus = staus;
     }
+
+    /*public Bitmap getResorceId() {
+        return resorceId;
+    }
+
+    public void setResorceId(Bitmap resorceId) {
+        this.resorceId = resorceId;
+    }*/
 }

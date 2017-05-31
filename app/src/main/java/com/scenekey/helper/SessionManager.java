@@ -40,7 +40,9 @@ public class SessionManager {
         editor.putString(Constants.ARTIST_TYPE, userInfo.getArtisttype());
         editor.putString(Constants.FIRST_NAME, userInfo.getFirstname());
         editor.putString(Constants.LAST_NAME, userInfo.getLastname());
-        editor.putString(Constants.FACEBOOK_ID, userInfo.getLastname());
+        editor.putString(Constants.FACEBOOK_ID, userInfo.getFacebookId());
+        editor.putBoolean(Constants.TRYDEMO_FIRST, userInfo.isFirstTimeDemo());
+        editor.putString(Constants.ACCESSTOEKN, userInfo.getUserAccessToken());
         editor.putBoolean(IS_LOGGEDIN, true);
         editor.commit();
     }
@@ -60,7 +62,9 @@ public class SessionManager {
         userInfo.setArtisttype(mypref.getString(Constants.ARTIST_TYPE, null));
         userInfo.setFirstname(mypref.getString(Constants.FIRST_NAME, null));
         userInfo.setLastname(mypref.getString(Constants.LAST_NAME, null));
-        userInfo.setLastname(mypref.getString(Constants.FACEBOOK_ID, null));
+        userInfo.setFacebookId(mypref.getString(Constants.FACEBOOK_ID, null));
+        userInfo.setFirstTimeDemo(mypref.getBoolean(Constants.TRYDEMO_FIRST, false));
+        userInfo.setUserAccessToken(mypref.getString(Constants.ACCESSTOEKN, null));
         return userInfo;
     }
 
