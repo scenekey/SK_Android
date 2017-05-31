@@ -175,7 +175,6 @@ public class Map_Fragment_Single  extends Fragment implements View.OnClickListen
 
     void googleMapCall(){
         Uri routeUri = Uri.parse("http://maps.google.com/maps?saddr="+activity.getlatlong()[0]+","+activity.getlatlong()[1]+"&daddr="+lat+","+longe);
-        //Uri routeUri = Uri.parse("http://maps.google.com/maps?saddr=38.222046"+",-122.144755"+"&daddr="+lat+","+longe);
         Log.e(TAG , " : "+routeUri);
         Intent i = new Intent(Intent.ACTION_VIEW, routeUri);
         startActivity(i);

@@ -12,7 +12,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.android.volley.VolleyError;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -24,11 +26,21 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.scenekey.R;
+import com.scenekey.Utility.CusDialogProg;
+import com.scenekey.Utility.Util;
+import com.scenekey.Utility.VolleyGetPost;
+import com.scenekey.Utility.WebService;
 import com.scenekey.activity.HomeActivity;
 import com.scenekey.adapter.MapInfoAdapter;
 import com.scenekey.models.Events;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Created by mindiii on 27/4/17.
@@ -40,6 +52,8 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
     private MapView mMapView;
     private GoogleMap googleMap;
     private MapInfoAdapter adapter;
+    CusDialogProg cusDialogProg;
+    ArrayList<Events> eventArrayMarker;
 
     @Nullable
     @Override
@@ -62,16 +76,13 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
         super.onViewCreated(view, savedInstanceState);
         activity.setTitleVisibality(View.VISIBLE);
         activity.setTitle(activity.getResources().getString(R.string.Scene));
+        cusDialogProg = new CusDialogProg(activity,R.layout.custom_progress_dialog_layout);
+        checkEventAvailablity();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
-        try {
-            mapAsyncer();
-        } catch (Exception e) {
-        }
 
     }
 
@@ -93,8 +104,6 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
         return googleMap.addMarker(new MarkerOptions()
                 .position(new LatLng(lat, longe))
                 .anchor(0.5f, 0.5f)
-                .title("HI this is tile")
-                .snippet("A new Snippet")
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker)));
         //;
     }
@@ -126,23 +135,23 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
 
                 //TODO:reduce marker size and tilt the map
                 //marker.icon(BitmapDescriptorFactory.fromBitmap(ImageUtil.resizeBitmap( ImageUtil.getBitmapByUrl(markerUrl) , 2 ,2)));
-                final ArrayList<Events> markersArray = activity.getEventsArrayList();
+               // eventArrayMarker = activity.getEventsArrayList();
                 try {
 
 
-                    if (markersArray == null || markersArray.size() <= 0) {
+                    if (eventArrayMarker == null || eventArrayMarker.size() <= 0) {
                         Log.e(TAG, " Size 0");
 
                     } else {
-                        adapter = new MapInfoAdapter(activity, markersArray);
+                        adapter = new MapInfoAdapter(activity, eventArrayMarker);
                         googleMap.setInfoWindowAdapter(adapter);
-                        for (int i = 0; i < markersArray.size(); i++) {
-                            Log.e(TAG, markersArray.get(i).getEvent().getEvent_name() + " : " + markersArray.get(i).getEvent().getEvent_id() + " : " + markersArray.get(i).getVenue().getLatitude() + " : " + markersArray.get(i).getVenue().getLongitude());
-                            if (i == (markersArray.size() - 1)) {
-                                sydney = new LatLng(Double.parseDouble(markersArray.get(i).getVenue().getLatitude()), Double.parseDouble(markersArray.get(i).getVenue().getLongitude()));
-                                m = createMarker(markersArray.get(i).getVenue().getLatitude(), markersArray.get(i).getVenue().getLongitude());
+                        for (int i = 0; i < eventArrayMarker.size(); i++) {
+                            Log.e(TAG, eventArrayMarker.get(i).getEvent().getEvent_name() + " : " + eventArrayMarker.get(i).getEvent().getEvent_id() + " : " + eventArrayMarker.get(i).getVenue().getLatitude() + " : " + eventArrayMarker.get(i).getVenue().getLongitude());
+                            if (i == (eventArrayMarker.size() - 1)) {
+                                sydney = new LatLng(Double.parseDouble(eventArrayMarker.get(i).getVenue().getLatitude()), Double.parseDouble(eventArrayMarker.get(i).getVenue().getLongitude()));
+                                m = createMarker(eventArrayMarker.get(i).getVenue().getLatitude(), eventArrayMarker.get(i).getVenue().getLongitude());
                             } else
-                                createMarker(markersArray.get(i).getVenue().getLatitude(), markersArray.get(i).getVenue().getLongitude());
+                                createMarker(eventArrayMarker.get(i).getVenue().getLatitude(), eventArrayMarker.get(i).getVenue().getLongitude());
                         }
                     }
 
@@ -159,7 +168,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
                     @Override
                     public void onInfoWindowClick(Marker marker) {
                         //Log.e(TAG,"Info window clicked"+marker.getId()+":"+marker.getZIndex());
-                        Events events = markersArray.get(Integer.parseInt(marker.getId().replace("m", "")));
+                        Events events = eventArrayMarker.get(Integer.parseInt(marker.getId().replace("m", "")));
                         Event_Fragment frg = new Event_Fragment();
                         frg.setData(events.getEvent().getEvent_id(),events.getVenue().getVenue_name());
                         activity.addFragment(frg, 0);
@@ -171,7 +180,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
                     @Override
                     public boolean onMarkerClick(Marker marker) {
                         //TODO:DELETE BEFORE LIVE
-                       /* Events events = markersArray.get(Integer.parseInt(marker.getId().replace("m","")));
+                       /* Events events = eventArrayMarker.get(Integer.parseInt(marker.getId().replace("m","")));
                         Log.e(TAG,"Info window clicked"+marker.getId()+":"+events.getVenue().getLatitude()+"="+marker.getPosition()+" :"+events.getVenue().getLongitude());*/
                         marker.showInfoWindow();
                         return true;
@@ -205,5 +214,103 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
         if (adapter != null) {
             adapter.setEventArrayList(activity.getEventsArrayList());
         }
+    }
+
+
+
+    void checkEventAvailablity() {
+        cusDialogProg.setCancelable(false);
+        cusDialogProg.setCanceledOnTouchOutside(false);
+        cusDialogProg.setColor(R.color.transparent);
+         cusDialogProg.show();
+
+        VolleyGetPost volleyGetPost = new VolleyGetPost(activity, activity, WebService.EVENT_BY_LOCAL, false) {
+            @Override
+            public void onVolleyResponse(String response) {
+                Util.printBigLogcat(TAG, " " + response);
+                try {
+                    JSONObject jo = new JSONObject(response);
+                    if (jo.has("status")) {
+                        int status = jo.getInt("status");
+                        if (status == 0){
+                            activity.dismissProgDailog();
+                            try {
+                                Toast.makeText(activity,jo.getString("message"),Toast.LENGTH_SHORT).show();
+                            }catch (Exception e){
+
+                            }
+                        }
+                        //else if()
+                    } else {
+                        if (jo.has("userinfo")) {
+                        }
+                        if (jo.has("events")) {
+                            if (eventArrayMarker == null) eventArrayMarker = new ArrayList<>();
+                            else eventArrayMarker.clear();
+                            JSONArray eventAr = jo.getJSONArray("events");
+                            for (int i = 0; i < eventAr.length(); i++) {
+                                JSONObject object = eventAr.getJSONObject(i);
+                                Events events = new Events();
+                                if (object.has("venue"))
+                                    events.setVenueJSON(object.getJSONObject("venue"));
+                                if (object.has("artists"))
+                                    events.setArtistsArray(object.getJSONArray("artists"));
+                                if (object.has("events"))
+                                    events.setEventJson(object.getJSONObject("events"));
+                                try{
+                                    events.setOngoing(events.checkWithTime(events.getEvent().getEvent_date() , events.getEvent().getInterval() ));
+                                }catch (Exception e){
+
+                                }
+                                eventArrayMarker.add(events);
+                                //Log.e("Size",eventsArrayList.size()+"");
+                            }
+
+                            try {
+                                mapAsyncer();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    }
+                    if (cusDialogProg != null) cusDialogProg.dismiss();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    if (cusDialogProg != null) cusDialogProg.dismiss();
+                    Toast.makeText(activity,getString(R.string.somethingwentwrong),Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onVolleyError(VolleyError error) {
+                if (cusDialogProg != null) cusDialogProg.dismiss();
+               Toast.makeText(activity,getString(R.string.somethingwentwrong),Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "" + error);
+            }
+
+            @Override
+            public void onNetError() {
+                if (cusDialogProg != null) cusDialogProg.dismiss();
+            }
+
+            @Override
+            public Map<String, String> setParams(Map<String, String> params) {
+                params.put("lat",activity.getlatlong()[0]);
+                params.put("long",activity.getlatlong()[1]);
+                params.put("user_id",activity.userInfo().getUserID());
+                return params;
+            }
+
+            @NotNull
+            @Override
+            public Map<String, String> setHeaders(Map<String, String> params) {
+                return params;
+            }
+        };
+        volleyGetPost.execute();
+
     }
 }

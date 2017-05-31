@@ -36,6 +36,7 @@ public class TreandingAdapter extends RecyclerView.Adapter<TreandingAdapter.Hold
     HomeActivity activity;
     ArrayList<Events> eventsList;
     boolean clicked;
+    int heightA,widthA;
 
 
     public TreandingAdapter(HomeActivity activity, ArrayList<Events> eventsList) {
@@ -59,7 +60,7 @@ public class TreandingAdapter extends RecyclerView.Adapter<TreandingAdapter.Hold
             Bitmap bitmap = ImageUtil.getBitmapByUrl(event.getImage());
             holder.img_event.setImageBitmap(bitmap);
         } catch (Exception e) {
-//            Picasso.with(activity).load(event.getImage()).resize(holder.img_event.getWidth(),holder.img_event.getHeight()).into(holder.img_event);
+            Picasso.with(activity).load(event.getImage()).resize(widthA,heightA).into(holder.img_event);
             e.printStackTrace();
         }
 
@@ -84,7 +85,7 @@ public class TreandingAdapter extends RecyclerView.Adapter<TreandingAdapter.Hold
 
 
         holder.txt_eventName.setText(event.getEvent_name());
-        holder.txt_eventAdress.setText(venue.getAddress()+" "+ activity.getDistanceMile(new Double[]{Double.valueOf(venue.getLatitude()), Double.valueOf(venue.getLongitude()),38.222046D,-122.144755D})+" M");
+        holder.txt_eventAdress.setText(venue.getAddress()+" "+ activity.getDistanceMile(new Double[]{Double.valueOf(venue.getLatitude()), Double.valueOf(venue.getLongitude()), Double.valueOf(activity.getlatlong()[0]), Double.valueOf(activity.getlatlong()[1])})+" M");
         holder.txt_eventDate.setText(object.timeFormat);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -180,7 +181,8 @@ public class TreandingAdapter extends RecyclerView.Adapter<TreandingAdapter.Hold
             RelativeLayout.LayoutParams parameters = (RelativeLayout.LayoutParams) rtv_all.getLayoutParams();
             DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
             int width = metrics.widthPixels;
-            parameters.height = ((HomeActivity.ActivityWidth) * 3 / 4);
+            heightA = parameters.height = ((HomeActivity.ActivityWidth) * 3 / 4);
+            widthA = HomeActivity.ActivityWidth;
             Font font = new Font(activity);
             font.setFontFrankBookReg(txt_eventAdress, txt_eventDate, txt_eventName, txt_time);
             txt_time.setTypeface(font.FrankBookRegular());

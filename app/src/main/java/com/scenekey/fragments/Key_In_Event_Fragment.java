@@ -207,6 +207,20 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
         if (timerNudge != null) timerNudge.cancel();
         timerHttp = null;
         timerNudge = null;
+        for (Fragment fragment : activity().getSupportFragmentManager().getFragments()) {
+            try {
+                ((Trending_Fragment) fragment).getTrending();
+                break;
+            } catch (Exception e) {
+
+            }
+            try {
+                ((Map_Fragment) fragment).checkEventAvailablity();
+                break;
+            } catch (Exception e) {
+
+            }
+        }
         super.onDestroy();
     }
 
@@ -395,7 +409,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
         }
         try {
             if (obj1.has("event_profile_rating"))
-                eventDetails.setProfile_ratingJSon(obj1.getJSONArray("event_profile_rating"));
+                eventDetails.setProfile_ratingJSon(obj1.getJSONObject("event_profile_rating"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -467,6 +481,10 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
             CardsAdapter arrayAdapter = new CardsAdapter(getContext(), cardslist);
             card_stack_view.setAdapter(arrayAdapter);
         }
+        else {
+            ((CardsAdapter)card_stack_view.getAdapter()).notifyDataSetChanged();
+            card_stack_view.restart();
+        }
 
         ((CardsAdapter) card_stack_view.getAdapter()).notifyDataSetChanged();
         card_stack_view.setFlingListener(new SwipeCardView.OnCardFlingListener() {
@@ -513,6 +531,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
                 //makeToast(CardSwipeActivity.this, "Bottom!");
             }
         });
+
     }
 
 
@@ -528,7 +547,11 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
                                                   @Override
                                                   public void run() {
                                                         Log.e(TAG,"TimerVolley");
-                                                      if (canCallWebservice) getAlldata();
+                                                      try {
+                                                          if (canCallWebservice) getAlldata();
+                                                      }catch (Exception e){
+
+                                                      }
 
 
                                                   }
@@ -585,14 +608,15 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == Constants.MY_PERMISSIONS_REQUEST_CAMERA) {
             if (Build.VERSION.SDK_INT >= 23) {
                 if (activity().checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                     //TODO : May be need to toast the msg that user denied permission
                 } else captureImage();
             }
+            else captureImage();
         }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
     }
 
@@ -626,7 +650,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
                 params.put("event_id", EventId);
                 params.put("location", "Fairfield,CA");
                 params.put("image", ImageUtil.encodeTobase64(bitmap));
-                params.put("Ratingtime", "2017-04-13 15:28:16");
+                params.put("ratingtime", getCutrrentTimeinFormat());
                 return params;
             }
 
@@ -957,12 +981,26 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
                 try {
                     JSONObject object = new JSONObject(response);
                     if (object.has("success")) if (object.getInt("success") == 1) {
+                        if(object.getString("msg").contains(" liked the event.")){
+                            fabMenu1_like.setImageDrawable(getResources().getDrawable(R.drawable.red_heart));
+                            CustomToastDialog customToastDialog = new CustomToastDialog(activity());
+                            customToastDialog.setMessage(object.getString("msg"));
+                            customToastDialog.show();
+                        }
+                        else if(object.getString("msg").contains("unliked the event.")){
+                            fabMenu1_like.setImageDrawable(getResources().getDrawable(R.drawable.heart));
+                            CustomToastDialog customToastDialog = new CustomToastDialog(activity());
+                            customToastDialog.setMessage(object.getString("msg"));
+                            customToastDialog.show();
+                        }
                         getAlldata();
-                        //if("":1,"msg":"your have liked the event."})
+
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    Toast.makeText(activity(), getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
                 }
+                getAlldata();
 
 
             }
@@ -1001,7 +1039,6 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
      * For getting the nudge at notification popUp and show on it
      */
     void getNudges() {
-        ;
         VolleyGetPost volleyGetPost2 = new VolleyGetPost(activity(), activity(), WebService.GET_NUDGE, false) {
             @Override
             public void onVolleyResponse(String response) {
@@ -1068,12 +1105,14 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
                 Log.e(TAG, " : " + WebService.ADD_EVENT + response);
                 if (type == 0) likeEvent();
                 else if (type == 1) sendPicture(bitmap);
+                getAlldata();
 
             }
 
             @Override
             public void onVolleyError(VolleyError error) {
                 activity().dismissProgDailog();
+                getAlldata();
                 Toast.makeText(activity(), getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
             }
 
@@ -1230,9 +1269,8 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
 
         }
 
-        public void setProfile_ratingJSon(JSONArray jsonAr) throws JSONException {
+        public void setProfile_ratingJSon(JSONObject JSon) throws JSONException {
             this.profile_rating = new Event_Profile_Rating();
-            JSONObject JSon = jsonAr.getJSONObject(0);
             if (JSon.has("username"))
                 profile_rating.setEvent_rating(JSon.getString("event_rating"));
             if (JSon.has("venue_detail")) {
@@ -1254,10 +1292,10 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
             }
             if (JSon.has("event_name")) {
                 profile_rating.setEvent_name(JSon.getString("event_name"));
-                if (profile_rating.getEvent_name().length() < 45)
+                if (profile_rating.getEvent_name().length() < 40)
                     txt_event_name.setText(profile_rating.getEvent_name());
                 else
-                    txt_event_name.setText(profile_rating.getEvent_name().substring(0, 45) + "...");
+                    txt_event_name.setText(profile_rating.getEvent_name().substring(0, 40) + "...");
             }
             if (JSon.has("interval")) profile_rating.setInterval(JSon.getInt("interval") + "");
             if (JSon.has("event_date")) profile_rating.setEvent_date(JSon.getString("event_date"));
@@ -1290,6 +1328,10 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
         public void setNudges_count(String nudges_count) {
             this.nudges_count = nudges_count;
         }
+    }
+
+    String getCutrrentTimeinFormat() {
+        return (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date(System.currentTimeMillis()));
     }
 
 }

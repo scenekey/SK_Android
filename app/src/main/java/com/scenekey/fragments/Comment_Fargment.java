@@ -111,13 +111,15 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
             public void onVolleyError(VolleyError error) {
                 Log.e(TAG, " volleyResponse " + error);
                 activity().dismissProgDailog();
-                activity().onBackPressed();//TODO handle after implementing notification from server side
+                activity().onBackPressed();
+                //TODO handle after implementing notification from server side
             }
 
             @Override
             public void onNetError() {
 
                 activity().dismissProgDailog();
+                activity().onBackPressed();
             }
 
             @Override
@@ -148,8 +150,14 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onDestroy() {
-       if(event_fragment !=null) event_fragment.canCallWebservice = true;
-       if(key_in_event_fragment !=null) key_in_event_fragment.canCallWebservice = true;
+       if(event_fragment !=null) {
+           event_fragment.canCallWebservice = true;
+           event_fragment.getAlldata();
+       }
+       if(key_in_event_fragment !=null) {
+           key_in_event_fragment.canCallWebservice = true;
+           key_in_event_fragment.getAlldata();
+       }
         super.onDestroy();
     }
 
@@ -187,7 +195,9 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onVolleyError(VolleyError error) {
+
                 activity().dismissProgDailog();
+                commentEvent();
             }
 
             @Override

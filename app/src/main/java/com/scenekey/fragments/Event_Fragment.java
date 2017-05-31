@@ -33,6 +33,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.facebook.AccessToken;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.scenekey.R;
 import com.scenekey.Utility.CircleTransform;
 import com.scenekey.Utility.CustomToastDialog;
@@ -44,6 +49,7 @@ import com.scenekey.Utility.WebService;
 import com.scenekey.activity.HomeActivity;
 import com.scenekey.adapter.DataAdapter;
 import com.scenekey.helper.Constants;
+import com.scenekey.helper.SessionManager;
 import com.scenekey.lib_sources.Floting_menuAction.FloatingActionButton;
 import com.scenekey.lib_sources.Floting_menuAction.FloatingActionMenu;
 import com.scenekey.lib_sources.SwipeCard.Card;
@@ -100,6 +106,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
     NotificationData nudge;
     FloatingActionButton fabMenu1_like;
     ImageView img_p2_profile2, img_p2_profile, next, img_nudge;
+    LinearLayout lnr_mutul;
     TextView txt_message, txt_timer;
     TextView txt_nudge, txt_reply, txt_view_pro;
     TextView txt_title;
@@ -124,11 +131,16 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
     LinearLayout no_one;
     TextView txt_not_started;
 
+    //Demo Screen
+    RelativeLayout demoView;
+    TextView btn_got_it;
+
     //TODO  if event is more then a day
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        FacebookSdk.sdkInitialize(activity());
         View view = inflater.inflate(R.layout.f2_demo_event, null);
 
         try {
@@ -159,6 +171,21 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         txt_hide_all_one = (TextView) view.findViewById(R.id.txt_hide_all_one);
         txt_hide_all_two = (TextView) view.findViewById(R.id.txt_hide_all_two);
         no_one = (LinearLayout) view.findViewById(R.id.no_one);
+        demoView = (RelativeLayout) view.findViewById(R.id.demoView);
+        btn_got_it = (TextView) view.findViewById(R.id.btn_got_it);
+        activity().showProgDilog(false);
+        menu_blue.setOnMenuToggleListener(new FloatingActionMenu.OnMenuToggleListener() {
+            @Override
+            public void onMenuToggle(boolean opened) {
+                if(opened){
+                   if(eventDetails.getProfile_rating()!=null) if (eventDetails.getProfile_rating().getKey_in().equals(Constants.KEY_NOTEXIST)) {
+                        addUserIntoEvent(-1, null);
+                    }
+                }
+            }
+        });
+
+
 
 
         return view;
@@ -175,11 +202,19 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         font = new Font(activity());
         rtlv_top.getLayoutParams().height = ((HomeActivity.ActivityWidth) * 3 / 4);
         getAlldata();
+
+       UserInfo userInfo = activity().userInfo();
+        if(activity().userInfo().isFirstTimeDemo()){
+            demoView.setVisibility(View.VISIBLE);
+            userInfo.setFirstTimeDemo(false);
+            activity().getSessionManager().createSession(userInfo);
+
+        }
         if (timerHttp == null) setDataTimer();
         isInfoVisible = false;
         rclv_grid.hasFixedSize();
         txt_event_name.setText("");
-        setOnClick(mainlayout,image_map, scrl_all, rtlv_top, img_infoget_f2, img_f10_back, fabMenu1_like, fabMenu2_picture, fabMenu3_comment, img_notif, txt_hide_all_one, txt_hide_all_two, txt_event_name);
+        setOnClick(mainlayout,btn_got_it,image_map, scrl_all, rtlv_top, img_infoget_f2, img_f10_back, fabMenu1_like, fabMenu2_picture, fabMenu3_comment, img_notif, txt_hide_all_one, txt_hide_all_two, txt_event_name);
         cardslist = new ArrayList<>();
         info_view.setVisibility(View.GONE);
         nudge = new NotificationData();
@@ -206,6 +241,20 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         if (timerNudge != null) timerNudge.cancel();
         timerHttp = null;
         timerNudge = null;
+        for (Fragment fragment : activity().getSupportFragmentManager().getFragments()) {
+            try {
+                ((Trending_Fragment) fragment).getTrending();
+                break;
+            } catch (Exception e) {
+
+            }
+            try {
+                ((Map_Fragment) fragment).checkEventAvailablity();
+                break;
+            } catch (Exception e) {
+
+            }
+        }
         super.onDestroy();
     }
 
@@ -363,6 +412,10 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
             case R.id.rtlv_top:
                 break;
             case R.id.menu_blue:
+
+                break;
+            case R.id.btn_got_it:
+                demoView.setVisibility(View.GONE);
                 break;
             default:
                 break;
@@ -394,7 +447,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         }
         try {
             if (obj1.has("event_profile_rating"))
-                eventDetails.setProfile_ratingJSon(obj1.getJSONArray("event_profile_rating"));
+                eventDetails.setProfile_ratingJSon(obj1.getJSONObject("event_profile_rating"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -407,7 +460,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         try {
             inTime = checkWithTime(eventDetails.profile_rating.getEvent_date());
         } catch (Exception e) {
-
+            Log.e(TAG," inTime "+e);
         }
         try {
             setDateTime(eventDetails.getProfile_rating().getEvent_date());
@@ -479,6 +532,10 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
             CardsAdapter arrayAdapter = new CardsAdapter(getContext(), cardslist);
             card_stack_view.setAdapter(arrayAdapter);
         }
+        else {
+            ((CardsAdapter)card_stack_view.getAdapter()).notifyDataSetChanged();
+            card_stack_view.restart();
+        }
 
         ((CardsAdapter) card_stack_view.getAdapter()).notifyDataSetChanged();
         card_stack_view.setFlingListener(new SwipeCardView.OnCardFlingListener() {
@@ -540,7 +597,11 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
                                                   @Override
                                                   public void run() {
                                                         Log.e(TAG,"TimerVolley");
-                                                      if (canCallWebservice) getAlldata();
+                                                      try{
+                                                          if (canCallWebservice) getAlldata();
+                                                      }catch (Exception e){
+
+                                                      }
 
 
                                                   }
@@ -597,14 +658,16 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         if (requestCode == Constants.MY_PERMISSIONS_REQUEST_CAMERA) {
             if (Build.VERSION.SDK_INT >= 23) {
                 if (activity().checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                     //TODO : May be need to toast the msg that user denied permission
                 } else captureImage();
             }
+            else captureImage();
         }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
     }
 
@@ -625,6 +688,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
             public void onVolleyError(VolleyError error) {
                 Log.e(TAG, "error" + error);
                 activity().dismissProgDailog();
+                getAlldata();
             }
 
             @Override
@@ -638,7 +702,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
                 params.put("event_id", EventId);
                 params.put("location", "Fairfield,CA");
                 params.put("image", ImageUtil.encodeTobase64(bitmap));
-                params.put("Ratingtime", "2017-04-13 15:28:16");
+                params.put("ratingtime", getCutrrentTimeinFormat());
                 return params;
             }
 
@@ -707,7 +771,8 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         if (currentTime < endTime.getTime() && currentTime > startTime.getTime()) {
             return true;
         }
-        return false;
+        //ToDo false
+        return true;
     }
 
     public boolean checkWithTime_No_Attendy(final String date , int interval) throws ParseException {
@@ -754,6 +819,9 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
             img_p2_profile = (ImageView) popupview.findViewById(R.id.img_p2_profile);
         if (img_p2_profile2 == null)
             img_p2_profile2 = (ImageView) popupview.findViewById(R.id.img_p2_profile2);
+        if (lnr_mutul == null)
+            lnr_mutul = (LinearLayout) popupview.findViewById(R.id.lnr_mutul);
+        lnr_mutul.setVisibility(View.GONE);
         if (img_nudge == null)
             img_nudge = (ImageView) popupview.findViewById(R.id.img_nudge);
         if (txt_message == null) {
@@ -928,26 +996,39 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
     /**
      * GetALl the data for that event
      */
-    public void getAlldata() {
+public void getAlldata() {
         VolleyGetPost volleyGetPost = new VolleyGetPost(activity(), HomeActivity.instance, WebService.LISTEVENTFEED, false) {
             @Override
             public void onVolleyResponse(String response) {
                 Log.e(TAG, "response volley :" + response);
                 try {
+                    activity().dismissProgDailog();
                     getResponse(response);
                 } catch (JSONException e) {
+                    try {
+                        Toast.makeText(HomeActivity.instance, HomeActivity.instance.getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
+                    }catch (Exception ee){}
+                    e.printStackTrace();
+                }
+                catch (IllegalStateException e){
+                    try {
+                        Toast.makeText(HomeActivity.instance, HomeActivity.instance.getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
+                    }catch (Exception ee){
+
+                    }
                     e.printStackTrace();
                 }
             }
 
             @Override
             public void onVolleyError(VolleyError error) {
+                activity().dismissProgDailog();
                 Toast.makeText(activity(), getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onNetError() {
-
+                activity().dismissProgDailog();
             }
 
             @Override
@@ -981,12 +1062,27 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
                 try {
                     JSONObject object = new JSONObject(response);
                     if (object.has("success")) if (object.getInt("success") == 1) {
+                        if(object.getString("msg").contains(" liked the event.")){
+                            fabMenu1_like.setImageDrawable(getResources().getDrawable(R.drawable.red_heart));
+                            CustomToastDialog customToastDialog = new CustomToastDialog(activity());
+                            customToastDialog.setMessage(object.getString("msg"));
+                            customToastDialog.show();
+                        }
+                        else if(object.getString("msg").contains("unliked the event.")){
+                            fabMenu1_like.setImageDrawable(getResources().getDrawable(R.drawable.heart));
+                            CustomToastDialog customToastDialog = new CustomToastDialog(activity());
+                            customToastDialog.setMessage(object.getString("msg"));
+                            customToastDialog.show();
+                        }
                         getAlldata();
-                        //if("":1,"msg":"your have liked the event."})
+                        //{"success":1,"msg":"your have liked the event."}
+                        //{"success":1,"msg":"your have unliked the event."}
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    Toast.makeText(activity(), getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
                 }
+                getAlldata();
 
 
             }
@@ -1085,19 +1181,21 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
      * @param type must be 0 or 1
      */
     void addUserIntoEvent(final int type, @Nullable final Bitmap bitmap) {
-        activity().showProgDilog(false);
+       if(type!=-1) activity().showProgDilog(false);
         VolleyGetPost adduserVolley = new VolleyGetPost(activity(), activity(), WebService.ADD_EVENT, false) {
             @Override
             public void onVolleyResponse(String response) {
                 Log.e(TAG, " : " + WebService.ADD_EVENT + response);
                 if (type == 0) likeEvent();
                 else if (type == 1) sendPicture(bitmap);
+                getAlldata();
 
             }
 
             @Override
             public void onVolleyError(VolleyError error) {
                 activity().dismissProgDailog();
+                getAlldata();
                 Toast.makeText(activity(), getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
             }
 
@@ -1172,7 +1270,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
 
     void callProfile(EventAttendy attendy) {
         dialog.dismiss();
-        activity().addFragment(new Profile_Fragment().setData(attendy, false, Event_Fragment.this), 1);
+        activity().addFragment(new Profile_Fragment().setData(attendy, false, Event_Fragment.this,0), 1);
     }
 
     /**
@@ -1253,9 +1351,8 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
 
         }
 
-        public void setProfile_ratingJSon(JSONArray jsonAr) throws JSONException {
+        public void setProfile_ratingJSon(JSONObject JSon) throws JSONException {
             this.profile_rating = new Event_Profile_Rating();
-            JSONObject JSon = jsonAr.getJSONObject(0);
             if (JSon.has("username"))
                 profile_rating.setEvent_rating(JSon.getString("event_rating"));
             if (JSon.has("venue_detail")) {
@@ -1277,10 +1374,10 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
             }
             if (JSon.has("event_name")) {
                 profile_rating.setEvent_name(JSon.getString("event_name"));
-                if (profile_rating.getEvent_name().length() < 45)
+                if (profile_rating.getEvent_name().length() < 40)
                     txt_event_name.setText(profile_rating.getEvent_name());
                 else
-                    txt_event_name.setText(profile_rating.getEvent_name().substring(0, 45) + "...");
+                    txt_event_name.setText(profile_rating.getEvent_name().substring(0, 40) + "...");
             }
             if (JSon.has("interval")) profile_rating.setInterval(JSon.getInt("interval") + "");
             if (JSon.has("event_date")) profile_rating.setEvent_date(JSon.getString("event_date"));
@@ -1313,6 +1410,76 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
         public void setNudges_count(String nudges_count) {
             this.nudges_count = nudges_count;
         }
+    }
+
+    public String mutualFriend(String ID){
+
+        Bundle params = new Bundle();
+        params.putString("fields", "context.fields(mutual_friends)");
+        new GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/"+ID,
+                params,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    int count;
+                    public void onCompleted(GraphResponse response) {
+                        // handle the result
+                        /*{
+                            Response:
+                            responseCode:
+                            200, graphObject:{
+                            "context":{
+                                "mutual_friends":{
+                                    "data":[{
+                                        "name":"Brajmohan Sharma", "id":"1509275075753428"
+                                    }],"paging":{
+                                        "cursors":{
+                                            "before":"MTUwOTI3NTA3NTc1MzQyOAZDZD", "after":
+                                            "MTUwOTI3NTA3NTc1MzQyOAZDZD"
+                                        }
+                                    },"summary":{
+                                        "total_count":11
+                                    }
+                                },"id":
+                                "dXNlcl9jb250ZAXh0OgGQZBmk4PTSAeRDMZCu4FJ7tZCyBmLhmhhXQ7JFZCKDulhXZCqfrNQnylMeNUDn0UCK2jDRg2UNxqFleZB16JhiszZCqErvBrD7dOfZBcSzV32Vd1OW2MoZD"
+                            },"id":"1499369580073869"
+                        },error:
+                        null
+                        }*/
+                        Log.e(TAG," : "+response);
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.getRawResponse());
+                            if (jsonObject.has("context")) {
+                                jsonObject = jsonObject.getJSONObject("context");
+                                if (jsonObject.has("mutual_friends")) {
+                                    JSONArray mutualFriendsJSONArray = jsonObject.getJSONObject("mutual_friends").getJSONArray("data");
+
+                                    Log.e(TAG," Mutul Friend"+mutualFriendsJSONArray.length()+ mutualFriendsJSONArray.toString());
+                                    count = jsonObject.getJSONObject("mutual_friends").getJSONObject("summary").getInt("total_count");
+
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+        ).executeAsync();
+/*https://graph.facebook.com/100000025257108?access_token=EAAU6Ok4XbPYBAKtk5p0WKtK22jfAiV2kUzFbG6qojkCw7TM9iWK9L5qocDGDdpSeQjfUFmwzgoBMPpjl1NC99tpNpRfTR6i48utfrV1O3ZBQWljK5sYIaMa3JUralW2NPPcbBEIsb4INJZCmStvz23eWOqJJ0V6oCSZA7JGZBT5jD1ZB56JWnwAV6INEUK4RxsNnFTURWrxmg6WXXMnmy%20&&fields=context.fields%28mutual_friends%29*/
+        try {
+            Log.e(TAG,activity().userInfo().getUserAccessToken()+" : ");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return "";
+
+    }
+
+    String getCutrrentTimeinFormat() {
+        return (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date(System.currentTimeMillis()));
     }
 
 }

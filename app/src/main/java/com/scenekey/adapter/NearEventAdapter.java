@@ -87,7 +87,7 @@ public class NearEventAdapter extends RecyclerView.Adapter<NearEventAdapter.Hold
             holder.txt_time.setText(object.remainingTime);
         }
         holder.txt_eventName.setText(event.getEvent_name());
-        holder.txt_eventAdress.setText(venue.getAddress()+" "+activity.getDistanceMile(new Double[]{Double.valueOf(venue.getLatitude()), Double.valueOf(venue.getLongitude()),38.222046D,-122.144755D})+" M");
+        holder.txt_eventAdress.setText(venue.getAddress()+" "+activity.getDistanceMile(new Double[]{Double.valueOf(venue.getLatitude()), Double.valueOf(venue.getLongitude()), Double.valueOf(activity.getlatlong()[0]), Double.valueOf(activity.getlatlong()[1])})+" M");
         holder.txt_eventDate.setText(convertDate(event.getEvent_date()));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

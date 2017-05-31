@@ -109,11 +109,11 @@ public class DataAdapter_Key_IN extends RecyclerView.Adapter<DataAdapter_Key_IN.
         return roomPersons.size();
     }
 
-    void popUpMy(int position) {
+    void popUpMy(final int position) {
         final ImageView img_red, img_yellow, img_green, img_p1_profile;
         dialog = new Dialog(activity);
         final TextView txt_stop, txt_caution, txt_go;
-        final TextView txt_title;
+        final TextView txt_title ,txt_my_details;
 
         popupview = LayoutInflater.from(activity).inflate(R.layout.pop_my_profile, null);
         img_p1_profile = (ImageView) popupview.findViewById(R.id.img_p1_profile);
@@ -124,6 +124,7 @@ public class DataAdapter_Key_IN extends RecyclerView.Adapter<DataAdapter_Key_IN.
         txt_caution = (TextView) popupview.findViewById(R.id.txt_caution);
         txt_go = (TextView) popupview.findViewById(R.id.txt_go);
         txt_title = (TextView) popupview.findViewById(R.id.txt_title);
+        txt_my_details = (TextView) popupview.findViewById(R.id.txt_my_details);
         img_green.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -149,6 +150,20 @@ public class DataAdapter_Key_IN extends RecyclerView.Adapter<DataAdapter_Key_IN.
                 setUserStatus(3, (ImageView) v);
             }
         });
+
+        txt_my_details.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callProfile(roomPersons.get(position),true);
+            }
+        });
+        img_p1_profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callProfile(roomPersons.get(position),true);
+            }
+        });
+
         switch (roomPersons.get(position).getUser_status()) {
             case "1":
                 img_green.setImageResource(R.drawable.bg_green_ring_accept);
@@ -243,14 +258,14 @@ public class DataAdapter_Key_IN extends RecyclerView.Adapter<DataAdapter_Key_IN.
         img_p2_profile2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callProfile(attendy);
+                callProfile(attendy,false);
             }
         });
 
         txt_view_pro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callProfile(attendy);
+                callProfile(attendy,false);
             }
         });
 
@@ -307,9 +322,9 @@ public class DataAdapter_Key_IN extends RecyclerView.Adapter<DataAdapter_Key_IN.
 
     }
 
-    void callProfile(EventAttendy attendy) {
+    void callProfile(EventAttendy attendy,boolean ownProfile) {
         dialog.dismiss();
-        ((HomeActivity) activity).addFragment(new Profile_Fragment().setData(attendy, false, fragment), 1);
+        ((HomeActivity) activity).addFragment(new Profile_Fragment().setData(attendy, ownProfile, fragment), 1);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

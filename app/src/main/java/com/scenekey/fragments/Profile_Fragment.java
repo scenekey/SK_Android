@@ -38,6 +38,7 @@ import com.scenekey.adapter.ProfileListAdapter;
 import com.scenekey.adapter.Profile_Events_Adapter;
 import com.scenekey.models.EventAttendy;
 import com.scenekey.models.Feeds;
+import com.scenekey.models.UserInfo;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
@@ -64,11 +65,12 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
     LinearLayout mainlayout;
     Event_Fragment event_fragment;
     Key_In_Event_Fragment key_in_event_fragment;
+    Demo_Event_Fragment demo_event_fragment;
     ListView rclv_f3_trending;
     private ImageView img_profile_pic, img_cross, img_left, img_right, img_fb, img_capture;
     private TextView txt_event_count, txt_dimmer, txt_f2_badge, txt_profile_name;
     private ArrayList<Feeds> feedslist;
-
+    int mutulFriendCount;
     //GridLayoutManager layoutManager;
    // Profile_Events_Adapter adapter;
     int pageToshow=1;
@@ -79,13 +81,10 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.f2_profile_own, null);
         FacebookSdk.sdkInitialize(activity());
-
+        View v = inflater.inflate(R.layout.f2_profile_own, null);
         mainlayout = (LinearLayout) v.findViewById(R.id.mainlayout);
-
         rclv_f3_trending = (ListView) v.findViewById(R.id.rclv_f3_trending);
-
         return v;
     }
 
@@ -124,6 +123,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
         txt_dimmer = (TextView) view.findViewById(R.id.txt_dimmer);
         txt_f2_badge = (TextView) header.findViewById(R.id.txt_f2_badge);
         txt_profile_name = (TextView) header.findViewById(R.id.txt_profile_name);
+        txt_profile_name.setText(attendy.getUsername());
         setClick(view, img_back ,img_setting);
         img_profile_pic.setOnClickListener(this);
         Picasso.with(activity()).load(attendy.getUserimage()).transform(new CircleTransform()).into(img_profile_pic);
@@ -141,7 +141,8 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
         }
         Font font = new Font(activity());
         font.setFontLibreFranklin_SemiBold(txt_profile_name, txt_event_count);
-        mutualFriend();
+
+        txt_f2_badge.setText(mutulFriendCount+"");
         /*adapter = new Profile_Events_Adapter(activity(), feedslist);
         layoutManager = new GridLayoutManager(activity(), 1);*/
         /*rclv_f3_trending.setLayoutManager(layoutManager);
@@ -163,7 +164,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
                 activity().onBackPressed();
                 break;
             case R.id.img_setting:
-                //activity().addFragment(new Setting_Fragment(),1);
+                if(myProfile)activity().addFragment(new Setting_Fragment(),1);
                 break;
         }
     }
@@ -263,10 +264,11 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
      * @param myProfile if user comming to show his own profile then true otherwise false.
      * @return
      */
-    public Profile_Fragment setData(EventAttendy attendy, boolean myProfile, @Nullable Event_Fragment fragment) {
+    public Profile_Fragment setData(EventAttendy attendy, boolean myProfile,  Event_Fragment fragment,int mutulFriendCount) {
         this.attendy = attendy;
         this.myProfile = myProfile;
         this.event_fragment = fragment;
+        this.mutulFriendCount = mutulFriendCount;
         return this;
     }
     /**
@@ -274,10 +276,22 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
      * @param myProfile if user comming to show his own profile then true otherwise false.
      * @return
      */
-    public Profile_Fragment setData(EventAttendy attendy, boolean myProfile, @Nullable Key_In_Event_Fragment fragment) {
+    public Profile_Fragment setData(EventAttendy attendy, boolean myProfile,  Key_In_Event_Fragment fragment) {
         this.attendy = attendy;
         this.myProfile = myProfile;
         this.key_in_event_fragment = fragment;
+        return this;
+    }
+
+    /**
+     * @param attendy   if do not Eventattendy object just create one , set userId URL and pass it.
+     * @param myProfile if user comming to show his own profile then true otherwise false.
+     * @return
+     */
+    public Profile_Fragment setData(EventAttendy attendy, boolean myProfile, @Nullable Demo_Event_Fragment fragment) {
+        this.attendy = attendy;
+        this.myProfile = myProfile;
+        this.demo_event_fragment = fragment;
         return this;
     }
 
@@ -332,11 +346,12 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
             @Override
             public void onVolleyError(VolleyError error) {
                 Log.e(TAG, error + "");
+                activity().dismissProgDailog();
             }
 
             @Override
             public void onNetError() {
-
+                activity().dismissProgDailog();
             }
 
             @Override
@@ -402,6 +417,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
     }
 
     void mutualFriend(){
+
         /*Bundle params = new Bundle();
         params.putString("fields", "context.fields(mutual_friends)");
         new GraphRequest(
@@ -433,7 +449,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
 
         Bundle params = new Bundle();
         params.putString("fields", "context.fields(mutual_friends)");
-        /* make the API call */
+        // make the API call
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
                 "/"+attendy.getUserFacebookId(),
@@ -441,7 +457,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
                 HttpMethod.GET,
                 new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
-            /* handle the result */
+            // handle the result
                         Log.e(TAG," : "+response);
                         try {
                             JSONObject jsonObject = new JSONObject(response.getRawResponse());
@@ -449,7 +465,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
                                 jsonObject = jsonObject.getJSONObject("context");
                                 if (jsonObject.has("mutual_friends")) {
                                     JSONArray mutualFriendsJSONArray = jsonObject.getJSONObject("mutual_friends").getJSONArray("data");
-                                    // this mutualFriendsJSONArray contains the id and name of the mutual friends.
+
                                     Log.e(TAG," Mutul Friend"+mutualFriendsJSONArray.length()+ mutualFriendsJSONArray.toString());
                                 }
                             }
@@ -461,6 +477,44 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
                     }
                 }
         ).executeAsync();
+/*https://graph.facebook.com/100000025257108?access_token=EAAU6Ok4XbPYBAKtk5p0WKtK22jfAiV2kUzFbG6qojkCw7TM9iWK9L5qocDGDdpSeQjfUFmwzgoBMPpjl1NC99tpNpRfTR6i48utfrV1O3ZBQWljK5sYIaMa3JUralW2NPPcbBEIsb4INJZCmStvz23eWOqJJ0V6oCSZA7JGZBT5jD1ZB56JWnwAV6INEUK4RxsNnFTURWrxmg6WXXMnmy%20&&fields=context.fields%28mutual_friends%29*/
+
+        try {
+            Log.e(TAG,activity().userInfo().getUserAccessToken()+" : ");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        /*VolleyGetPost volleyGetPost = new VolleyGetPost(activity(),activity(),"https://graph.facebook.com/v2.9/100000025257108",true) {
+            @Override
+            public void onVolleyResponse(String response) {
+
+                Log.e(TAG,response+"");
+            }
+
+            @Override
+            public void onVolleyError(VolleyError error) {
+                Log.e(TAG,error+" Error");
+            }
+
+            @Override
+            public void onNetError() {
+
+            }
+
+            @Override
+            public Map<String, String> setParams(Map<String, String> params) {
+                return params;
+            }
+
+            @NotNull
+            @Override
+            public Map<String, String> setHeaders(Map<String, String> params) {
+                params.put("access_token",activity().userInfo().getUserAccessToken());
+                params.put("fields","context.fields(mutual_friends)");
+                return params;
+            }
+        };
+        volleyGetPost.execute();*/
     }
 
 

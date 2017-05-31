@@ -29,7 +29,6 @@ import com.scenekey.Utility.CircleTransform;
 import com.scenekey.Utility.Font;
 import com.scenekey.Utility.Util;
 import com.scenekey.activity.HomeActivity;
-import com.scenekey.adapter.DataAdapter;
 import com.scenekey.adapter.DataAdapter_Demo;
 import com.scenekey.helper.SessionManager;
 import com.scenekey.lib_sources.Floting_menuAction.FloatingActionButton;
@@ -87,10 +86,15 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
     private TextView txt_f2_badge;
     //Tinder Sswipe
     private SwipeCardView card_stack_view;
-    private ArrayList<Card> al;
+    private ArrayList<Card> cardlist;
     private ArrayList<NotificationData> nlist;
     private CardsAdapter arrayAdapter;
     private Font font;
+
+
+    //Demo Screen
+    RelativeLayout demoView;
+    TextView btn_got_it;
 
     public void setImageArrray(Home_no_Event home_no_event) {
         this.home_no_event = home_no_event;
@@ -120,6 +124,8 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         fabMenu1 = (FloatingActionButton) view.findViewById(R.id.fabMenu1_like);
         fabMenu2 = (FloatingActionButton) view.findViewById(R.id.fabMenu2_picture);
         fabMenu3 = (FloatingActionButton) view.findViewById(R.id.fabMenu3_comment);
+        demoView = (RelativeLayout) view.findViewById(R.id.demoView);
+        btn_got_it = (TextView) view.findViewById(R.id.btn_got_it);
 
         card_stack_view = (SwipeCardView) view.findViewById(R.id.card_stack_view);//TinderSwipe
         rtlv2_animate_f2 = (RelativeLayout) view.findViewById(R.id.rtlv2_animate_f2);
@@ -133,6 +139,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         rtlv_top.getLayoutParams().height = ((HomeActivity.ActivityWidth) * 3 / 4);
         Util.setStatusBarColor(HomeActivity.instance, R.color.colorPrimary);
         (activity).setBBvisiblity(View.GONE);
+
 
         return view;
     }
@@ -148,18 +155,24 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         ImageView img_notif = (ImageView) view.findViewById(R.id.img_notif);
         fabMenu1.setTextView(new TextView[]{txt_hide_all_one, txt_hide_all_two});
 
-        setOnClick(img_infoget_f2, img_f10_back, fabMenu1, fabMenu2, fabMenu3, img_notif, txt_hide_all_one, txt_hide_all_two);
+        setOnClick(img_infoget_f2, img_f10_back, fabMenu1, fabMenu2, fabMenu3, img_notif, txt_hide_all_one, txt_hide_all_two,btn_got_it,demoView);
         isInfoVisible = false;
         rclv_grid.hasFixedSize();
         SessionManager sessionManager = new SessionManager(activity);
         userInfo = sessionManager.getUserInfo();
+        if(userInfo.isFirstTimeDemo()){
+            demoView.setVisibility(View.VISIBLE);
+            userInfo.setFirstTimeDemo(false);
+            activity.getSessionManager().createSession(userInfo);
+
+        }
         activity.dismissProgDailog();
 
 
         //TinderSwipe
-        al = new ArrayList<>();
-        getDummyData(al);
-        arrayAdapter = new CardsAdapter(getContext(), al);
+        cardlist = new ArrayList<>();
+        getDummyData(cardlist);
+        arrayAdapter = new CardsAdapter(getContext(), cardlist);
         card_stack_view.setAdapter(arrayAdapter);
         noNotify = 5;
 
@@ -186,12 +199,14 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
                 break;
             case R.id.fabMenu1_like:
                 menu_blue.close(true);
+                fabMenu1.setImageDrawable(getResources().getDrawable(R.drawable.red_heart));
                 break;
             case R.id.fabMenu2_picture:
                 menu_blue.close(true);
                 break;
             case R.id.fabMenu3_comment:
                 menu_blue.close(true);
+                activity.addFragment(new Demo_Comment_Fargment().setData(this),1);
                 break;
             case R.id.txt_hide_all_two:
                 menu_blue.close(true);
@@ -201,6 +216,9 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
                 break;
             case R.id.img_notif:
                 if (noNotify > 0) popupNotification();
+                break;
+            case R.id.btn_got_it:
+                demoView.setVisibility(View.GONE);
                 break;
         }
     }
@@ -314,7 +332,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
 
         };
 
-        /*final String android_image_urls[] = {
+        final String android_image_urls[] = {
                 "" + R.drawable.room_1,
                 "" + R.drawable.room_2,
                 "" + R.drawable.room_3,
@@ -323,17 +341,6 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
                 "" + R.drawable.room_6,
                 "" + R.drawable.room_7,
                 "" + R.drawable.room_8,
-                userInfo.getUserImage()
-        };*/
-        final String android_image_urls[] = {
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
                 userInfo.getUserImage()
         };
 
@@ -352,7 +359,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
 
 
         final ArrayList<RoomPerson> roomPersons = new ArrayList<>();
-        final DataAdapter_Demo adapter = new DataAdapter_Demo(getContext(), roomPersons, HomeActivity.instance, font, home_no_event);
+        final DataAdapter_Demo adapter = new DataAdapter_Demo(getContext(), roomPersons, HomeActivity.instance, font, home_no_event,this);
         rclv_grid.setAdapter(adapter);
         for (int i = 0; i < 9; i++) {
             roomPersons.add(new RoomPerson(android_version_names[i], android_image_urls[i], staus[i]));
@@ -455,7 +462,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         card2.imageint = R.drawable.room_2;
         al.add(card2);
 
-        /*al.add(card);*/
+        /*cardlist.add(card);*/
 
 
     }
@@ -465,61 +472,61 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         card3.name = "Card3";
         card3.imageId = R.drawable.demo_2;
         card3.imageint = R.drawable.room_3;
-        al.add(card3);
+        cardlist.add(card3);
 
         Card card4 = new Card();
         card4.name = "Card4";
         card4.text = getResources().getString(R.string.ihavebest);
         card4.imageint = R.drawable.room_4;
-        al.add(card4);
+        cardlist.add(card4);
 
         Card card5 = new Card();
         card5.name = "Card5";
         card5.imageId = R.drawable.demo_3;
         card5.imageint = R.drawable.room_5;
-        al.add(card5);
+        cardlist.add(card5);
 
         Card card6 = new Card();
         card6.name = "Card6";
         card6.imageId = R.drawable.demo_4;
         card6.imageint = R.drawable.room_6;
-        al.add(card6);
+        cardlist.add(card6);
 
         Card card7 = new Card();
         card7.name = "Card7";
         card7.text = getResources().getString(R.string.omg__smooth);
         card7.imageint = R.drawable.room_7;
-        al.add(card7);
+        cardlist.add(card7);
 
         Card card8 = new Card();
         card8.name = "Card8";
         card8.imageId =R.drawable.demo_5;
         card8.imageint = R.drawable.room_8;
-        al.add(card8);
+        cardlist.add(card8);
 
         Card card9 = new Card();
         card9.name = "card9";
         card9.text = getResources().getString(R.string.ihavebest);
         card9.imageint = R.drawable.room_1;
-        al.add(card9);
+        cardlist.add(card9);
 
         Card card10 = new Card();
         card10.name = "card10";
         card10.imageId =R.drawable.demo_6;
         card10.imageint = R.drawable.room_2;
-        al.add(card10);
+        cardlist.add(card10);
 
         Card card11 = new Card();
         card11.name = "Card8";
         card11.imageId =R.drawable.demo_7;
         card11.imageint = R.drawable.room_3;
-        al.add(card11);
+        cardlist.add(card11);
 
         Card card12 = new Card();
         card12.name = "card9";
         card12.text = getResources().getString(R.string.ilovemike);
         card12.imageint = R.drawable.room_5;
-        al.add(card12);
+        cardlist.add(card12);
 
 
 
@@ -649,5 +656,15 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
                 0,
                 //Set the amount of time between each execution (in milliseconds)
                 1000);
+    }
+
+    public void addUserComment(String comment){
+        Card card = new Card();
+        card.text = comment;
+        card.userImage = userInfo.getUserImage();
+        cardlist.add(0,card);
+        arrayAdapter.notifyDataSetChanged();
+        card_stack_view.setAdapter(arrayAdapter);
+        card_stack_view.restart();
     }
 }

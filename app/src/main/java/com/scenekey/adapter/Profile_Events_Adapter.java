@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.scenekey.R;
 import com.scenekey.Utility.Font;
+import com.scenekey.Utility.WebService;
 import com.scenekey.activity.HomeActivity;
 import com.scenekey.helper.Constants;
 import com.scenekey.models.Feeds;
@@ -65,7 +66,7 @@ public class Profile_Events_Adapter extends RecyclerView.Adapter<Profile_Events_
             holder.txt_comment.setVisibility(View.GONE);
             holder.img_event.setVisibility(View.VISIBLE);
             Log.e(TAG, feeds.getFeed() + " ");
-            Picasso.with(activity).load("http://mindiii.com/scenekeyNew/scenekey/" + feeds.getFeed()).placeholder(R.drawable.def_scene).into(holder.img_event);
+            Picasso.with(activity).load(WebService.BASE_IMAGE_URL + feeds.getFeed()).placeholder(R.drawable.def_scene).into(holder.img_event);
 
         }
         /*if(position==feedlist.size()-1){

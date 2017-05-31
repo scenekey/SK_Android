@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -41,6 +42,7 @@ public class Home_no_Event extends Fragment implements View.OnClickListener {
     private Font font;
     private TextView txt_sorry1;
     private TextView txt_sorry2;
+    boolean clicked;
 
     public Bitmap[] getImageArrray() {
         return imageArrray;
@@ -83,14 +85,29 @@ public class Home_no_Event extends Fragment implements View.OnClickListener {
 
         switch (v.getId()) {
             case R.id.txt_try_button_f1:
-                activity.showProgDilog(false);
-                Log.e("LAG", "CLICKED");
-                activity.addFragment(event_fragment, 0);
-                event_fragment.setImageArrray(this);
+                if (!clicked) {
+                    activity.showProgDilog(false);
+
+                    activity.addFragment(event_fragment, 0);
+                    event_fragment.setImageArrray(this);
+                    clicked = true;
+                }
+
+                try {
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            clicked = false;
+                        }
+                    }, 2000);
+                } catch (Exception e) {
+                }
                 //activity.getSupportFragmentManager().executePendingTransactions();
                 break;
-        }
 
+
+        }
     }
 
     void setOnClick(View... views) {

@@ -148,8 +148,8 @@ public class VenuSearch_Fragment extends Fragment implements View.OnClickListene
 
             @Override
             public Map<String, String> setParams(Map<String, String> params) {
-                params.put("lat", "38.222046");
-                params.put("long", "-122.144755");
+                params.put("lat", activity().getlatlong()[0]);
+                params.put("long", activity().getlatlong()[1]);
                 params.put("page", page + "");
                 params.put("name", name + "");
                 Log.e(TAG, params.toString());

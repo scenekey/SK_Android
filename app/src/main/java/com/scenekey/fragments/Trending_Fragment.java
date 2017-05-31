@@ -85,17 +85,25 @@ public class Trending_Fragment extends Fragment {
             @Override
             public void onVolleyResponse(String response) {
                 Util.printBigLogcat(TAG, response);
-                try {
-                    JSONObject jo = new JSONObject(response);
+                try {JSONObject jo = new JSONObject(response);
                     if (jo.has("status")) {
                         int status = jo.getInt("status");
-                        if (status == 0) trendingEvents = false;
+                        if (status == 0){
+                            trendingEvents = false;
+                            activity.dismissProgDailog();
+                            try {
+                                Toast.makeText(activity,jo.getString("message"),Toast.LENGTH_SHORT).show();
+                            }catch (Exception e){
+
+                            }
+                        }
                         //else if()
                     } else {
                         if (jo.has("userinfo")) {
                         }
                         if (jo.has("events")) {
                             if (eventsArrayList == null) eventsArrayList = new ArrayList<>();
+                            else eventsArrayList.clear();
                             JSONArray eventAr = jo.getJSONArray("events");
                             for (int i = 0; i < eventAr.length(); i++) {
                                 JSONObject object = eventAr.getJSONObject(i);
@@ -156,10 +164,8 @@ public class Trending_Fragment extends Fragment {
 
             @Override
             public Map<String, String> setParams(Map<String, String> params) {
-                params.put("lat", "38.222046");
-                params.put("long", "-122.144755");
-                /*params.put("lat",activity.getlatlong()[0]);
-                params.put("long",activity.getlatlong()[1]);*/
+                params.put("lat",activity.getlatlong()[0]);
+                params.put("long",activity.getlatlong()[1]);
                 params.put("user_id", sessionManager.getUserInfo().getUserID() + "");
                 //Log.e(TAG,params.toString());
                 return params;
