@@ -7,7 +7,15 @@ package com.scenekey.Utility;
 public class WebService {
 
     //Devlopment
-     public final static String BASE_URL = "http://mindiii.com/scenekeyNew/scenekey/index.php/event/";
+    //public final static String BASE_URL = "http://mindiii.com/scenekeyNew/scenekey/index.php/event/";
+
+    //By PHP
+    //public final static String BASE_URL = "http://mindiii.com/scenekeyFinal/index.php/event/";
+
+    //You are at the event but it hasn't started yet.
+    //You have not yet arrived at this scene.
+    //By HIBYEE
+    public final static String BASE_URL = "http://hiiandbyee.com/scenekeyFinal/index.php/event/";
 
     //Final
    // public final static String BASE_URL = "http://scenekey.com/scenekey/index.php/event/";
@@ -38,6 +46,11 @@ public class WebService {
 
 
     public final static String LISTATTENDEDEVENT = BASE_URL + "webservices/listofuserattendedevent";
+
+
+
+    //http://mindiii.com/scenekeyNew/scenekey/
+    public final static String BASE_IMAGE_URL = "http://hiiandbyee.com/scenekeyFinal/";
 
 
 }
