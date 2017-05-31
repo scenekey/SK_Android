@@ -1,0 +1,138 @@
+<resources>
+    <string name="app_name">Scenekey</string>
+   <!-- <string name="facebook_app_id"> 1471396976225526 </string>-->
+    <string name="facebook_app_id"> 1277961268944471 </string>
+
+    <!--Facebook-->
+    <string name="fb_login"> Sign in with Facebook</string>
+    <!--<string name="fb_login_protocol_scheme">fb1471396976225526</string>-->   <!--To Open the Facebook Crome Browser-->
+
+    <!--a1_login_activity-->
+    <string name="Trending"> Trending</string>
+    <string name="Map"> Map</string>
+
+
+    <!--Titles-->
+    <string name="Enter"> Enter</string>
+    <string name="Scene"> The Scene</string>
+    <string name="addvenue"> Add Venue</string>
+    <string name="addevent"> Add Event</string>
+    <string name="venue"> Venue</string>
+    <string name="selectttag"> Select Tag </string>
+    <string name="comment"> Comment </string>
+
+
+    <string name="Search"> Search</string>
+    <string name="Add"> Add</string>
+    <string name="Sorry"> Sorry!</string>
+    <string name="Sorry2"> You are not currently at a \n Scenekey event</string>
+    <string name="tryd"> Try a Demo</string>
+    <string name="sample_event"> Michael Jackson live</string>
+    <string name="sample_welcome"> "\"Welcome to 'Beverly Hills'! \nKey In and get connected\"" </string>
+    <string name="sample_Address"> Staples Center Los Angeles </string>
+    <string name="sample_date"> April 26,2015 9:00 PM - 12:00 PM </string>
+    <string name="Description">Description </string>
+    <string name="TheRoom">The Room</string>
+    <string name="alertDoubletap"> Press again to exit</string>
+    <string name="PTBS"> Post to the big screen!</string>
+    <string name="myprofile"> My Profile</string>
+    <string name="Go"> Go</string>
+    <string name="stop"> Stop</string>
+    <string name="caution"> Caution</string>
+    <string name="Yes"> Yes</string>
+    <string name="No"> No</string>
+    <string name="Alert"> Alert</string>
+    <string name="Nudge"> Nudge</string>
+    <string name="Reply"> Reply</string>
+    <string name="message"> Message</string>
+    <string name="DetailMy"> My Details</string>
+    <string name="View"> View Profile</string>
+    <string name="notification1"> Welcome to Scenester! </string>
+    <string name="notification2"> join the room at any event </string>
+    <string name="notification3"> send someone in the room a little nudge </string>
+    <string name="notification4"> have a real time look into events everywhere! </string>
+    <string name="notification5"> share a rating, a comment , or a pic. </string>
+
+    <string name="getdirection"> Get Directions </string>
+
+    <string name="ihavebest"> I have the best view </string>
+    <string name="omg..smooth"> OMG.. Smooth Criminal! </string>
+    <string name="ilovemike"> I Love mike. Sick dance moves! </string>
+
+    <string name="AlertMsg1"> Please turn on your GPS </string>
+    <string name="closeformap"> This will close Scenekey and open google map. \n continue?  </string>
+
+    <string name="EventAndExib"> Events &amp; Exhibition </string>
+    <string name="enterhint"> Enter nudge message here </string>
+    <string name="nudgeBack"> Nudge back </string>
+    <string name="goodNudge"> Good nudge </string>
+    <string name="send"> Send </string>
+
+    <string name="startTime"> Start Time </string>
+    <string name="EndTime"> End Time </string>
+
+    <string name="name"> Name </string>
+    <string name="type"> Type </string>
+    <string name="address"> Address </string>
+    <string name="uploadeimg"> Uploade Image </string>
+
+    <string name="date"> Date </string>
+    <string name="time"> Time </string>
+    <string name="duration"> Duration </string>
+    <string name="addtag"> Add Tag </string>
+
+    <string name="font_raleway_light">0</string>
+    <string name="font_raleway_medium">1</string>
+    <string name="font_raleway_ragular">2</string>
+    <string name="font_raleway_semibold">3</string>
+    <string name="font_Franklin_Reg">4</string>
+    <string name="font_Franklin_Italic">5</string>
+
+
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednseday">Wednesday</string>
+    <string name="thursady">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
+
+    <string name="setting"> Setting </string>
+    <string name="aboutme"> About me </string>
+    <string name="firstname"> First Name </string>
+    <string name="lastname"> Last Name </string>
+    <string name="email"> email </string>
+    <string name="information"> Information </string>
+    <string name="termsandcc"> Terms &amp; Conditions </string>
+    <string name="privacy"> Privacy Policy </string>
+    <string name="feedback"> Feedback </string>
+    <string name="logout"> Logout </string>
+    <string name="searchvenue"> Search venue </string>
+    <string name="searchtag"> Search tag </string>
+    <string name="somethingwentwrong"> Something went wrong </string>
+    <string name="sorryEvent"> Sorry!! you have to be at this event to interact </string>
+    <string name="noNotification"> You have no notification at this time </string>
+    <string name="cancel"> Cancel </string>
+    <string name="ok"> Ok </string>
+    <string name="charectersremain"> characters remaining </string>
+    <string name="post"> Post </string>
+
+    <string name="no_one"> There is no one currently in the room. </string>
+    <string name="not_start"> This event has not started yet. </string>
+    <string name="dontBore"> Don\'t be boring Key in and be the first! </string>
+
+
+    <style name="settingText">
+        <item name="android:textColorHint">#808080</item>
+        <item name="android:textColor">#808080</item>
+    </style>
+
+
+    <style name="searchText">
+        <item name="android:textColorHint">#808080</item>
+        <item name="android:textColor">#808080</item>
+        <item name="android:textSize">@dimen/_12sdp</item>
+    </style>
+
+
+</resources>
