@@ -60,6 +60,12 @@
             android:value="@integer/google_play_services_version" />
 
 
+        <service android:name=".fcm.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <service android:name=".fcm.MyFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
@@ -69,10 +75,14 @@
             android:name=".Services.TrackGPS"
             android:enabled="true"
             android:label="My Service">
-
-
         </service>
 
+
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="39a3f4bfccefb2b1c6bbe01ed20cbb11782caffa" />
     </application>
 
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
