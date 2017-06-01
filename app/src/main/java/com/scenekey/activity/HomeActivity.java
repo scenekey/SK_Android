@@ -17,6 +17,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
@@ -100,14 +102,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private TextView txt_f1_title;
     private TrackGPS gps;
     private RelativeLayout title_view;
+    View view;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //FacebookSdk.sdkInitialize(activity().getApplicationContext());
         overridePendingTransition(0, R.anim.fade_out);
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+//Remove notification bar
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.a3_home_activity);
-        Util.setStatusBarColor(this, R.color.colorPrimary);
+        view = this.getWindow().getDecorView();
+       // Util.setStatusBarColor(this, R.color.colorPrimary);
         txt_f1_title = (TextView) findViewById(R.id.txt_f1_title);
         title_view = (RelativeLayout) findViewById(R.id.title_view);
         img_f1_profile = (CircleImageView) findViewById(R.id.img_f1_profile);
@@ -124,6 +132,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         /*************************** Arc Menu *****************************************/
         ArcMenu arcMenu = (ArcMenu) findViewById(R.id.arcMenuX);
+
         /*
         RelativeLayout.LayoutParams layoutParams= (RelativeLayout.LayoutParams) arcMenu.getLayoutParams();
         layoutParams.setMargins(0,0,-(width/2),-(height/2));
@@ -151,6 +160,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         initArcMenu(arcMenu, str, ITEM_DRAWABLES, ITEM_DRAWABLES.length);
 
     }
+
+
 
     /************************************
      * Arc Menu
