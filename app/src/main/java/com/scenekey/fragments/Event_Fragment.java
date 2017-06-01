@@ -178,7 +178,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener {
             @Override
             public void onMenuToggle(boolean opened) {
                 if(opened){
-                   if(eventDetails.getProfile_rating()!=null) if (eventDetails.getProfile_rating().getKey_in().equals(Constants.KEY_NOTEXIST)) {
+                  if(eventDetails !=null && eventDetails.getProfile_rating()!=null) if (eventDetails.getProfile_rating().getKey_in().equals(Constants.KEY_NOTEXIST)) {
                         addUserIntoEvent(-1, null);
                     }
                 }

@@ -6,8 +6,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.scenekey.R;
+import com.scenekey.Utility.Font;
 import com.scenekey.activity.HomeActivity;
 
 /**
@@ -23,6 +25,15 @@ public class Setting_Fragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        EditText settingText = (EditText) view.findViewById(R.id.edt_terms);
+        EditText edt_privacy = (EditText) view.findViewById(R.id.edt_privacy);
+
+        Font font = new Font(activity());
+        font.setFontLibreFranklin_SemiBold(settingText,edt_privacy);
+    }
 
     HomeActivity activity(){
         return  HomeActivity.instance;
