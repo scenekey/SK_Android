@@ -142,11 +142,13 @@
                 android:src="@drawable/ic_icon_checklist_black" />
 
             <EditText
+                android:id="@+id/edt_terms"
                 style="@style/settingText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@null"
-                android:text="@string/termsandcc" />
+                android:text="@string/termsandcc"
+                android:editable="false"/>
         </LinearLayout>
 
 
@@ -164,11 +166,14 @@
                 android:src="@drawable/ic_envelope" />
 
             <EditText
+                android:id="@+id/edt_privacy"
                 style="@style/settingText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@null"
-                android:text="@string/privacy" />
+                android:text="@string/privacy"
+                android:editable="false"
+                android:clickable="false"/>
         </LinearLayout>
 
         <LinearLayout

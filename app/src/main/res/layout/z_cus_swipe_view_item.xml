@@ -59,7 +59,8 @@
                 android:layout_alignParentRight="true"
                 android:textSize="@dimen/_12sdp"
                 android:gravity="center"
-                android:layout_marginRight="@dimen/right_margin_event"
+                android:layout_marginLeft="@dimen/_minus8sdp"
+                android:layout_marginRight="@dimen/_8sdp"
                 android:layout_alignLeft="@+id/img_user"
                 android:layout_alignStart="@+id/img_user" />
 

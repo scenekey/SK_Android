@@ -38,13 +38,15 @@
 
         <ImageButton
             android:id="@+id/img_f10_back"
-            android:layout_width="@dimen/_30sdp"
-            android:layout_height="@dimen/_30sdp"
+            android:layout_width="@dimen/_45sdp"
+            android:layout_height="@dimen/_45sdp"
+            android:paddingTop="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_10sdp"
+            android:paddingRight="@dimen/_10sdp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/right_margin_event"
             android:background="@null"
-            android:padding="@dimen/_3sdp"
             android:scaleType="fitCenter"
             android:src="@drawable/left_arrow_shape"
             android:visibility="visible" />
@@ -244,7 +246,7 @@
                 <TextView
                     android:id="@+id/txt_discrp"
                     style="@style/txt_event_green_background"
-                    android:layout_width="@dimen/_85sdp"
+                    android:layout_width="@dimen/_105sdp"
                     android:layout_height="@dimen/_30sdp"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:background="@drawable/background_f2_description"
@@ -282,6 +284,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/txt_no_one"
                     android:textSize="@dimen/_12sdp"
+                    android:gravity="center"
                     android:text="@string/no_one"/>
 
                 <TextView
@@ -290,7 +293,15 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/txt_no_one"
                     android:textSize="@dimen/_12sdp"
+                    android:gravity="center"
                     android:text="@string/not_start"/>
+                <TextView
+                    android:layout_width="@dimen/_300sdp"
+                    android:layout_height="@dimen/_50sdp"
+                    android:textColor="@color/txt_no_one"
+                    android:textSize="@dimen/_12sdp"
+                    android:gravity="center"
+                    />
             </LinearLayout>
 
             <android.support.v7.widget.RecyclerView
@@ -315,7 +326,7 @@
                 <TextView
                     android:id="@+id/txt_room"
                     style="@style/txt_event_green_background"
-                    android:layout_width="@dimen/_85sdp"
+                    android:layout_width="@dimen/_105sdp"
                     android:layout_height="@dimen/_30sdp"
                     android:layout_centerVertical="true"
                     android:layout_marginTop="@dimen/_5sdp"
