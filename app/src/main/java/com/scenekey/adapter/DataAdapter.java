@@ -84,7 +84,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
     public void onBindViewHolder(DataAdapter.ViewHolder viewHolder, int i) {
         final EventAttendy attendy = roomPersons.get(i);
         final int position = i;
-        viewHolder.txt_name_gvb1.setText(roomPersons.get(i).getUsername());
+        viewHolder.txt_name_gvb1.setText(roomPersons.get(i).getUsername().split("\\s+")[0]);
         //TODO : what to set user name or the stage name of the person.
         Picasso.with(context).load(roomPersons.get(i).getUserimage()).placeholder(R.drawable.image_defult_profile).transform(new CircleTransform()).into(viewHolder.img_profile_gvb1);
         switch (attendy.getUser_status()) {

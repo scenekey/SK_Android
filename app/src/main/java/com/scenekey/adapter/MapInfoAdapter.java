@@ -12,6 +12,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.scenekey.R;
 import com.scenekey.Utility.Font;
 import com.scenekey.Utility.ImageUtil;
+import com.scenekey.Utility.WebService;
 import com.scenekey.models.Events;
 import com.squareup.picasso.Picasso;
 
@@ -47,14 +48,6 @@ public class MapInfoAdapter implements GoogleMap.InfoWindowAdapter {
         ImageView img_event = (ImageView) myContentsView.findViewById(R.id.img_event);
         int radius = (int) activity.getResources().getDimension(R.dimen._8sdp);
 
-        //The marker with the info at start
-        /*if (position == (eventArrayList.size() - 1)) {
-            Bitmap bitmap = ImageUtil.getBitmapByUrl(events.getEvent().getImage());
-
-            //bitmap = (new RoundedTransformation(radius,1).transform(bitmap));
-            img_event.setImageBitmap(bitmap);
-        }
-        else Picasso.with(activity).load(events.getEvent().getImage()).placeholder(R.color.white).into(img_event);*/
         try {
 
             Bitmap bitmap = ImageUtil.getBitmapByUrl(events.getEvent().getImage());
@@ -63,6 +56,7 @@ public class MapInfoAdapter implements GoogleMap.InfoWindowAdapter {
             img_event.setImageBitmap(bitmap);
         } catch (Exception e) {
             Picasso.with(activity).load(events.getEvent().getImage()).placeholder(R.drawable.scene1).into(img_event);
+            e.printStackTrace();
         }
 
 
@@ -71,11 +65,17 @@ public class MapInfoAdapter implements GoogleMap.InfoWindowAdapter {
         TextView txt_name = ((TextView) myContentsView.findViewById(R.id.txt_name));
         TextView txt_time = ((TextView) myContentsView.findViewById(R.id.txt_time));
         TextView txt_distance = ((TextView) myContentsView.findViewById(R.id.txt_distance));
+        ImageView img_clock = ((ImageView) myContentsView.findViewById(R.id.img_clock));
         txt_name.setText(events.getEvent().getEvent_name());
         Font font = new Font(activity);
         txt_distance.setText(events.getEvent().getDistance());
         try {
-            txt_time.setText(convertTime(events.getEvent().getEvent_time()));
+            if(events.isOngoing){
+                img_clock.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_heart));
+                if(Integer.parseInt(events.getEvent().getRating())==0)txt_time.setText("--");
+                else txt_time.setText(events.getEvent().getRating());
+            }
+            else txt_time.setText(convertTime(events.getEvent().getEvent_time()));
         } catch (ParseException e) {
             e.printStackTrace();
         }

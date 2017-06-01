@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
@@ -84,9 +86,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         Log.e(TAG, "From: " + remoteMessage.getFrom()+remoteMessage.getData());
         session = new SessionManager(getApplicationContext());
-
-        /*String notificationMsg = remoteMessage.getData().get("");
-        sendNotification(remoteMessage.getTtl(), title, notificationMsg, null ,toActivity);*/
+//{title=, message=Donie Darko has commented on mindiii nights, notificationType=[]}
+        String notificationMsg = remoteMessage.getData().get("message");
+        sendNotification(remoteMessage.getTtl(), title, notificationMsg, null ,false);
 
 
 
@@ -189,13 +191,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void sendNotification(int id, String title, String messageBody , Intent intent ,boolean send) {
 
 
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         Random r = new Random();
         int random = r.nextInt(899 - 65) + 65;
         int m = ((int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE))+random;
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, m, intent, PendingIntent.FLAG_ONE_SHOT);
-        if( intent == null ) pendingIntent = null;
+        //PendingIntent pendingIntent = PendingIntent.getActivity(this, m, intent, PendingIntent.FLAG_ONE_SHOT);
+        //if( intent == null ) pendingIntent = null;
         NotificationCompat.Builder notificationBuilder;
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -205,6 +207,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     .setColor(getResources().getColor(R.color.colorPrimary))
                     .setContentTitle(title)
                     .setContentText(messageBody)
+                     .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(),
+                             R.drawable.app_icon))
+                     .setSmallIcon(R.drawable.key2)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(messageBody))
                     .setAutoCancel(true)
                     .setSound(defaultSoundUri);
@@ -215,10 +220,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     .setColor(getResources().getColor(R.color.colorPrimary))
                     .setContentTitle(title)
                     .setContentText(messageBody)
+                    .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(),
+                            R.drawable.app_icon))
+                    .setSmallIcon(R.drawable.key2)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(messageBody))
                     .setAutoCancel(true)
-                    .setSound(defaultSoundUri)
-                    .setContentIntent(pendingIntent);
+                    .setSound(defaultSoundUri);
+
         }
 
         NotificationManager notificationManager =
