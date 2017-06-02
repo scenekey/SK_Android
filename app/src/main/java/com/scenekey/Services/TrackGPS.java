@@ -45,7 +45,7 @@ public abstract class TrackGPS extends Service implements LocationListener {
         getLocation();
     }
 
-    private Location getLocation() {
+    public Location getLocation() {
 
         try {
             locationManager = (LocationManager) mContext
@@ -231,35 +231,7 @@ public abstract class TrackGPS extends Service implements LocationListener {
     double[] getLetLong(double lat, double log) {
         return new double[]{lat, log};
     }
-    /*double latitude,longitue;
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
 
-    //Location Listner
-    @Override
-    public void onLocationChanged(Location location) {
-        latitude = location.getLatitude();
-        longitue = location.getLongitude();
-
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }*/
 
     public abstract String[] onLocationUpdate(double latitude, double longitude);
 }

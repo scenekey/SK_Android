@@ -45,7 +45,10 @@ public class CardsAdapter extends ArrayAdapter<Card> {
             }
         } else if (card.imageId != 0) {
             ((ImageView) view.findViewById(R.id.card_image)).setImageResource(card.imageId);
-        } else {
+        }else if (card.bitmap != null) {
+            ((ImageView) view.findViewById(R.id.card_image)).setImageBitmap(card.bitmap);
+        }
+        else {
             ((ImageView) view.findViewById(R.id.card_image)).setVisibility(View.GONE);
             ((TextView) view.findViewById(R.id.card_text)).setVisibility(View.VISIBLE);
             ((TextView) view.findViewById(R.id.card_text)).setText(card.text);
@@ -62,6 +65,7 @@ public class CardsAdapter extends ArrayAdapter<Card> {
         }
         else if(card.imageint != 0){
             Picasso.with(getContext()).load(card.imageint).transform(new CircleTransform()).into(((ImageView)view.findViewById(R.id.img_user)));
+            //((TextView) view.findViewById(R.id.txt_time)).setText(getTimeInFormat(card.date));
         }
 
         return view;
