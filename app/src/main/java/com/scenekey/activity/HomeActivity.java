@@ -109,13 +109,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         //FacebookSdk.sdkInitialize(activity().getApplicationContext());
         overridePendingTransition(0, R.anim.fade_out);
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 //Remove notification bar
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.a3_home_activity);
         view = this.getWindow().getDecorView();
-       // Util.setStatusBarColor(this, R.color.colorPrimary);
+        Util.setStatusBarColor(this, R.color.colorPrimary);
         txt_f1_title = (TextView) findViewById(R.id.txt_f1_title);
         title_view = (RelativeLayout) findViewById(R.id.title_view);
         img_f1_profile = (CircleImageView) findViewById(R.id.img_f1_profile);
@@ -209,7 +209,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             public String[] onLocationUpdate(double latitude, double longitude) {
                 instance.latitude = latitude;
                 instance.longiude = longitude;
-                Log.e(TAG, "Lat " + latitude + " Long" + longitude);
+                Log.e(TAG, "Lat Update" + latitude + " Long Update" + longitude);
                 return new String[0];
             }
         };
@@ -234,7 +234,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         frame_fragments_a3 = (FrameLayout) findViewById(R.id.frame_fragments_a3);
         frm_bottmbar = (FrameLayout) findViewById(R.id.frm_bottmbar);
         dimmedEffet();
-        setOnClick(rtlv_one, rtlv_two, rtlv_three, rtlv_four, rtlv_five);
+        setOnClick(rtlv_one, rtlv_two, rtlv_three, rtlv_four, rtlv_five,img_f1_profile);
 
         dimmedEffet();
         font = new Font(this);
@@ -270,6 +270,23 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.rtlv_four:
                 setBottombar((RelativeLayout) v, lastclicked);
                 // TODO delete temp Chekcing the profile
+                /*try {
+
+                    EventAttendy attendy = new EventAttendy();
+                    attendy.setUserid("163");
+                    attendy.setUserFacebookId("199951490519578");
+                    attendy.setUserimage(userInfo.getUserImage());
+                    attendy.setUsername(userInfo.getUserName());
+                    addFragment(new Profile_Fragment().setData(attendy, true, new Event_Fragment(),0), 1);
+                }catch (Exception e){
+
+                }*/
+                break;
+            case R.id.rtlv_five:
+                setBottombar((RelativeLayout) v, lastclicked);
+                replaceFragment(new Add_Event_Fragmet());
+                break;
+            case R.id.img_f1_profile:
                 try {
 
                     EventAttendy attendy = new EventAttendy();
@@ -277,14 +294,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     attendy.setUserFacebookId("199951490519578");
                     attendy.setUserimage(userInfo.getUserImage());
                     attendy.setUsername(userInfo.getUserName());
-                    addFragment(new Profile_Fragment().setData(attendy, false, new Event_Fragment(),0), 1);
+                    addFragment(new Profile_Fragment().setData(attendy, true, null,0), 1);
                 }catch (Exception e){
 
                 }
-                break;
-            case R.id.rtlv_five:
-                setBottombar((RelativeLayout) v, lastclicked);
-                replaceFragment(new Add_Event_Fragmet());
                 break;
         }
 
@@ -673,11 +686,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     public String[] getlatlong() {
         //TODO remove constant Before LIVE
-       /* if(latitude == 0.0D && longiude == 0.0D){
-           *//*CustomToastDialog customToastDialog = new CustomToastDialog(HomeActivity.this);
-            customToastDialog.setMessage();*//*
-            Toast.makeText(HomeActivity.this,"There was an error getting your location",Toast.LENGTH_SHORT).show();
-        }*/
+        if(latitude == 0.0D && longiude == 0.0D){
+            gps.getLocation();
+            latitude = gps.getLatitude();
+            longiude = gps.getLongitude();
+            CustomToastDialog customToastDialog = new CustomToastDialog(instance);
+            customToastDialog.setMessage("There was an error getting your location");
+            customToastDialog.show();
+
+
+           // Toast.makeText(HomeActivity.this,"There was an error getting your location",Toast.LENGTH_SHORT).show();
+        }
         //return new String[]{latitude + "", longiude + ""};
         return new String[]{38.222046+"",-122.144755+""};
     }

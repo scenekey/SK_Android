@@ -63,6 +63,8 @@ public class ProfileListAdapter extends BaseAdapter{
             holder.txt_EE = (TextView) itemView.findViewById(R.id.txt_EE);
             holder.txt_date = (TextView) itemView.findViewById(R.id.txt_date);
             holder.txt_time = (TextView) itemView.findViewById(R.id.txt_time);
+            holder.txt_time.setVisibility(View.INVISIBLE);
+            holder.txt_date.setVisibility(View.INVISIBLE);
             holder.img_event = (ImageView) itemView.findViewById(R.id.img_event);
             holder.rtlv_EE = (RelativeLayout) itemView.findViewById(R.id.rtlv_EE);
 
