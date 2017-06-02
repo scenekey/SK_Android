@@ -1,11 +1,17 @@
 package com.scenekey.fragments;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -23,13 +29,16 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.scenekey.R;
 import com.scenekey.Utility.CircleTransform;
 import com.scenekey.Utility.Font;
+import com.scenekey.Utility.Permission;
 import com.scenekey.Utility.Util;
 import com.scenekey.activity.HomeActivity;
 import com.scenekey.adapter.DataAdapter_Demo;
+import com.scenekey.helper.Constants;
 import com.scenekey.helper.SessionManager;
 import com.scenekey.lib_sources.Floting_menuAction.FloatingActionButton;
 import com.scenekey.lib_sources.Floting_menuAction.FloatingActionMenu;
@@ -44,6 +53,7 @@ import com.squareup.picasso.Picasso;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -154,7 +164,8 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         TextView txt_event_name = (TextView) view.findViewById(R.id.txt_event_name);
         ImageView img_notif = (ImageView) view.findViewById(R.id.img_notif);
         fabMenu1.setTextView(new TextView[]{txt_hide_all_one, txt_hide_all_two});
-
+        txt_address_i1.setText(getString(R.string.sample_Address));
+        txt_discipI_f2.setText(getString(R.string.sample_discrip));
         setOnClick(img_infoget_f2, img_f10_back, fabMenu1, fabMenu2, fabMenu3, img_notif, txt_hide_all_one, txt_hide_all_two,btn_got_it,demoView);
         isInfoVisible = false;
         rclv_grid.hasFixedSize();
@@ -203,6 +214,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
                 break;
             case R.id.fabMenu2_picture:
                 menu_blue.close(true);
+                captureImage();
                 break;
             case R.id.fabMenu3_comment:
                 menu_blue.close(true);
@@ -223,6 +235,64 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         }
     }
 
+    void captureImage() {
+        Permission permission = new Permission(activity, activity);
+        if (permission.checkForCamera()) callIntent(Constants.INTENT_CAMERA);
+    }
+
+    public void callIntent(int caseid) {
+
+        switch (caseid) {
+            case Constants.INTENT_CAMERA:
+                try {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, Constants.INTENT_CAMERA);
+                } catch (Exception e) {
+
+                }
+                break;
+        }
+    }
+
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        activity.setBBvisiblity(View.GONE);
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == -1) {
+
+
+            if (requestCode == Constants.INTENT_CAMERA && data != null) {
+                final Bitmap eventImg = (Bitmap) data.getExtras().get("data");
+                Card card = new Card();
+                card.bitmap = eventImg;
+                card.name = "Card";
+                card.userImage =activity.userInfo().getUserImage();
+                card.date = getCutrrentTimeinFormat();
+                cardlist.add(0,card);
+                activity.setBBvisiblity(View.GONE);
+                arrayAdapter.notifyDataSetChanged();
+                card_stack_view.restart();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if (requestCode == Constants.MY_PERMISSIONS_REQUEST_CAMERA) {
+            if (Build.VERSION.SDK_INT >= 23) {
+                if (activity.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    //TODO : May be need to toast the msg that user denied permission
+                } else captureImage();
+            }
+            else captureImage();
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -233,9 +303,9 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             txt_discipI_f2.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
         }
-        txt_discipI_f2.setText("Lorem ipsum is a pseudo-Latin text used in web design, typography, layout, and printing in place " +
+        /*txt_discipI_f2.setText("Lorem ipsum is a pseudo-Latin text used in web design, typography, layout, and printing in place " +
                 "of English to emphasise design elements over content. It's also called placeholder (or filler) text. " +
-                "It's a convenient tool for mock-ups.");
+                "It's a convenient tool for mock-ups.");*/
 
 
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.bottom_to_position);
@@ -280,6 +350,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
     @Override
     public void onResume() {
         super.onResume();
+        activity.setBBvisiblity(View.GONE);
 
     }
 
@@ -454,12 +525,14 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         card.name = "Card1";
         card.imageId = R.drawable.demo_1;
         card.imageint = R.drawable.room_1;
+        card.date = "2017-5-16 10:12:00";
         al.add(card);
 
         Card card2 = new Card();
         card2.name = "Card2";
         card2.text  = getResources().getString(R.string.omg__smooth);
         card2.imageint = R.drawable.room_2;
+        card2.date = "2017-5-16 16:18:00";
         al.add(card2);
 
         /*cardlist.add(card);*/
@@ -472,60 +545,70 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         card3.name = "Card3";
         card3.imageId = R.drawable.demo_2;
         card3.imageint = R.drawable.room_3;
+        card3.date = "2017-5-16 20:45:00";
         cardlist.add(card3);
 
         Card card4 = new Card();
         card4.name = "Card4";
         card4.text = getResources().getString(R.string.ihavebest);
         card4.imageint = R.drawable.room_4;
+        card4.date = "2017-5-16 22:26:00";
         cardlist.add(card4);
 
         Card card5 = new Card();
         card5.name = "Card5";
         card5.imageId = R.drawable.demo_3;
         card5.imageint = R.drawable.room_5;
+        card5.date = "2017-5-16 17:22:00";
         cardlist.add(card5);
 
         Card card6 = new Card();
         card6.name = "Card6";
         card6.imageId = R.drawable.demo_4;
         card6.imageint = R.drawable.room_6;
+        card6.date = "2017-5-16 18:46:00";
         cardlist.add(card6);
 
         Card card7 = new Card();
         card7.name = "Card7";
         card7.text = getResources().getString(R.string.omg__smooth);
         card7.imageint = R.drawable.room_7;
+        card7.date = "2017-5-16 9:12:00";
         cardlist.add(card7);
 
         Card card8 = new Card();
         card8.name = "Card8";
         card8.imageId =R.drawable.demo_5;
         card8.imageint = R.drawable.room_8;
+        card8.date = "2017-5-16 20:20:00";
         cardlist.add(card8);
 
         Card card9 = new Card();
         card9.name = "card9";
         card9.text = getResources().getString(R.string.ihavebest);
         card9.imageint = R.drawable.room_1;
+        card9.date = "2017-5-16 22:45:00";
         cardlist.add(card9);
 
         Card card10 = new Card();
         card10.name = "card10";
         card10.imageId =R.drawable.demo_6;
         card10.imageint = R.drawable.room_2;
+        card10.date = "2017-5-16 19:12:00";
         cardlist.add(card10);
 
         Card card11 = new Card();
         card11.name = "Card8";
         card11.imageId =R.drawable.demo_7;
         card11.imageint = R.drawable.room_3;
+        card11.date = "2017-5-16 18:46:00";
         cardlist.add(card11);
 
         Card card12 = new Card();
         card12.name = "card9";
         card12.text = getResources().getString(R.string.ilovemike);
         card12.imageint = R.drawable.room_5;
+        card12.date = "2017-5-16 23:12:00";
         cardlist.add(card12);
 
 
@@ -666,5 +749,9 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         arrayAdapter.notifyDataSetChanged();
         card_stack_view.setAdapter(arrayAdapter);
         card_stack_view.restart();
+    }
+
+    String getCutrrentTimeinFormat() {
+        return (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date(System.currentTimeMillis()));
     }
 }

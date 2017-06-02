@@ -127,7 +127,6 @@ public class Home_no_Event extends Fragment implements View.OnClickListener {
     @Override
     public void onStart() {
         activity.setBBvisiblity(View.VISIBLE);
-        Log.e("VISIBALITY", " : ");
         super.onStart();
         font = new Font(getContext());
         font.setFontFranklinRegular(txt_try_button_f1);
@@ -144,6 +143,13 @@ public class Home_no_Event extends Fragment implements View.OnClickListener {
         // activity.startService(new Intent(activity.getApplicationContext(), TrackGPS.class));
         //Log.e("Lat log",Gps.getLatitude()+" "+Gps.getLongitude());
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        activity.setBBvisiblity(View.VISIBLE);
+        activity.setTitleVisibality(View.VISIBLE);
     }
 
     void createBitmap() {

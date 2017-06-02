@@ -77,8 +77,8 @@ public class SessionManager {
         editor.commit();
         /*Intent intent = new Intent();
         activity.startActivity(intent);
-        activity.finish();*/
-        /*Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+        activity.finish();
+        Intent homeIntent = new Intent(Intent.ACTION_MAIN);
         homeIntent.addCategory( Intent.CATEGORY_HOME );
         homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         activity.startActivity(homeIntent);

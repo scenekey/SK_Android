@@ -143,6 +143,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
         font.setFontLibreFranklin_SemiBold(txt_profile_name, txt_event_count);
 
         txt_f2_badge.setText(mutulFriendCount+"");
+        activity().setBBvisiblity(View.GONE);
         /*adapter = new Profile_Events_Adapter(activity(), feedslist);
         layoutManager = new GridLayoutManager(activity(), 1);*/
         /*rclv_f3_trending.setLayoutManager(layoutManager);
@@ -172,6 +173,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
     @Override
     public void onStart() {
         super.onStart();
+        activity().setBBvisiblity(View.GONE);
         if(event_fragment != null)event_fragment.canCallWebservice = false;
         if(key_in_event_fragment != null)key_in_event_fragment.canCallWebservice = false;
 
@@ -180,9 +182,14 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
+
         if(event_fragment != null)event_fragment.canCallWebservice = true;
         if(key_in_event_fragment != null)key_in_event_fragment.canCallWebservice = true;
+        if(event_fragment == null && key_in_event_fragment == null) {
+            activity().setBBvisiblity(View.VISIBLE);
+            activity().setTitleVisibality(View.VISIBLE);
+        }
+        super.onDestroy();
     }
 
     void profileImgClick() {
