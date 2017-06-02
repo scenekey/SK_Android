@@ -19,7 +19,9 @@
         android:layout_height="@dimen/_30sdp"
         android:layout_marginLeft="@dimen/_10sdp"
         android:src="@drawable/ic_back_icon"
-        android:padding="@dimen/_3sdp"
+        android:paddingTop="@dimen/_3sdp"
+        android:paddingBottom="@dimen/_3sdp"
+        android:scaleType="fitStart"
         android:layout_marginTop="@dimen/_10sdp" />
 
     <ImageView

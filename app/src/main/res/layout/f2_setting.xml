@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/mainlayout"
     android:background="@color/centre_solid"
     android:orientation="vertical">
 
@@ -11,12 +12,13 @@
         android:background="@color/colorPrimary">
 
         <ImageView
-            android:id="@+id/img_f1_profile"
+            android:id="@+id/img_f1_back"
             android:layout_width="@dimen/top_bar_profile"
             android:layout_height="@dimen/top_bar_profile"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/_10sdp"
-            android:padding="@dimen/_5sdp"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingBottom="@dimen/_8sdp"
+            android:paddingRight="@dimen/_10sdp"
             android:src="@drawable/left_arrow_shape" />
 
 
@@ -43,12 +45,14 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_25sdp"
             android:gravity="center_vertical"
+            android:textColor="#A3A3A3"
+            android:textSize="@dimen/_12sdp"
             android:text="@string/aboutme" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_setting_text"
+            android:layout_height="@dimen/_124sdp"
+            android:background="@drawable/text_field_bg"
             android:orientation="vertical"
             android:padding="@dimen/_1sdp">
 
@@ -61,21 +65,23 @@
                 <ImageView
                     android:layout_width="@dimen/_40sdp"
                     android:layout_height="@dimen/_40sdp"
-                    android:padding="@dimen/_8sdp"
+                    android:padding="@dimen/_10sdp"
                     android:src="@drawable/ic_avatar" />
 
                 <EditText
+                    android:id="@+id/edt_first_name"
                     style="@style/settingText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@null"
+                    android:editable="false"
                     android:text="@string/firstname" />
             </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_1sdp"
-                android:background="#808080" />
+                android:layout_height="1dp"
+                android:background="#A3A3A3" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -85,11 +91,13 @@
                 <ImageView
                     android:layout_width="@dimen/_40sdp"
                     android:layout_height="@dimen/_40sdp"
-                    android:padding="@dimen/_8sdp"
+                    android:padding="@dimen/_10sdp"
                     android:src="@drawable/ic_avatar" />
 
                 <EditText
+                    android:id="@+id/edt_last_name"
                     style="@style/settingText"
+                    android:editable="false"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@null"
@@ -98,8 +106,8 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_1sdp"
-                android:background="#808080" />
+                android:layout_height="1dp"
+                android:background="#A3A3A3" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -109,14 +117,16 @@
                 <ImageView
                     android:layout_width="@dimen/_40sdp"
                     android:layout_height="@dimen/_40sdp"
-                    android:padding="@dimen/_8sdp"
+                    android:padding="@dimen/_10sdp"
                     android:src="@drawable/ic_envelope" />
 
                 <EditText
+                    android:id="@+id/edt_email"
                     style="@style/settingText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@null"
+                    android:editable="false"
                     android:text="@string/email" />
             </LinearLayout>
 
@@ -127,19 +137,22 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_25sdp"
             android:gravity="center_vertical"
+            android:textColor="#A3A3A3"
+            android:textSize="@dimen/_12sdp"
             android:text="@string/information" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_40sdp"
-            android:background="@drawable/bg_setting_text"
+            android:layout_height="@dimen/_42sdp"
+            android:background="@drawable/text_field_bg"
+            android:paddingBottom="@dimen/_2sdp"
             android:orientation="horizontal">
 
             <ImageView
                 android:layout_width="@dimen/_40sdp"
                 android:layout_height="@dimen/_40sdp"
-                android:padding="@dimen/_8sdp"
-                android:src="@drawable/ic_icon_checklist_black" />
+                android:padding="@dimen/_10sdp"
+                android:src="@drawable/term_conditions_icon" />
 
             <EditText
                 android:id="@+id/edt_terms"
@@ -154,16 +167,17 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_40sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:background="@drawable/bg_setting_text"
+            android:layout_height="@dimen/_42sdp"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:background="@drawable/text_field_bg"
+            android:paddingBottom="@dimen/_2sdp"
             android:orientation="horizontal">
 
             <ImageView
                 android:layout_width="@dimen/_40sdp"
                 android:layout_height="@dimen/_40sdp"
-                android:padding="@dimen/_8sdp"
-                android:src="@drawable/ic_envelope" />
+                android:padding="@dimen/_10sdp"
+                android:src="@drawable/privecy_policy_icon" />
 
             <EditText
                 android:id="@+id/edt_privacy"
@@ -176,6 +190,38 @@
                 android:clickable="false"/>
         </LinearLayout>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_25sdp"
+            android:gravity="center_vertical"
+            android:textColor="#A3A3A3"
+            android:textSize="@dimen/_12sdp"
+            android:text="@string/admin" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_42sdp"
+            android:background="@drawable/text_field_bg"
+            android:paddingBottom="@dimen/_2sdp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:padding="@dimen/_10sdp"
+                android:src="@drawable/map_icon2" />
+
+            <EditText
+                android:id="@+id/edt_location"
+                style="@style/settingText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:text="@string/yourlocatoion"
+                android:editable="false"
+                android:clickable="false"/>
+        </LinearLayout>
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/_40sdp"
@@ -184,23 +230,27 @@
             android:padding="@dimen/_5sdp">
 
             <TextView
+                android:id="@+id/txt_feedback"
                 style="@style/txt_event_welcome"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/background_f1_try_demo"
+                android:gravity="center"
+                android:background="@drawable/btn_bg"
                 android:text="@string/feedback" />
 
             <TextView
-                android:layout_width="@dimen/_36sdp"
+                android:layout_width="@dimen/_30sdp"
                 android:layout_height="@dimen/_36sdp" />
 
             <TextView
+                android:id="@+id/txt_logout"
                 style="@style/txt_event_welcome"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/background_f1_try_demo"
+                android:gravity="center"
+                android:background="@drawable/btn_bg"
                 android:text="@string/logout" />
         </LinearLayout>
 

@@ -340,7 +340,7 @@
                     android:layout_height="@dimen/_40sdp"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_marginRight="@dimen/right_margin_event"
+                    android:layout_marginRight="@dimen/_5sdp"
                     android:layout_marginTop="@dimen/_3sdp"
                     android:background="@drawable/background_circle_gray_notification"
                     android:src="@drawable/notification" />
@@ -351,7 +351,7 @@
                     android:layout_height="@dimen/_15sdp"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_marginRight="@dimen/right_margin_event"
+                    android:layout_marginRight="@dimen/_5sdp"
                     android:layout_marginTop="@dimen/_2sdp"
                     android:background="@drawable/bg_circle_gray_badge"
                     android:gravity="center"
