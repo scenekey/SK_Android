@@ -277,7 +277,9 @@
             arc:menuGravity="Bottom_Right"
             arc:menuNormalColor="@color/colorPrimary"
             arc:menuShadowElevation="true"
-            arc:menuType="normal"></com.scenekey.lib_sources.arc_menu.ArcMenu>
+            arc:menuType="normal">
+
+        </com.scenekey.lib_sources.arc_menu.ArcMenu>
 
     </FrameLayout>
 

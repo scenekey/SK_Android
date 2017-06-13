@@ -46,6 +46,7 @@
                 android:layout_height="@dimen/_12sdp"
                 android:layout_toLeftOf="@+id/txt_time"
                 android:text=" At "
+                android:visibility="invisible"
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/_10sdp"/>
 

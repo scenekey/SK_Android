@@ -27,6 +27,7 @@
         android:padding="@dimen/_4sdp" />
 
     <TextView
+        android:id="@+id/txt_white_circle"
         android:layout_width="@dimen/profilepic2"
         android:layout_height="@dimen/profilepic2"
         android:layout_alignParentEnd="true"

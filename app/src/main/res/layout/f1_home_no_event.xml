@@ -54,6 +54,13 @@
                 android:text="@string/tryd"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_20sdp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_marginLeft="@dimen/_50sdp"
+                android:layout_marginRight="@dimen/_50sdp"
+                android:layout_marginTop="@dimen/_20sdp"
+                />
         </LinearLayout>
     </ScrollView>
 

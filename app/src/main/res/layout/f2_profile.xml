@@ -42,7 +42,6 @@
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:padding="@dimen/_2sdp"
                     android:src="@drawable/key" />
-                <!--TODO set textview to 99+ if total event count is more then that-->
                 <TextView
                     android:id="@+id/txt_event_count"
                     android:layout_width="match_parent"

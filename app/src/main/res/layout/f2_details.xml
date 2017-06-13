@@ -47,56 +47,58 @@
             android:gravity="center_vertical"
             android:textColor="#A3A3A3"
             android:textSize="@dimen/_12sdp"
-            android:text="@string/aboutme" />
+            android:text="My details" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_44sdp"
+            android:layout_height="@dimen/_84sdp"
             android:background="@drawable/text_field_bg"
             android:orientation="vertical"
             android:padding="@dimen/_1sdp">
 
             <LinearLayout
-                android:id="@+id/lnr_deatils"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_40sdp"
+
                 android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="@dimen/_40sdp"
                     android:layout_height="@dimen/_40sdp"
                     android:padding="@dimen/_10sdp"
-                    android:src="@drawable/ic_avatar" />
+                    android:src="@drawable/ic_avatar"
+                    android:visibility="gone"/>
 
                 <EditText
+                    android:paddingLeft="@dimen/_5sdp"
                     android:id="@+id/edt_first_name"
                     style="@style/settingText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@null"
                     android:editable="false"
-                    android:text="My details" />
+                    />
             </LinearLayout>
 
             <TextView
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#A3A3A3" />
 
             <LinearLayout
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_40sdp"
                 android:orientation="horizontal">
 
                 <ImageView
+                    android:visibility="gone"
                     android:layout_width="@dimen/_40sdp"
                     android:layout_height="@dimen/_40sdp"
                     android:padding="@dimen/_10sdp"
                     android:src="@drawable/ic_avatar" />
 
                 <EditText
+                    android:paddingLeft="@dimen/_5sdp"
                     android:id="@+id/edt_last_name"
                     style="@style/settingText"
                     android:editable="false"
@@ -125,7 +127,8 @@
                     android:src="@drawable/ic_envelope" />
 
                 <EditText
-                    android:id="@+id/edt_email"
+                    android:paddingLeft="@dimen/_5sdp"
+                    android:id="@+id/edt_email1"
                     style="@style/settingText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -137,133 +140,78 @@
 
         </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_25sdp"
-            android:gravity="center_vertical"
-            android:textColor="#A3A3A3"
-            android:textSize="@dimen/_12sdp"
-            android:text="@string/information" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/_42sdp"
             android:background="@drawable/text_field_bg"
             android:paddingBottom="@dimen/_2sdp"
+            android:layout_marginTop="@dimen/_10sdp"
             android:orientation="horizontal">
 
             <ImageView
+                android:visibility="gone"
                 android:layout_width="@dimen/_40sdp"
                 android:layout_height="@dimen/_40sdp"
                 android:padding="@dimen/_10sdp"
                 android:src="@drawable/term_conditions_icon" />
 
             <EditText
-                android:id="@+id/edt_terms"
+                android:paddingLeft="@dimen/_5sdp"
+                android:id="@+id/edt_email"
                 style="@style/settingText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@null"
-                android:text="@string/termsandcc"
-                android:editable="false"/>
+                android:background="@null" />
         </LinearLayout>
+
+
+
+
+        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/img_profile_update"
+            android:layout_width="@dimen/_55sdp"
+            android:layout_height="@dimen/_55sdp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:background="@drawable/bg_profile_circular"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:padding="@dimen/top_bar_profile_padding"
+            android:src="@drawable/image_defult_profile"
+            app:civ_border_color="@color/colorPrimary"
+            app:civ_border_width="2dp" />
 
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_42sdp"
-            android:layout_marginTop="@dimen/_2sdp"
-            android:background="@drawable/text_field_bg"
-            android:paddingBottom="@dimen/_2sdp"
-            android:orientation="horizontal">
+            android:layout_height="@dimen/_40sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:gravity="center"
+            android:padding="@dimen/_5sdp">
 
-            <ImageView
-                android:layout_width="@dimen/_40sdp"
-                android:layout_height="@dimen/_40sdp"
-                android:padding="@dimen/_10sdp"
-                android:src="@drawable/privecy_policy_icon" />
-
-            <EditText
-                android:id="@+id/edt_privacy"
-                style="@style/settingText"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/txt_updateImage"
+                style="@style/txt_event_welcome"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:background="@null"
-                android:text="@string/privacy"
-                android:editable="false"
-                android:clickable="false"/>
+                android:layout_weight="1"
+                android:gravity="center"
+                android:background="@drawable/btn_bg"
+                android:text="@string/uplode" />
+
+            <TextView
+                android:layout_width="@dimen/_30sdp"
+                android:layout_height="@dimen/_36sdp" />
+
+            <TextView
+                style="@style/txt_event_welcome"
+                android:layout_width="@dimen/_80sdp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:background="@drawable/btn_bg"
+                android:text="@string/cancel"
+                android:visibility="invisible"/>
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/txt_admin"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_25sdp"
-            android:gravity="center_vertical"
-            android:textColor="#A3A3A3"
-            android:textSize="@dimen/_12sdp"
-            android:text="@string/admin" />
-
-
-        <RelativeLayout
-            android:id="@+id/lnr_location"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_42sdp">
-            <fragment
-                android:id="@+id/autocomplete_fragment"
-                android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="@dimen/_3sdp"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_42sdp"
-                android:background="@drawable/text_field_bg"
-                android:paddingBottom="@dimen/_2sdp"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="@dimen/_40sdp"
-                    android:layout_height="@dimen/_40sdp"
-                    android:padding="@dimen/_10sdp"
-                    android:src="@drawable/map_icon2" />
-
-                <TextView
-                    android:id="@+id/edt_location"
-                    style="@style/settingText"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:maxLines="2"
-                    android:gravity="center_vertical"
-                    android:text="@string/yourlocatoion"
-                    />
-            </LinearLayout>
-        </RelativeLayout>
-       <!-- <LinearLayout
-            android:id="@+id/lnr_location"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_42sdp"
-            android:background="@drawable/text_field_bg"
-            android:paddingBottom="@dimen/_2sdp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="@dimen/_40sdp"
-                android:layout_height="@dimen/_40sdp"
-                android:padding="@dimen/_10sdp"
-                android:src="@drawable/map_icon2" />
-
-            <EditText
-                android:id="@+id/edt_location"
-                style="@style/settingText"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@null"
-                android:text="@string/yourlocatoion"
-                android:editable="false"
-                android:clickable="false"/>
-        </LinearLayout>-->
 
 
         <LinearLayout
@@ -281,7 +229,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:background="@drawable/btn_bg"
-                android:text="@string/feedback" />
+                android:text="@string/update" />
 
             <TextView
                 android:layout_width="@dimen/_30sdp"
@@ -295,7 +243,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:background="@drawable/btn_bg"
-                android:text="@string/logout" />
+                android:text="@string/cancel" />
         </LinearLayout>
 
     </LinearLayout>
