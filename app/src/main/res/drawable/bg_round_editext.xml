@@ -8,5 +8,4 @@
         android:color="@color/border_gray" />
     <corners android:radius="@dimen/_25sdp" />
 
-    <!--TODO colorCode-->
 </shape>

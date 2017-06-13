@@ -7,6 +7,4 @@
         android:width="@dimen/_1sdp"
         android:color="@color/border_gray" />
     <corners android:radius="@dimen/_3sdp" />
-
-    <!--TODO colorCode-->
 </shape>
