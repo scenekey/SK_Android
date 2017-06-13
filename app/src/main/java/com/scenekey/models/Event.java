@@ -17,7 +17,7 @@ public class Event implements Serializable {
     private String event_time;
     private String rating;
     private String image;
-    private int interval;
+    private Double interval;
     private String status;
     private String trending_point;
 
@@ -85,11 +85,11 @@ public class Event implements Serializable {
         this.image = image;
     }
 
-    public int getInterval() {
+    public Double getInterval() {
         return interval;
     }
 
-    public void setInterval(int interval) {
+    public void setInterval(Double interval) {
         this.interval = interval;
     }
 

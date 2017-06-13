@@ -18,6 +18,7 @@ public class Event_Profile_Rating implements Serializable {
     private String event_date;
     private String key_in;
     private String like;
+    private String date_in_format;
 
     public String getEvent_rating() {
         return event_rating;
@@ -88,6 +89,7 @@ public class Event_Profile_Rating implements Serializable {
     }
 
     public void setEvent_date(String event_date) {
+        setDate_in_format(event_date.replace("To","T").replace("T"," ").split("\\s+")[0]);
         this.event_date = event_date;
     }
 
@@ -105,5 +107,13 @@ public class Event_Profile_Rating implements Serializable {
 
     public void setLike(String like) {
         this.like = like;
+    }
+
+    public String getDate_in_format() {
+        return date_in_format;
+    }
+
+    public void setDate_in_format(String date_in_format) {
+        this.date_in_format = date_in_format;
     }
 }

@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
 import com.scenekey.R;
+
 import com.scenekey.helper.Constants;
 
 /**
@@ -39,6 +40,13 @@ public class Permission {
 
                 @Override
                 public void rightButtonClick() {
+                    /*TrackGPS gps = new TrackGPS(activity) {
+                        @Override
+                        public String[] onLocationUpdate(double latitude, double longitude) {
+                            return new String[0];
+                        }
+                    };
+                    gps.getLocation();*/
                     activity.startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), Constants.GPS_RESULT_CODE);
                     this.dismiss();
                 }
@@ -125,7 +133,7 @@ public class Permission {
             } else {
                 ActivityCompat.requestPermissions(activity,
                         new String[]{Manifest.permission.CAMERA, Manifest.permission.CAMERA},
-                        Constants.MY_PERMISSIONS_REQUEST_EXTERNAL);
+                        Constants.MY_PERMISSIONS_REQUEST_CAMERA);
             }
             return false;
         } else {

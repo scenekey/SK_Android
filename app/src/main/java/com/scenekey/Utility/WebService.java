@@ -12,13 +12,26 @@ public class WebService {
     //By PHP
     //public final static String BASE_URL = "http://mindiii.com/scenekeyFinal/index.php/event/";
 
-    //You are at the event but it hasn't started yet.
-    //You have not yet arrived at this scene.
+
     //By HIBYEE
-    public final static String BASE_URL = "http://hiiandbyee.com/scenekeyFinal/index.php/event/";
+    //public final static String BASE_URL = "http://hiiandbyee.com/scenekeyFinal/index.php/event/";
+    //By WedRewward
+   // public final static String BASE_URL = "http://www.weedrwrds.com/scene/index.php/event/";
+    //Amazon
+    //public final static String BASE_URL = "http://php-env.us-west-1.elasticbeanstalk.com/event/";
+    //AWS
+    public final static String BASE_URL = "http://php-env.us-west-1.elasticbeanstalk.com/mindiiiNew/event/";
+
+    public final static String TERMS_ ="http://hiiandbyee.com/scenekeyFinal/Terms&conditions.pdf";
 
     //Final
    // public final static String BASE_URL = "http://scenekey.com/scenekey/index.php/event/";
+
+
+    //http://mindiii.com/scenekeyNew/scenekey/
+    public final static String BASE_IMAGE_URL = "http://php-env.us-west-1.elasticbeanstalk.com/mindiiiNew/";
+
+
 
     public final static String Login = BASE_URL + "webservices/facebookLogin";
     public final static String CHK_LOGIN = BASE_URL + "webservices/chkLogin";
@@ -47,10 +60,13 @@ public class WebService {
 
     public final static String LISTATTENDEDEVENT = BASE_URL + "webservices/listofuserattendedevent";
 
+    //Update
+    public final static String Update_INFO = BASE_URL + "webservices/updateuserInfo";
+    public final static String MAKE_SCENE = BASE_URL + "makescen";
+    public final static String MAKE_SCENE_UPDATE = BASE_URL + "makescenUpdate";
+    public final static String DELETE_EVENT = BASE_URL + "deleteEvent";
 
-
-    //http://mindiii.com/scenekeyNew/scenekey/
-    public final static String BASE_IMAGE_URL = "http://hiiandbyee.com/scenekeyFinal/";
+    /*[{"key":"user_id","value":"174"},{"key":"venue_id","value":"130178"},{"key":"date","value":"2017-06-05"},{"key":"time","value":"9:00:00"},{"key":"event_name","value":"Monday ..... Test "},{"key":"interval","value":"15"},{"key":"description","value":"Android Testing Event For IOS also"}]*/
 
 
 }

@@ -26,7 +26,7 @@ public class CustomToastDialog extends Dialog {
         txt_pop10_One = (TextView) pop_up_view.findViewById(R.id.txt_pop10_One);
         txt_pop10_message = (TextView) pop_up_view.findViewById(R.id.txt_pop10_message);
         Font font = new Font(activity);
-        font.setFontBold(txt_pop10_One, txt_pop10_message);
+        font.setFontLibreFranklin_SemiBold(txt_pop10_One, txt_pop10_message);
         //.setTypeface(font.Franklin_Gothic_Reg);
         //this.context = context;
         // This is the layout XML file that describes your Dialog layout

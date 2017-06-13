@@ -26,6 +26,9 @@ public class UserInfo implements Serializable {
     private String makeAdmin;
     private String userAccessToken;
     private boolean firstTimeDemo;
+    private String latitude;
+    private String longitude;
+    private String Address;
 
 
     public String getUserID() {
@@ -162,5 +165,29 @@ public class UserInfo implements Serializable {
 
     public void setFirstTimeDemo(boolean firstTimeDemo) {
         this.firstTimeDemo = firstTimeDemo;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getAddress() {
+        return Address;
+    }
+
+    public void setAddress(String address) {
+        Address = address;
     }
 }

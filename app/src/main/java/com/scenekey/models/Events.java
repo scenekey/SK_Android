@@ -83,7 +83,7 @@ public class Events implements Serializable {
         if (events.has("event_time")) event.setEvent_time(events.getString("event_time"));
         if (events.has("rating")) event.setRating(events.getString("rating"));
         if (events.has("image")) event.setImage(events.getString("image"));
-        if (events.has("interval")) event.setInterval(events.getInt("interval"));
+        if (events.has("interval")) event.setInterval(events.getDouble("interval"));
         if (events.has("status")) event.setStatus(events.getString("status"));
         if (events.has("trending_point"))
             event.setTrending_point(events.getString("trending_point"));
@@ -118,10 +118,10 @@ public class Events implements Serializable {
      * @return
      * @throws ParseException
      */
-    public boolean checkWithTime(final String date , int interval) throws ParseException {
+    public boolean checkWithTime(final String date , Double interval) throws ParseException {
         String[] dateSplit = (date.replace("TO", "T")).replace(" ", "T").split("T");
         Date startTime = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).parse(dateSplit[0] + " " + dateSplit[1]);
-        Date endTime = new Date(startTime.getTime()+(interval* 60 * 60 * 1000));
+        Date endTime = new Date(startTime.getTime()+(int)(interval* 60 * 60 * 1000));
         Log.e("TrendingAdapter ",startTime +"  : "+endTime);
         long currentTime = java.util.Calendar.getInstance().getTime().getTime();
         /*if (currentTime < endTime.getTime() && currentTime > startTime.getTime()) {
@@ -149,11 +149,15 @@ public class Events implements Serializable {
     }
 
     String convertTime(String time) throws ParseException {
-        //Log.e("Time ", time);
+
         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
         Date date1 = format.parse(time);
         Date date2 = new Date();
         int milis = Math.abs(date2.getHours() - date1.getHours());
+        if(milis==1){
+            milis = 60 - Math.abs(date2.getMinutes() - date1.getMinutes());
+            return milis + " min";
+        }
         return milis + " hr";
     }
 }

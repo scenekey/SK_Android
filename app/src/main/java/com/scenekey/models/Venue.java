@@ -20,6 +20,7 @@ public class Venue implements Serializable {
     private String latitude;
     private String longitude;
     private int rating;
+    private boolean validate;
 
 
     public String getVenue_id() {
@@ -124,5 +125,13 @@ public class Venue implements Serializable {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public boolean isValidate() {
+        return validate;
+    }
+
+    public void setValidate(boolean validate) {
+        this.validate = validate;
     }
 }

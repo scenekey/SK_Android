@@ -65,6 +65,12 @@ public class Font {
     public void setFontRailRegular(TextView text) {
         text.setTypeface(Raleway_Regular);
     }
+    public void setFontRailRegular(TextView... texts) {
+        for (TextView text : texts) {
+            text.setTypeface(Raleway_Regular);
+        }
+
+    }
 
     public void setFontRailRegularLight(TextView... texts) {
         for (TextView text : texts) {
