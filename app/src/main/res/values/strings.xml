@@ -17,6 +17,7 @@
     <string name="Scene"> The Scene</string>
     <string name="addvenue"> Add Venue</string>
     <string name="addevent"> Add Event</string>
+    <string name="editevent"> Edit Event</string>
     <string name="venue"> Venue</string>
     <string name="selectttag"> Select Tag </string>
     <string name="comment"> Comment </string>
@@ -32,7 +33,7 @@
     <string name="sample_welcome"> "\"Welcome to 'Beverly Hills'! \nKey In and get connected\"" </string>
     <string name="sample_Address"> Staples Center Los Angeles </string>
     <string name="sample_date"> April 26,2015 9:00 PM - 12:00 PM </string>
-    <string name="Description">Description </string>
+    <string name="description">Description </string>
     <string name="TheRoom">The Room</string>
     <string name="alertDoubletap"> Press again to exit</string>
     <string name="PTBS"> Post to the big screen!</string>
@@ -60,8 +61,12 @@
     <string name="omg..smooth"> OMG.. Smooth Criminal! </string>
     <string name="ilovemike"> I Love mike. Sick dance moves! </string>
 
+
+    <!--Alerts-->
     <string name="AlertMsg1"> Please turn on your GPS </string>
     <string name="closeformap"> This will close Scenekey and open google map. \n continue?  </string>
+    <string name="confirmUpdate"> Confirm update?  </string>
+    <string name="confirmDelete"> Confirm delete?  </string>
 
     <string name="EventAndExib"> Events &amp; Exhibition </string>
     <string name="enterhint"> Enter nudge message here </string>
@@ -112,8 +117,14 @@
     <string name="yourlocatoion"> Your Location </string>
     <string name="noemail"> Email not provided </string>
 
+    <string name="update"> Update </string>
+    <string name="delete"> Delete </string>
+    <string name="create"> Create </string>
+    <string name="uplode"> Uploade new imge </string>
+
     <string name="searchvenue"> Search venue </string>
     <string name="searchtag"> Search tag </string>
+    <string name="search"> Search </string>
     <string name="somethingwentwrong"> Something went wrong </string>
     <string name="sorryEvent"> Sorry!! you have to be at this event to interact </string>
     <string name="noNotification"> You have no notification at this time </string>
@@ -126,6 +137,16 @@
     <string name="not_start"> This event has not started yet. </string>
     <string name="dontBore"> Don\'t be boring Key in and be the first! </string>
 
+    <string name="shoot"> Shoot! This feature is unavailable.\n Be on the lookout! </string>
+
+
+    <!--error-->
+    <string name="eyourlocatoion"> There was an error getting your Location ! \n please check GPS , internet  &amp; try again after a moment. </string>
+    <string name="elocatoion"> There was an error getting your Location . </string>
+    <string name="elocationPermission"> Please provide location permission to Scenekey. </string>
+    <string name="einternet"> Please connect to internet . </string>
+    <string name="enotStarted">You are at the event but it hasn\'t started yet.</string>
+    <string name="enotat"> You have not yet arrived at this scene. </string>
 
     <style name="settingText">
         <item name="android:textColorHint">#A3A3A3</item>

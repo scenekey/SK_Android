@@ -35,6 +35,8 @@
     <color name="blueToastTxt">#FF0140C4</color>
     <color name="txt_discrip">#FF5B5B5B</color>
     <color name="txt_no_one">#FF565656</color>
+    <color name="txt_add_event">#A3A3A3</color>
+    <color name="txt_border_add_event">#CCCCCC</color>
 
 
     <!--    100% — FF

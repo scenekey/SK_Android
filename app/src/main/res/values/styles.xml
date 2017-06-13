@@ -128,7 +128,7 @@
         <item name="android:paddingLeft">@dimen/_10sdp</item>
         <item name="android:textColor">@color/black80p</item>
         <item name="android:textSize">@dimen/_12sdp</item>
-        <item name="android:textColorHint">@color/black30p</item>
+        <item name="android:textColorHint">@color/txt_add_event</item>
         <item name="android:background">@drawable/transparent</item>
     </style>
 
