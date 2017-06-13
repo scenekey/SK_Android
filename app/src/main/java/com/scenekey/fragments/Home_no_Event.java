@@ -34,10 +34,9 @@ public class Home_no_Event extends Fragment implements View.OnClickListener {
     TextView txt_try_button_f1;
     HomeActivity activity;
     Context context;
-    SessionManager sessionManager;
-    UserInfo userInfo;
     Permission permission;
     Demo_Event_Fragment event_fragment;
+    /*Demo_Event_Fragment_ListView event_fragment_listView;*/
     Bitmap imageArrray[];
     private Font font;
     private TextView txt_sorry1;
@@ -86,10 +85,12 @@ public class Home_no_Event extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.txt_try_button_f1:
                 if (!clicked) {
-                    activity.showProgDilog(false);
+                    activity.showProgDilog(false,TAG);
 
                     activity.addFragment(event_fragment, 0);
+//                    activity.addFragment(event_fragment_listView, 0);
                     event_fragment.setImageArrray(this);
+//                    event_fragment_listView.setImageArrray(this);
                     clicked = true;
                 }
 
@@ -120,23 +121,21 @@ public class Home_no_Event extends Fragment implements View.OnClickListener {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         event_fragment = new Demo_Event_Fragment();
+//        event_fragment_listView = new Demo_Event_Fragment_ListView();
         activity.setTitle(activity.getResources().getString(R.string.Enter));
 
     }
 
     @Override
     public void onStart() {
-        activity.setBBvisiblity(View.VISIBLE);
+        activity.setBBvisiblity(View.VISIBLE,TAG);
         super.onStart();
         font = new Font(getContext());
         font.setFontFranklinRegular(txt_try_button_f1);
         font.setFontFrankDemiReg(txt_sorry1, txt_sorry2);
-        sessionManager = new SessionManager(activity);
-        userInfo = sessionManager.getUserInfo();
         // Working String date = new SimpleDateFormat("yyyy-MMMM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
         String date = new SimpleDateFormat("MMMM dd,yyyy").format(Calendar.getInstance().getTime());
         Log.e("Date", date + " 8:00 AM - 12:00 PM");
-        //TODO ask for location permission
         permission = new Permission(activity, HomeActivity.instance);
         permission.checkLocationPermission();
         //activity.startService(new Intent(activity, TrackGPS.class));
@@ -148,7 +147,7 @@ public class Home_no_Event extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        activity.setBBvisiblity(View.VISIBLE);
+        activity.setBBvisiblity(View.VISIBLE,TAG);
         activity.setTitleVisibality(View.VISIBLE);
     }
 

@@ -122,7 +122,7 @@ public class Map_Fragment_Single  extends Fragment implements View.OnClickListen
                 // For dropping a marker at a point on the Map
                 LatLng sydney = new LatLng(lat,longe);
 
-                //TODO:reduce marker size and tilt the map
+
                 googleMap.addMarker(new MarkerOptions()
                         .position(new LatLng(lat, longe))
                         .anchor(0.5f, 0.5f)
@@ -174,7 +174,8 @@ public class Map_Fragment_Single  extends Fragment implements View.OnClickListen
 
 
     void googleMapCall(){
-        Uri routeUri = Uri.parse("http://maps.google.com/maps?saddr="+activity.getlatlong()[0]+","+activity.getlatlong()[1]+"&daddr="+lat+","+longe);
+        //Uri routeUri = Uri.parse("http://maps.google.com/maps?saddr="+activity.getLatitude()+","+activity.getLongiude()+"&daddr="+lat+","+longe);
+        Uri routeUri = Uri.parse("http://maps.google.com/maps?daddr="+lat+","+longe);
         Log.e(TAG , " : "+routeUri);
         Intent i = new Intent(Intent.ACTION_VIEW, routeUri);
         startActivity(i);

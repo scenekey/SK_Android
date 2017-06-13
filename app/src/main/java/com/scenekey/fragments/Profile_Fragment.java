@@ -74,7 +74,6 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
     //GridLayoutManager layoutManager;
    // Profile_Events_Adapter adapter;
     int pageToshow=1;
-
     ProfileListAdapter adapter;
 
 
@@ -93,14 +92,13 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
         super.onViewCreated(view, savedInstanceState);
 
 
-        //TODO : Seeting the fonts
-        //TODO :Setting the Event count to 99+ if greter then 99
+        //TOD
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                activity().showProgDilog(false);
+                activity().showProgDilog(false,TAG);
                 getProfile();
             }
         },200);
@@ -142,8 +140,9 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
         Font font = new Font(activity());
         font.setFontLibreFranklin_SemiBold(txt_profile_name, txt_event_count);
 
-        txt_f2_badge.setText(mutulFriendCount+"");
-        activity().setBBvisiblity(View.GONE);
+        if(mutulFriendCount<99)txt_f2_badge.setText(mutulFriendCount+"");
+        else txt_f2_badge.setText("99+");
+        activity().setBBvisiblity(View.GONE,TAG);
         /*adapter = new Profile_Events_Adapter(activity(), feedslist);
         layoutManager = new GridLayoutManager(activity(), 1);*/
         /*rclv_f3_trending.setLayoutManager(layoutManager);
@@ -173,7 +172,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
     @Override
     public void onStart() {
         super.onStart();
-        activity().setBBvisiblity(View.GONE);
+        activity().setBBvisiblity(View.GONE,TAG);
         if(event_fragment != null)event_fragment.canCallWebservice = false;
         if(key_in_event_fragment != null)key_in_event_fragment.canCallWebservice = false;
 
@@ -186,8 +185,11 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
         if(event_fragment != null)event_fragment.canCallWebservice = true;
         if(key_in_event_fragment != null)key_in_event_fragment.canCallWebservice = true;
         if(event_fragment == null && key_in_event_fragment == null) {
-            activity().setBBvisiblity(View.VISIBLE);
+            if(demo_event_fragment ==null){
+            activity().setBBvisiblity(View.VISIBLE,TAG);
             activity().setTitleVisibality(View.VISIBLE);
+                activity().backPressToposition();
+            }
         }
         super.onDestroy();
     }
@@ -348,26 +350,39 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
                 }catch (InterruptedException e){
 
                 }
+                if (feedslist == null) {
+                    feedslist = new ArrayList<>();
+                }
+                activity().dismissProgDailog();
             }
 
             @Override
             public void onVolleyError(VolleyError error) {
                 Log.e(TAG, error + "");
-                activity().dismissProgDailog();
+                try {
+                    adapter.notifyDataSetChanged();
+
+                    rclv_f3_trending.setAdapter(adapter);
+                    activity().dismissProgDailog();
+                    activity().showToast(getString(R.string.somethingwentwrong));
+                } catch (Exception e) {
+
+                }
+
             }
 
             @Override
             public void onNetError() {
                 activity().dismissProgDailog();
+                activity().showToast(getString(R.string.einternet));
+                adapter.notifyDataSetChanged();
+                rclv_f3_trending.setAdapter(adapter);
             }
 
             @Override
             public Map<String, String> setParams(Map<String, String> params) {
                 params.put("user_id",attendy.getUserid());
                 params.put("type","app");
-                //TODO change with live
-               /* params.put("user_id", activity().);
-                params.put("type", "app");*/
                 return params;
             }
 
@@ -414,7 +429,9 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
 
         }
         if(feedslist.size()==0){
-            Toast.makeText(activity()," No event found !",Toast.LENGTH_SHORT).show();
+            activity().showToast(" No event found !");
+            adapter.notifyDataSetChanged();
+            rclv_f3_trending.setAdapter(adapter);
         }
         if (object.has("keyin_count")) {
             txt_event_count.setText(object.getInt("keyin_count") + " event");

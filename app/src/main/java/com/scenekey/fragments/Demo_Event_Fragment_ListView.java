@@ -24,12 +24,13 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.scenekey.R;
 import com.scenekey.Utility.CircleTransform;
@@ -39,6 +40,7 @@ import com.scenekey.Utility.Permission;
 import com.scenekey.Utility.Util;
 import com.scenekey.activity.HomeActivity;
 import com.scenekey.adapter.DataAdapter_Demo;
+import com.scenekey.adapter.Event_Grid_Adapter;
 import com.scenekey.helper.Constants;
 import com.scenekey.helper.SessionManager;
 import com.scenekey.lib_sources.Floting_menuAction.FloatingActionButton;
@@ -62,9 +64,9 @@ import java.util.TimerTask;
  * Created by mindiii on 12/4/17.
  */
 
-public class Demo_Event_Fragment extends Fragment implements View.OnClickListener {
+public class Demo_Event_Fragment_ListView extends Fragment implements View.OnClickListener {
 
-    private static final String TAG = Demo_Event_Fragment.class.toString();
+    private static final String TAG = Demo_Event_Fragment_ListView.class.toString();
     TextView txt_discipI_f2;
     double latitude;
     double longitude;
@@ -72,11 +74,13 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
     RelativeLayout rtlv2_animate_f2;
     ImageView img_infoget_f2, img_f10_back;
     Boolean isInfoVisible;
-    RecyclerView rclv_grid;
+    GridView rclv_grid;
     ScrollView scrl_all;
     //private MapView imagemap;
     //private GoogleMap googleMap;
     Handler handler;
+    SessionManager sessionManager;
+    UserInfo userInfo;
     View popupview;
     Dialog dialog;
     int noNotify;
@@ -113,13 +117,13 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.f2_demo_event, null);
+        View view = inflater.inflate(R.layout.f2_event, null);
 
         txt_discipI_f2 = (TextView) view.findViewById(R.id.txt_discipI_f2);
 
         info_view = (LinearLayout) view.findViewById(R.id.info_view);
         img_infoget_f2 = (ImageView) view.findViewById(R.id.img_infoget_f2);
-        rclv_grid = (RecyclerView) view.findViewById(R.id.rclv_grid);
+        rclv_grid = (GridView) view.findViewById(R.id.rclv_grid);
         img_f10_back = (ImageView) view.findViewById(R.id.img_f10_back);
         txt_f2_badge = (TextView) view.findViewById(R.id.txt_f2_badge);
 
@@ -147,7 +151,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         info_view.setVisibility(View.GONE);
         rtlv_top.getLayoutParams().height = ((HomeActivity.ActivityWidth) * 3 / 4);
         Util.setStatusBarColor(HomeActivity.instance, R.color.colorPrimary);
-        (activity()).setBBvisiblity(View.GONE,TAG);
+        activity().setBBvisiblity(View.GONE,TAG);
 
 
         return view;
@@ -167,9 +171,8 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         txt_discipI_f2.setText(getString(R.string.sample_discrip));
         setOnClick(img_infoget_f2, img_f10_back, fabMenu1, fabMenu2, fabMenu3, img_notif, txt_hide_all_one, txt_hide_all_two,btn_got_it,demoView);
         isInfoVisible = false;
-        rclv_grid.hasFixedSize();
-
-        UserInfo userInfo = activity().userInfo();
+        SessionManager sessionManager = new SessionManager(activity());
+        userInfo = sessionManager.getUserInfo();
         if(userInfo.isFirstTimeDemo()){
             demoView.setVisibility(View.VISIBLE);
             userInfo.setFirstTimeDemo(false);
@@ -232,7 +235,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
                 break;
             case R.id.fabMenu3_comment:
                 menu_blue.close(true);
-                activity().addFragment(new Demo_Comment_Fargment().setData(this),1);
+                //activity.addFragment(new Demo_Comment_Fargment().setData(this),1);
                 break;
             case R.id.txt_hide_all_two:
                 menu_blue.close(true);
@@ -260,7 +263,6 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
             case Constants.INTENT_CAMERA:
                 try {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
                     startActivityForResult(intent, Constants.INTENT_CAMERA);
                 } catch (Exception e) {
 
@@ -401,9 +403,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
 
 
     void InitializeGrid() {
-        rclv_grid.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
-        rclv_grid.setLayoutManager(layoutManager);
+
 
         final String android_version_names[] = {
                 "Alexander",
@@ -414,7 +414,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
                 "Erin",
                 "James",
                 "Morgan",
-                activity().userInfo().getUserName(),
+                userInfo.getUserName(),
 
         };
 
@@ -427,7 +427,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
                 "" + R.drawable.room_6,
                 "" + R.drawable.room_7,
                 "" + R.drawable.room_8,
-                activity().userInfo().getUserImage()
+                userInfo.getUserImage()
         };
 
         final String staus[] = {
@@ -445,17 +445,12 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
 
 
         final ArrayList<RoomPerson> roomPersons = new ArrayList<>();
-        final DataAdapter_Demo adapter = new DataAdapter_Demo(getContext(), roomPersons, HomeActivity.instance, font, home_no_event,this);
+        final Event_Grid_Adapter adapter = new Event_Grid_Adapter(activity(), roomPersons, HomeActivity.instance, font, home_no_event,this);
         rclv_grid.setAdapter(adapter);
         for (int i = 0; i < 9; i++) {
             roomPersons.add(new RoomPerson(android_version_names[i], android_image_urls[i], staus[i]));
-            adapter.notifyItemInserted(i);
+            adapter.notifyDataSetChanged();
         }
-       /* adapter.notifyDataSetChanged();*/
-
-                /*Animation animation = AnimationUtils.loadAnimation(activity,R.anim.enter_from_right);
-                rclv_grid.startAnimation(animation);*/
-        //Notifaication Data
         if (nlist == null) nlist = new ArrayList<NotificationData>();
         nlist.add(new NotificationData(R.drawable.room_3, getResources().getString(R.string.notification5)));
         nlist.add(new NotificationData(R.drawable.room_1, getResources().getString(R.string.notification4)));
@@ -759,7 +754,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
     public void addUserComment(String comment){
         Card card = new Card();
         card.text = comment;
-        card.userImage = activity().userInfo().getUserImage();
+        card.userImage = userInfo.getUserImage();
         cardlist.add(0,card);
         arrayAdapter.notifyDataSetChanged();
         card_stack_view.setAdapter(arrayAdapter);

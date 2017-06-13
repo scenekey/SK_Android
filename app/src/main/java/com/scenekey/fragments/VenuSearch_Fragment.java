@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.android.volley.VolleyError;
 import com.scenekey.R;
@@ -44,14 +45,17 @@ public class VenuSearch_Fragment extends Fragment implements View.OnClickListene
     ArrayList<Venue> venuelist;
     Add_Event_Fragmet add_event_fragmet;
     int page;
+    boolean hideTheTitle;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fx_venu_fragment, null);
         recyvlerview_venu = (RecyclerView) view.findViewById(R.id.recyvlerview_venu);
-        activity().setBBvisiblity(View.GONE);
+        activity().setBBvisiblity(View.GONE,TAG);
         ImageView img_f1_back = (ImageView) view.findViewById(R.id.img_f1_back);
+        LinearLayout mainlayout = (LinearLayout) view.findViewById(R.id.mainlayout);
+        mainlayout.setOnClickListener(this);
         img_f1_back.setOnClickListener(this);
 
         return view;
@@ -118,6 +122,7 @@ public class VenuSearch_Fragment extends Fragment implements View.OnClickListene
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
+        activity().showProgDilog(false,TAG);
         getAllVenue(page, "", true);
     }
 
@@ -125,7 +130,7 @@ public class VenuSearch_Fragment extends Fragment implements View.OnClickListene
         VolleyGetPost volleyGetPost = new VolleyGetPost(activity(), activity(), WebService.VENUE_SEARCH, false) {
             @Override
             public void onVolleyResponse(String response) {
-                //Log.e(TAG,"volley response"+page+name+response);
+                Log.e(TAG,"volley response"+page+name+response);
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     if (clear) venuelist.clear();
@@ -134,16 +139,18 @@ public class VenuSearch_Fragment extends Fragment implements View.OnClickListene
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                activity().dismissProgDailog();
             }
 
             @Override
             public void onVolleyError(VolleyError error) {
                 Log.e(TAG, "volley error" + error);
+                activity().dismissProgDailog();
             }
 
             @Override
             public void onNetError() {
-
+                activity().dismissProgDailog();
             }
 
             @Override
@@ -168,8 +175,15 @@ public class VenuSearch_Fragment extends Fragment implements View.OnClickListene
     @Override
     public void onDestroy() {
         super.onDestroy();
-        activity().setBBvisiblity(View.VISIBLE);
-        activity().setTitleVisibality(View.GONE);
+
+        if(hideTheTitle){
+            activity().setTitleVisibality(View.GONE);
+            activity().setBBvisiblity(View.GONE,TAG);
+        }
+        else {
+            activity().setBBvisiblity(View.VISIBLE,TAG);
+            activity().setTitleVisibality(View.VISIBLE);
+        }
     }
 
     HomeActivity activity() {
@@ -192,8 +206,10 @@ public class VenuSearch_Fragment extends Fragment implements View.OnClickListene
         recyvlerview_venu.getAdapter().notifyDataSetChanged();
     }
 
-    public void setAdd_event_fragmet(Add_Event_Fragmet add_event_fragmet) {
+    public VenuSearch_Fragment setData(Add_Event_Fragmet add_event_fragmet,boolean hideTheTitle) {
         this.add_event_fragmet = add_event_fragmet;
+        this.hideTheTitle = hideTheTitle;
+        return this;
     }
 
     @Override
@@ -202,14 +218,17 @@ public class VenuSearch_Fragment extends Fragment implements View.OnClickListene
             case R.id.img_f1_back:
                 activity().onBackPressed();
                 break;
+            default:
+                break;
         }
 
     }
 
     public void onrecylcerViewItemClick(int position) {
         Log.e(TAG, page + " : " + venuelist.size());
-        add_event_fragmet.onVenueSelect(venuelist.get(position));
-        activity().onBackPressed();
+        try{add_event_fragmet.onVenueSelect(venuelist.get(position));
+        activity().onBackPressed();}
+        catch (Exception e){}
 
     }
 }

@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
@@ -55,6 +57,8 @@ public class Demo_Message_Fargment extends Fragment implements View.OnClickListe
         View view = inflater.inflate(R.layout.f3_comment, null);
         txt_char = (TextView) view.findViewById(R.id.txt_char);
         edt_comment = (EditText) view.findViewById(R.id.edt_comment);
+        RelativeLayout mainlayout = (RelativeLayout) view.findViewById(R.id.mainlayout);
+        mainlayout.setOnClickListener(this);
         edt_comment.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxNumber)});
         ImageView img_profile = (ImageView) view.findViewById(R.id.img_profile);
         TextView txt_post_comment = (TextView) view.findViewById(R.id.txt_post_comment);
@@ -99,7 +103,7 @@ public class Demo_Message_Fargment extends Fragment implements View.OnClickListe
     }
 
     UserInfo userInfo() {
-        return activity().getSessionManager().getUserInfo();
+        return activity().userInfo();
     }
 
     /******************************************************/

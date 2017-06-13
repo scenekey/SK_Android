@@ -29,6 +29,7 @@ import com.squareup.picasso.Picasso;
  */
 
 public class Image_uploade_fragment extends Fragment implements View.OnClickListener {
+    private static final String TAG = Image_uploade_fragment.class.toString();
     RecyclerView recyvlerview;
     RecyclerView.LayoutManager layoutManager;
     ImageUplodeAdpter adpter;
@@ -41,7 +42,7 @@ public class Image_uploade_fragment extends Fragment implements View.OnClickList
         View v = inflater.inflate(R.layout.fx_image_uploade, null);
         recyvlerview = (RecyclerView) v.findViewById(R.id.recyvlerview);
         img_profile = (ImageView) v.findViewById(R.id.img_profile);
-        HomeActivity.instance.setBBvisiblity(View.GONE);
+        HomeActivity.instance.setBBvisiblity(View.GONE,TAG);
         layoutManager = new GridLayoutManager(getActivity(), 3);
         adpter = new ImageUplodeAdpter((HomeActivity) getActivity(), this);
         recyvlerview.setLayoutManager(layoutManager);
@@ -59,7 +60,7 @@ public class Image_uploade_fragment extends Fragment implements View.OnClickList
         ImageView img_back = (ImageView) view.findViewById(R.id.img_back);
         img_back.setOnClickListener(this);
         //getActivity().setTheme(R.style.theme);
-        Picasso.with(HomeActivity.instance).load(HomeActivity.instance.getSessionManager().getUserInfo().getUserImage()).into(img_profile);
+        Picasso.with(HomeActivity.instance).load(HomeActivity.instance.userInfo().getUserImage()).into(img_profile);
     }
 
     @Override
@@ -93,7 +94,7 @@ public class Image_uploade_fragment extends Fragment implements View.OnClickList
     @Override
     public void onDestroy() {
         super.onDestroy();
-        HomeActivity.instance.setBBvisiblity(View.GONE);
+        HomeActivity.instance.setBBvisiblity(View.GONE,TAG);
     }
 
     @Override

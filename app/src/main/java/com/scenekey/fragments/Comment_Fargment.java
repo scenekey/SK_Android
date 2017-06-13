@@ -1,5 +1,7 @@
 package com.scenekey.fragments;
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
@@ -28,6 +32,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -57,9 +63,11 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
         TextView txt_f1_title = (TextView) view.findViewById(R.id.txt_f1_title);
         ImageView img_f3_back = (ImageView) view.findViewById(R.id.img_f3_back);
         TextView txt_char1 = (TextView) view.findViewById(R.id.txt_char1);
+        RelativeLayout mainlayout = (RelativeLayout) view.findViewById(R.id.mainlayout);
         txt_char.setText(maxNumber + " ");
         img_f3_back.setOnClickListener(this);
         txt_post_comment.setOnClickListener(this);
+        mainlayout.setOnClickListener(this);
         Font font = new Font(activity());
         font.setFontFrankBookReg(txt_post_comment, txt_f1_title, edt_comment);
         font.setFontRailRegularLight(txt_char, txt_char1);
@@ -93,7 +101,7 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
     }
 
     UserInfo userInfo() {
-        return activity().getSessionManager().getUserInfo();
+        return activity().userInfo();
     }
 
     /******************************************************/
@@ -112,7 +120,6 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
                 Log.e(TAG, " volleyResponse " + error);
                 activity().dismissProgDailog();
                 activity().onBackPressed();
-                //TODO handle after implementing notification from server side
             }
 
             @Override
@@ -127,13 +134,9 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
 
                 params.put("user_id", userInfo().getUserID());
                 params.put("event_id", EventId);
-                params.put("location", "Fairfield,CA");
+                params.put("location", getLocation());
                 params.put("comment", edt_comment.getText() + "");
                 params.put("ratingtime", getCutrrentTimeinFormat());
-
-                /*location:india
-                comment:welcome
-                Ratingtime:2017-04-12*/
                 Log.e(TAG, "" + params.toString());
                 return params;
             }
@@ -166,10 +169,10 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.txt_post_comment:
                 if (kyeInStatus.equals(Constants.KEY_NOTEXIST)) {
-                    activity().showProgDilog(false);
+                    activity().showProgDilog(false,TAG);
                     addUserIntoEvent();
                 } else {
-                    activity().showProgDilog(false);
+                    activity().showProgDilog(false,TAG);
                     commentEvent();
                 }
                 break;
@@ -208,7 +211,7 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
             @Override
             public Map<String, String> setParams(Map<String, String> params) {
                 params.put("userid", userInfo().getUserID());
-                params.put("eventname", userInfo().getUserID());
+                params.put("eventname", eventName);
                 params.put("eventid", EventId);
                 params.put("Eventdate", userInfo().getUserID());
                 Log.e(TAG, params.toString());
@@ -253,6 +256,43 @@ public class Comment_Fargment extends Fragment implements View.OnClickListener {
 
     String getCutrrentTimeinFormat() {
         return (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date(System.currentTimeMillis()));
+    }
+
+
+    String getLocation(){
+        String result;
+        if(activity().userInfo().getAddress().length()>1){
+            result =activity().userInfo().getAddress();
+        }
+        else {
+            result = getAddress(Double.parseDouble(activity().getlatlong()[0]), Double.parseDouble(activity().getlatlong()[1]));
+        }
+        return result;
+    }
+
+    String getAddress(double latitude, double longitude) {
+        String result = null;
+        Geocoder geocoder;
+        List<Address> addresses;
+        geocoder = new Geocoder(activity(), Locale.getDefault());
+
+        try {
+            addresses = geocoder.getFromLocation(latitude, longitude, 1);
+
+            String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+            String city = addresses.get(0).getLocality();
+            String addressLine = addresses.get(0).getAddressLine(1);
+            String state = addresses.get(0).getAdminArea();
+            String country = addresses.get(0).getCountryName();
+            String postalCode = addresses.get(0).getPostalCode();
+            String knownName = addresses.get(0).getFeatureName();
+            //result = knownName + " ," + addressLine + " , " + city + "," + state + "," + country + " counter" + counter;// Here 1 represent max location result to returned, by documents it recommended 1 to 5
+            result =  address+","+city + "," + state + "," + country ;// Here 1 represent max location result to returned, by documents it recommended 1 to 5
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return result;
     }
 
 

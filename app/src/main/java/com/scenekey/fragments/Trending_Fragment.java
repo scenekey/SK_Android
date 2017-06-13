@@ -52,7 +52,7 @@ public class Trending_Fragment extends Fragment {
         rclv_f3_trending = (RecyclerView) v.findViewById(R.id.rclv_f3_trending);
         activity = HomeActivity.instance;
         activity.setTitleVisibality(View.VISIBLE);
-        activity.showProgDilog(false);
+        activity.showProgDilog(false,TAG);
         return v;
 
     }
@@ -145,20 +145,22 @@ public class Trending_Fragment extends Fragment {
                     activity.dismissProgDailog();
                     Toast.makeText(activity,getString(R.string.somethingwentwrong),Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "" + e);
-                    //TODO Showing Toast on any Exception or error
                 }
             }
 
             @Override
             public void onVolleyError(VolleyError error) {
                 activity.dismissProgDailog();
-                Toast.makeText(activity, getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
+                try {
+                    activity.showToast(getString(R.string.somethingwentwrong));
+                }catch (IllegalStateException e){
+                }
                 Log.e(TAG, error + "");
             }
 
             @Override
             public void onNetError() {
-                Toast.makeText(activity, "Please check your internet connection", Toast.LENGTH_SHORT).show();
+                activity.showToast( "Please check your internet connection");
                 activity.dismissProgDailog();
             }
 

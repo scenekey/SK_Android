@@ -32,7 +32,9 @@ import com.scenekey.Utility.VolleyGetPost;
 import com.scenekey.Utility.WebService;
 import com.scenekey.activity.HomeActivity;
 import com.scenekey.adapter.MapInfoAdapter;
+import com.scenekey.helper.Constants;
 import com.scenekey.models.Events;
+import com.scenekey.models.UserInfo;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -48,7 +50,6 @@ import java.util.Map;
 
 public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickListener {
     private static final String TAG = Map_Fragment.class.toString();
-    HomeActivity activity;
     private MapView mMapView;
     private GoogleMap googleMap;
     private MapInfoAdapter adapter;
@@ -60,7 +61,6 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.f1_map_event, null);
         mMapView = (MapView) v.findViewById(R.id.map_view);
-        activity = HomeActivity.instance;
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume();
         try {
@@ -74,10 +74,14 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        activity.setTitleVisibality(View.VISIBLE);
-        activity.setTitle(activity.getResources().getString(R.string.Scene));
-        cusDialogProg = new CusDialogProg(activity,R.layout.custom_progress_dialog_layout);
+        activity().setTitleVisibality(View.VISIBLE);
+        activity().setTitle(activity().getResources().getString(R.string.Scene));
+        if(cusDialogProg == null)cusDialogProg = new CusDialogProg(activity(),R.layout.custom_progress_dialog_layout);
         checkEventAvailablity();
+    }
+
+    HomeActivity activity(){
+        return HomeActivity.instance;
     }
 
     @Override
@@ -131,9 +135,9 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
                 googleMap.setMyLocationEnabled(true);
 
                 // For dropping a marker at a point on the Map
-                LatLng sydney = new LatLng(Double.parseDouble(activity.getlatlong()[0]), Double.parseDouble(activity.getlatlong()[1]));
+                LatLng sydney = new LatLng(Double.parseDouble(activity().getlatlong()[0]), Double.parseDouble(activity().getlatlong()[1]));
 
-                //TODO:reduce marker size and tilt the map
+
                 //marker.icon(BitmapDescriptorFactory.fromBitmap(ImageUtil.resizeBitmap( ImageUtil.getBitmapByUrl(markerUrl) , 2 ,2)));
                // eventArrayMarker = activity.getEventsArrayList();
                 try {
@@ -143,7 +147,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
                         Log.e(TAG, " Size 0");
 
                     } else {
-                        adapter = new MapInfoAdapter(activity, eventArrayMarker);
+                        adapter = new MapInfoAdapter(activity(), eventArrayMarker);
                         googleMap.setInfoWindowAdapter(adapter);
                         for (int i = 0; i < eventArrayMarker.size(); i++) {
                             Log.e(TAG, eventArrayMarker.get(i).getEvent().getEvent_name() + " : " + eventArrayMarker.get(i).getEvent().getEvent_id() + " : " + eventArrayMarker.get(i).getVenue().getLatitude() + " : " + eventArrayMarker.get(i).getVenue().getLongitude());
@@ -171,17 +175,17 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
                         Events events = eventArrayMarker.get(Integer.parseInt(marker.getId().replace("m", "")));
                         Event_Fragment frg = new Event_Fragment();
                         frg.setData(events.getEvent().getEvent_id(),events.getVenue().getVenue_name());
-                        activity.addFragment(frg, 0);
-                        activity.setBBvisiblity(View.GONE);
+                        activity().addFragment(frg, 0);
+                        activity().setBBvisiblity(View.GONE,TAG);
+                        LatLng sydney = new LatLng(Double.parseDouble(events.getVenue().getLatitude()), Double.parseDouble(events.getVenue().getLongitude()));
+                        CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
+                        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                     }
                 });
 
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
-                        //TODO:DELETE BEFORE LIVE
-                       /* Events events = eventArrayMarker.get(Integer.parseInt(marker.getId().replace("m","")));
-                        Log.e(TAG,"Info window clicked"+marker.getId()+":"+events.getVenue().getLatitude()+"="+marker.getPosition()+" :"+events.getVenue().getLongitude());*/
                         marker.showInfoWindow();
                         return true;
                     }
@@ -212,7 +216,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
 
     public void notifyAdapter() {
         if (adapter != null) {
-            adapter.setEventArrayList(activity.getEventsArrayList());
+            adapter.setEventArrayList(activity().getEventsArrayList());
         }
     }
 
@@ -222,9 +226,9 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
         cusDialogProg.setCancelable(false);
         cusDialogProg.setCanceledOnTouchOutside(false);
         cusDialogProg.setColor(R.color.transparent);
-         cusDialogProg.show();
+        cusDialogProg.show();
 
-        VolleyGetPost volleyGetPost = new VolleyGetPost(activity, activity, WebService.EVENT_BY_LOCAL, false) {
+        VolleyGetPost volleyGetPost = new VolleyGetPost(activity(), activity(), WebService.EVENT_BY_LOCAL, false) {
             @Override
             public void onVolleyResponse(String response) {
                 Util.printBigLogcat(TAG, " " + response);
@@ -233,12 +237,23 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
                     if (jo.has("status")) {
                         int status = jo.getInt("status");
                         if (status == 0){
-                            activity.dismissProgDailog();
+                            activity().dismissProgDailog();
                             try {
-                                Toast.makeText(activity,jo.getString("message"),Toast.LENGTH_SHORT).show();
+                               activity().showToast(jo.getString("message"));
                             }catch (Exception e){
 
                             }
+                        }
+                        if (jo.has("userInfo")) {
+                            UserInfo  userInfo = activity().userInfo();
+                            JSONObject user = jo.getJSONObject("userInfo");
+                            if(user.has("makeAdmin"))   userInfo.setMakeAdmin(user.getString("makeAdmin"));
+                            if(user.has("lat"))         userInfo.setLatitude(user.getString("lat"));
+                            if(user.has("longi"))       userInfo.setLongitude(user.getString("longi"));
+                            if(user.has("adminLat"))    userInfo.setLatitude(user.getString("adminLat"));
+                            if(user.has("adminLong"))   userInfo.setLongitude(user.getString("adminLong"));
+                            if(user.has("address"))     userInfo.setAddress(user.getString("address"));
+                            activity().updateSession(userInfo);
                         }
                         //else if()
                     } else {
@@ -279,7 +294,11 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
                 } catch (JSONException e) {
                     e.printStackTrace();
                     if (cusDialogProg != null) cusDialogProg.dismiss();
-                    Toast.makeText(activity,getString(R.string.somethingwentwrong),Toast.LENGTH_SHORT).show();
+                    try {
+                        activity().showToast( getResources().getString(R.string.somethingwentwrong));
+                    }catch (Exception ee){
+
+                    }
                 }
 
             }
@@ -287,7 +306,12 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
             @Override
             public void onVolleyError(VolleyError error) {
                 if (cusDialogProg != null) cusDialogProg.dismiss();
-               Toast.makeText(activity,getString(R.string.somethingwentwrong),Toast.LENGTH_SHORT).show();
+                try {
+                    //TODO Activity activity();
+                    activity().showToast( getResources().getString(R.string.somethingwentwrong));
+                }catch (Exception e){
+
+                }
                 Log.e(TAG, "" + error);
             }
 
@@ -298,9 +322,10 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
 
             @Override
             public Map<String, String> setParams(Map<String, String> params) {
-                params.put("lat",activity.getlatlong()[0]);
-                params.put("long",activity.getlatlong()[1]);
-                params.put("user_id",activity.userInfo().getUserID());
+                params.put("lat",activity().getlatlong()[0]);
+                params.put("long",activity().getlatlong()[1]);
+                params.put("user_id",activity().userInfo().getUserID());
+                params.put("updateLocation", Constants.ADMIN_NO);
                 return params;
             }
 

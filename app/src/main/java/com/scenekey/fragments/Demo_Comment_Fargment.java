@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
@@ -55,9 +57,11 @@ public class Demo_Comment_Fargment extends Fragment implements View.OnClickListe
         TextView txt_f1_title = (TextView) view.findViewById(R.id.txt_f1_title);
         ImageView img_f3_back = (ImageView) view.findViewById(R.id.img_f3_back);
         TextView txt_char1 = (TextView) view.findViewById(R.id.txt_char1);
+        RelativeLayout mainlayout = (RelativeLayout) view.findViewById(R.id.mainlayout);
         txt_char.setText(maxNumber + " ");
         img_f3_back.setOnClickListener(this);
         txt_post_comment.setOnClickListener(this);
+        mainlayout.setOnClickListener(this);
         Font font = new Font(activity());
         font.setFontFrankBookReg(txt_post_comment, txt_f1_title, edt_comment);
         font.setFontRailRegularLight(txt_char, txt_char1);
@@ -91,7 +95,7 @@ public class Demo_Comment_Fargment extends Fragment implements View.OnClickListe
     }
 
     UserInfo userInfo() {
-        return activity().getSessionManager().getUserInfo();
+        return activity().userInfo();
     }
 
     /******************************************************/

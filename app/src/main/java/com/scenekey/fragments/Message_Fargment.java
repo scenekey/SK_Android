@@ -12,11 +12,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.scenekey.R;
 import com.scenekey.Utility.CircleTransform;
+import com.scenekey.Utility.CustomToastDialog;
 import com.scenekey.Utility.Font;
 import com.scenekey.Utility.VolleyGetPost;
 import com.scenekey.Utility.WebService;
@@ -27,6 +31,7 @@ import com.scenekey.models.UserInfo;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -60,6 +65,8 @@ public class Message_Fargment extends Fragment implements View.OnClickListener {
         TextView txt_post_comment = (TextView) view.findViewById(R.id.txt_post_comment);
         TextView txt_f1_title = (TextView) view.findViewById(R.id.txt_f1_title);
         TextView txt_char1 = (TextView) view.findViewById(R.id.txt_char1);
+        RelativeLayout mainlayout = (RelativeLayout) view.findViewById(R.id.mainlayout);
+        mainlayout.setOnClickListener(this);
         txt_f1_title.setText(getResources().getString(R.string.message));
         ImageView img_f3_back = (ImageView) view.findViewById(R.id.img_f3_back);
         txt_char.setText(maxNumber + " ");
@@ -99,20 +106,30 @@ public class Message_Fargment extends Fragment implements View.OnClickListener {
     }
 
     UserInfo userInfo() {
-        return activity().getSessionManager().getUserInfo();
+        return activity().userInfo();
     }
 
     /******************************************************/
 
     void commentEvent() {
-        activity().showProgDilog(false);
+        activity().showProgDilog(false,TAG);
         VolleyGetPost volleyGetPost = new VolleyGetPost(activity(), HomeActivity.instance, WebService.ADD_NUDGE, false) {
             @Override
             public void onVolleyResponse(String response) {
                 Log.e("VolleyRespnce", " Data Adapter " + response);
                 activity().dismissProgDailog();
-                activity().onBackPressed();
+                try{ if((new JSONObject(response).getInt("success") == 0 ) ){
+                    CustomToastDialog customToastDialogA = new CustomToastDialog(activity());
+                    customToastDialogA.setMessage(new JSONObject(response).getString("msg"));
+                    customToastDialogA.show();
 
+                }else{
+                    activity().onBackPressed();
+                   }
+                }catch (Exception e){
+
+                    Toast.makeText(activity(),activity().getString(R.string.somethingwentwrong),Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -157,10 +174,10 @@ public class Message_Fargment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.txt_post_comment:
                 if (nudgeBy.equals(Constants.KEY_NOTEXIST)) {
-                    activity().showProgDilog(false);
+                    activity().showProgDilog(false,TAG);
                     addUserIntoEvent();
                 } else {
-                    activity().showProgDilog(false);
+                    activity().showProgDilog(false,TAG);
                     commentEvent();
                 }
                 break;

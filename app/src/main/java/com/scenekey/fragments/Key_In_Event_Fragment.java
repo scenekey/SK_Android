@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -42,7 +44,6 @@ import com.scenekey.Utility.Permission;
 import com.scenekey.Utility.VolleyGetPost;
 import com.scenekey.Utility.WebService;
 import com.scenekey.activity.HomeActivity;
-import com.scenekey.adapter.DataAdapter;
 import com.scenekey.adapter.DataAdapter_Key_IN;
 import com.scenekey.helper.Constants;
 import com.scenekey.lib_sources.Floting_menuAction.FloatingActionButton;
@@ -66,6 +67,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -79,7 +82,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
 
     public boolean canCallWebservice;
     public boolean inLocation, inTime;
-    String EventId;
+    String EventId,eventName,eventDate;
     TextView txt_discipI_f2;
     double latitude;
     double longitude;
@@ -97,7 +100,8 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
     Dialog dialog;
     int noNotify;
     int timer;
-    Timer timerHttp, timerNudge;
+    static Timer timerHttp;
+    Timer timerNudge;
     NotificationData nudge;
     FloatingActionButton fabMenu1_like;
     ImageView img_p2_profile2, img_p2_profile, next, img_nudge;
@@ -125,15 +129,13 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
     LinearLayout no_one;
     TextView txt_not_started;
 
-    //TODO  if event is more then a day
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.f2_demo_event, null);
 
         try {
-            activity().setBBvisiblity(View.GONE);
+            activity().setBBvisiblity(View.GONE,TAG);
         } catch (Exception e) {
 
         }
@@ -170,6 +172,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
         super.onViewCreated(view, savedInstanceState);
         fabMenu1_like = (FloatingActionButton) view.findViewById(R.id.fabMenu1_like);
         fabMenu2_picture = (FloatingActionButton) view.findViewById(R.id.fabMenu2_picture);
+        ImageView img_edit_i1 = (ImageView) view.findViewById(R.id.img_edit_i1);
         RelativeLayout mainlayout = (RelativeLayout) view.findViewById(R.id.mainlayout);
         FloatingActionButton fabMenu3_comment = (FloatingActionButton) view.findViewById(R.id.fabMenu3_comment);
         fabMenu1_like.setTextView(new TextView[]{txt_hide_all_one, txt_hide_all_two});
@@ -180,7 +183,20 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
         isInfoVisible = false;
         rclv_grid.hasFixedSize();
         txt_event_name.setText("");
-        setOnClick(mainlayout,image_map, scrl_all, rtlv_top, img_infoget_f2, img_f10_back, fabMenu1_like, fabMenu2_picture, fabMenu3_comment, img_notif, txt_hide_all_one, txt_hide_all_two, txt_event_name);
+        setOnClick(img_edit_i1,
+                mainlayout,
+                image_map,
+                scrl_all,
+                rtlv_top,
+                img_infoget_f2,
+                img_f10_back,
+                fabMenu1_like,
+                fabMenu2_picture,
+                fabMenu3_comment,
+                img_notif,
+                txt_hide_all_one,
+                txt_hide_all_two,
+                txt_event_name);
         cardslist = new ArrayList<>();
         info_view.setVisibility(View.GONE);
         nudge = new NotificationData();
@@ -188,7 +204,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
         font.setFontFrankBookReg(txt_event_name, txt_calender_i1, txt_address_i1);
         font.setFontEuphemia(txt_discrp, txt_room);
         font.setFontRailRegular(txt_discipI_f2);
-        addUserIntoEvent(-1, null);
+
     }
 
     /******************************
@@ -198,7 +214,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
         return HomeActivity.instance;
     }
     UserInfo userInfo() {
-        return activity().getSessionManager().getUserInfo();
+        return activity().userInfo();
     }
 
     @Override
@@ -242,7 +258,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
             }
         }, 2000);
         activity().dismissProgDailog();
-        activity().setBBvisiblity(View.GONE);
+        activity().setBBvisiblity(View.GONE,TAG);
         canCallWebservice = true;
     }
 
@@ -250,9 +266,11 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
         return EventId;
     }
 
-    public Key_In_Event_Fragment setData(String eventId , String venueName) {
+    public Key_In_Event_Fragment setData(String eventId , String venueName ,String eventName,String eventDate) {
         EventId = eventId;
         venuename = venueName;
+        this.eventName = eventName;
+        this.eventDate = eventDate.replace("To","T").replace("T"," ").split("\\s+")[0];
         return this;
     }
 
@@ -260,14 +278,14 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
     public void onResume() {
         super.onResume();
         activity().dismissProgDailog();
-        activity().setBBvisiblity(View.GONE);
+        activity().setBBvisiblity(View.GONE,TAG);
         canCallWebservice = true;
     }
 
     @Override
     public void onDestroyView() {
         handler.removeCallbacksAndMessages(null);
-        ((HomeActivity) getActivity()).setBBvisiblity(View.VISIBLE, 300);
+        ((HomeActivity) getActivity()).setBBvisiblity(View.VISIBLE, 300 ,TAG);
         super.onDestroyView();
     }
 
@@ -313,7 +331,10 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
             case R.id.fabMenu1_like:
                 menu_blue.close(true);
                 try {
-                    if (activity().getDistance(new Double[]{latitude, longitude, Double.valueOf(activity().getlatlong()[0]), Double.valueOf(activity().getlatlong()[1])}) <= Constants.MAXIMUM_DISTANCE && checkWithTime(eventDetails.profile_rating.getEvent_date() , Integer.parseInt(eventDetails.getProfile_rating().getInterval()) )) {
+                    if(userInfo().getMakeAdmin().equals(Constants.ADMIN_YES) && checkWithTime(eventDetails.profile_rating.getEvent_date() , Double.parseDouble(eventDetails.getProfile_rating().getInterval()))){
+                        addUserIntoEvent(0, null);
+                    }
+                    else if (activity().getDistance(new Double[]{latitude, longitude, Double.valueOf(activity().getlatlong()[0]), Double.valueOf(activity().getlatlong()[1])}) <= Constants.MAXIMUM_DISTANCE && checkWithTime(eventDetails.profile_rating.getEvent_date() , Double.parseDouble(eventDetails.getProfile_rating().getInterval()) )) {
                         if (eventDetails.getProfile_rating().getKey_in().equals(Constants.KEY_NOTEXIST)) {
                             addUserIntoEvent(0, null);
                         } else likeEvent();
@@ -332,31 +353,43 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
             case R.id.fabMenu2_picture:
                 menu_blue.close(true);
                 try {
-                    if (activity().getDistance(new Double[]{latitude, longitude, Double.valueOf(activity().getlatlong()[0]), Double.valueOf(activity().getlatlong()[1])}) <= Constants.MAXIMUM_DISTANCE && checkWithTime(eventDetails.profile_rating.getEvent_date() , Integer.parseInt(eventDetails.getProfile_rating().getInterval()) )) {
+                    if(userInfo().getMakeAdmin().equals(Constants.ADMIN_YES) && checkWithTime(eventDetails.profile_rating.getEvent_date() , Double.parseDouble(eventDetails.getProfile_rating().getInterval()))){
+                        captureImage();
+                    }
+                    else if (activity().getDistance(new Double[]{latitude, longitude, Double.valueOf(activity().getlatlong()[0]), Double.valueOf(activity().getlatlong()[1])}) <= Constants.MAXIMUM_DISTANCE && checkWithTime(eventDetails.profile_rating.getEvent_date() , Double.parseDouble(eventDetails.getProfile_rating().getInterval()) )) {
                         captureImage();
                     } else {
                         cantJoinDialogue();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(activity(), getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_LONG).show();
+                    activity().showToast( getResources().getString(R.string.somethingwentwrong));
                 }
 
+                //TODO handle dialog dismiss illegle state exception
                 break;
             case R.id.fabMenu3_comment:
                 menu_blue.close(true);
                 try {
-                    if (activity().getDistance(new Double[]{latitude, longitude, Double.valueOf(activity().getlatlong()[0]), Double.valueOf(activity().getlatlong()[1])}) <= Constants.MAXIMUM_DISTANCE && checkWithTime(eventDetails.profile_rating.getEvent_date() , Integer.parseInt(eventDetails.getProfile_rating().getInterval()) )) {
+                    if(userInfo().getMakeAdmin().equals(Constants.ADMIN_YES) && checkWithTime(eventDetails.profile_rating.getEvent_date() , Double.parseDouble(eventDetails.getProfile_rating().getInterval()))){
                         Comment_Fargment comment_fargment = new Comment_Fargment();
-                        activity().addFragment(comment_fargment, 1);
+
                         canCallWebservice = false;
                         comment_fargment.setData(eventDetails.getProfile_rating().getKey_in(), EventId, eventDetails.getProfile_rating().getEvent_date(), eventDetails.getProfile_rating().getEvent_name(), this);
+                        activity().addFragment(comment_fargment, 1);
+                    }
+                    else if (activity().getDistance(new Double[]{latitude, longitude, Double.valueOf(activity().getlatlong()[0]), Double.valueOf(activity().getlatlong()[1])}) <= Constants.MAXIMUM_DISTANCE && checkWithTime(eventDetails.profile_rating.getEvent_date() , Double.parseDouble(eventDetails.getProfile_rating().getInterval()) )) {
+                        Comment_Fargment comment_fargment = new Comment_Fargment();
+
+                        canCallWebservice = false;
+                        comment_fargment.setData(eventDetails.getProfile_rating().getKey_in(), EventId, eventDetails.getProfile_rating().getEvent_date(), eventDetails.getProfile_rating().getEvent_name(), this);
+                        activity().addFragment(comment_fargment, 1);
                     } else {
                         cantJoinDialogue();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(activity(), getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_LONG).show();
+                    activity().showToast( getResources().getString(R.string.somethingwentwrong));
                 }
                 break;
             case R.id.txt_hide_all_two:
@@ -379,6 +412,10 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
                 break;
             case R.id.menu_blue:
                 break;
+            case R.id.img_edit_i1:
+                Event_Profile_Rating rating = eventDetails.getProfile_rating();
+                activity().addFragment(new Add_Event_Fragmet().setData(rating.getVenue_id(), rating.getEvent_date(), rating.getEvent_name(), rating.getInterval(), getEventId(),rating.getVenue_detail(),rating.getDescription()),1);
+                break;
             default:
                 break;
         }
@@ -388,7 +425,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
      * @param response the responce provided by getAlldata()
      * @throws JSONException
      */
-    void getResponse(String response) throws JSONException {
+    void getResponse(String response) throws JSONException ,IllegalStateException {
         JSONObject obj1 = new JSONObject(response);
         if (eventDetails == null) eventDetails = new EventDetails();
         try {
@@ -412,6 +449,27 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
                 eventDetails.setProfile_ratingJSon(obj1.getJSONObject("event_profile_rating"));
         } catch (JSONException e) {
             e.printStackTrace();
+        }try {
+            if(obj1.has("userInfo")){
+                UserInfo  userInfo = activity().userInfo();
+                Object intervention = obj1.get("userInfo");
+                if (intervention instanceof JSONArray) {
+                    activity().getSessionManager().logout(activity());
+                }
+                JSONObject user = obj1.getJSONObject("userInfo");
+                if(user.has("makeAdmin"))   {
+                    userInfo.setMakeAdmin(user.getString("makeAdmin"));
+
+                }
+                if(user.has("lat"))         userInfo.setLatitude(user.getString("lat"));
+                if(user.has("longi"))       userInfo.setLongitude(user.getString("longi"));
+                if(user.has("adminLat"))    userInfo.setLatitude(user.getString("adminLat"));
+                if(user.has("adminLong"))   userInfo.setLongitude(user.getString("adminLong"));
+                if(user.has("address"))       userInfo.setAddress(user.getString("address"));
+                activity().updateSession(userInfo);
+            }
+        }catch (JSONException e){
+
         }
         int height = (int) activity().ActivityWidth;
         int width = (int) activity().ActivityHeight;
@@ -537,7 +595,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
 
 
     void setDataTimer() {
-        timerHttp = new Timer();
+        if(timerHttp == null )timerHttp = new Timer();
         //Set the schedule function and rate
         timerHttp.scheduleAtFixedRate(new TimerTask() {
 
@@ -579,6 +637,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
             case Constants.INTENT_CAMERA:
                 try {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
                     startActivityForResult(intent, Constants.INTENT_CAMERA);
                 } catch (Exception e) {
 
@@ -648,7 +707,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
             public Map<String, String> setParams(Map<String, String> params) {
                 params.put("user_id", userInfo().getUserID());
                 params.put("event_id", EventId);
-                params.put("location", "Fairfield,CA");
+                params.put("location", getLocation()+"");
                 params.put("image", ImageUtil.encodeTobase64(bitmap));
                 params.put("ratingtime", getCutrrentTimeinFormat());
                 return params;
@@ -667,25 +726,22 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
     /**
      * The dialogue use to show if user is not in the range of the event and evneet is not started yet
      */
-    void cantJoinDialogue() {
+   public void cantJoinDialogue() {
         CustomToastDialog customToastDialog = new CustomToastDialog(activity());
         customToastDialog.setMessage(getResources().getString(R.string.sorryEvent));
         customToastDialog.show();
-        // Toast.makeText(activity(), getResources().getString(R.string.sorryEvent), Toast.LENGTH_LONG).show();
     }
 
     public void cantInteract() {
         CustomToastDialog customToastDialog = new CustomToastDialog(activity());
         customToastDialog.setMessage(getResources().getString(R.string.sorryEvent));
         customToastDialog.show();
-        //Toast.makeText(activity(), getResources().getString(R.string.noNotification), Toast.LENGTH_LONG).show();
     }
 
     public void noNotification() {
         CustomToastDialog customToastDialog = new CustomToastDialog(activity());
         customToastDialog.setMessage(getResources().getString(R.string.noNotification));
         customToastDialog.show();
-        //Toast.makcaeText(activity(),getResources().getString(R.string.noNotification),Toast.LENGTH_SHORT).show();
     }
 
 
@@ -702,6 +758,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
         if (currentTime < endTime.getTime() && currentTime > startTime.getTime()) {
             return true;
         }
+
         return false;
     }
 
@@ -710,15 +767,16 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
      * @return
      * @throws ParseException
      */
-    public boolean checkWithTime(final String date , int interval) throws ParseException {
+    public boolean checkWithTime(final String date , Double interval) throws ParseException {
         String[] dateSplit = (date.replace("TO", "T")).replace(" ", "T").split("T");
         Date startTime = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).parse(dateSplit[0] + " " + dateSplit[1]);
-        Date endTime = new Date(startTime.getTime()+(interval* 60 * 60 * 1000));
+        Date endTime = new Date(startTime.getTime()+(int)(interval* 60 * 60 * 1000));
         Log.e(TAG, " Date "+startTime+" : "+endTime);
         long currentTime = java.util.Calendar.getInstance().getTime().getTime();
         if (currentTime < endTime.getTime() && currentTime > startTime.getTime()) {
             return true;
         }
+
         return false;
     }
 
@@ -932,17 +990,25 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
         VolleyGetPost volleyGetPost = new VolleyGetPost(activity(), HomeActivity.instance, WebService.LISTEVENTFEED, false) {
             @Override
             public void onVolleyResponse(String response) {
-                Log.e(TAG, "response volley :" + response);
+                if(response != null) Log.e(TAG, "response volley :" + response);
                 try {
-                    getResponse(response);
+                    if(response != null){
+                        getResponse(response);
+                        addintoevnt();
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                }catch (IllegalStateException e){
+
+                }
+                if(response == null){
+
                 }
             }
 
             @Override
             public void onVolleyError(VolleyError error) {
-                Toast.makeText(activity(), getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
+                activity().showToast( getResources().getString(R.string.somethingwentwrong));
             }
 
             @Override
@@ -972,7 +1038,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
      * Event like volley
      */
     void likeEvent() {
-        activity().showProgDilog(false);
+        activity().showProgDilog(false,TAG);
         VolleyGetPost likeEventVolley = new VolleyGetPost(activity(), activity(), WebService.EVENT_LIKE, false) {
             @Override
             public void onVolleyResponse(String response) {
@@ -998,7 +1064,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(activity(), getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
+                    activity().showToast( getResources().getString(R.string.somethingwentwrong));
                 }
                 getAlldata();
 
@@ -1010,7 +1076,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
 
                 activity().dismissProgDailog();
                 Log.e(TAG, " Volley Error " + error);
-                Toast.makeText(activity(), getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
+                activity().showToast( getResources().getString(R.string.somethingwentwrong));
             }
 
             @Override
@@ -1064,8 +1130,12 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
             @Override
             public void onVolleyError(VolleyError error) {
                 Log.e(TAG, "Nudge" + error);
-                Toast.makeText(activity(), getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
+                activity().showToast( getResources().getString(R.string.somethingwentwrong));
+                try {
+                    dialog.dismiss();
+                }catch (IllegalStateException e){
+
+                }
             }
 
             @Override
@@ -1098,7 +1168,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
      * @param type must be 0 or 1
      */
     void addUserIntoEvent(final int type, @Nullable final Bitmap bitmap) {
-        activity().showProgDilog(false);
+        activity().showProgDilog(false,TAG);
         VolleyGetPost adduserVolley = new VolleyGetPost(activity(), activity(), WebService.ADD_EVENT, false) {
             @Override
             public void onVolleyResponse(String response) {
@@ -1113,7 +1183,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
             public void onVolleyError(VolleyError error) {
                 activity().dismissProgDailog();
                 getAlldata();
-                Toast.makeText(activity(), getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
+                activity().showToast( getResources().getString(R.string.somethingwentwrong));
             }
 
             @Override
@@ -1124,9 +1194,9 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
             @Override
             public Map<String, String> setParams(Map<String, String> params) {
                 params.put("userid", userInfo().getUserID());
-                params.put("eventname", userInfo().getUserID());
+                params.put("eventname", eventName);
                 params.put("eventid", EventId);
-                params.put("Eventdate", userInfo().getUserID());
+                params.put("eventdate", eventDate);
                 Log.e(TAG, params.toString());
                 return params;
             }
@@ -1141,7 +1211,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
     }
 
     void addNudge(final String attendyId, final String attendyFBID) {
-        (activity()).showProgDilog(false);
+        (activity()).showProgDilog(false,TAG);
         VolleyGetPost volleyGetPost = new VolleyGetPost(activity(), HomeActivity.instance, WebService.ADD_NUDGE, false) {
             @Override
             public void onVolleyResponse(String response) {
@@ -1275,7 +1345,7 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
                 profile_rating.setEvent_rating(JSon.getString("event_rating"));
             if (JSon.has("venue_detail")) {
                 profile_rating.setVenue_detail(JSon.getString("venue_detail"));
-                txt_address_i1.setText(profile_rating.getVenue_detail());
+                txt_address_i1.setText(profile_rating.getVenue_detail().trim());
             }
             if (JSon.has("venue_id")) profile_rating.setVenue_id(JSon.getString("venue_id"));
             if (JSon.has("venue_lat")) {
@@ -1292,12 +1362,12 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
             }
             if (JSon.has("event_name")) {
                 profile_rating.setEvent_name(JSon.getString("event_name"));
-                if (profile_rating.getEvent_name().length() < 40)
+                if (profile_rating.getEvent_name().length() < 27)
                     txt_event_name.setText(profile_rating.getEvent_name());
                 else
-                    txt_event_name.setText(profile_rating.getEvent_name().substring(0, 40) + "...");
+                    txt_event_name.setText(profile_rating.getEvent_name().substring(0, 27) + "...");
             }
-            if (JSon.has("interval")) profile_rating.setInterval(JSon.getInt("interval") + "");
+            if (JSon.has("interval")) profile_rating.setInterval(JSon.getDouble("interval") + "");
             if (JSon.has("event_date")) profile_rating.setEvent_date(JSon.getString("event_date"));
             if (JSon.has("key_in")) profile_rating.setKey_in(JSon.getString("key_in"));
             if (JSon.has("like")) {
@@ -1333,5 +1403,84 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
     String getCutrrentTimeinFormat() {
         return (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date(System.currentTimeMillis()));
     }
+
+    String getLocation(){
+        String result;
+        if(activity().userInfo().getAddress().length()>1){
+            result =activity().userInfo().getAddress();
+        }
+        else {
+            result = getAddress(Double.parseDouble(activity().getlatlong()[0]), Double.parseDouble(activity().getlatlong()[1]));
+        }
+        return result;
+    }
+
+    String getAddress(double latitude, double longitude) {
+        String result = null;
+        Geocoder geocoder;
+        List<Address> addresses;
+        geocoder = new Geocoder(activity(), Locale.getDefault());
+
+        try {
+            addresses = geocoder.getFromLocation(latitude, longitude, 1);
+
+            String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+            String city = addresses.get(0).getLocality();
+            String addressLine = addresses.get(0).getAddressLine(1);
+            String state = addresses.get(0).getAdminArea();
+            String country = addresses.get(0).getCountryName();
+            String postalCode = addresses.get(0).getPostalCode();
+            String knownName = addresses.get(0).getFeatureName();
+            //result = knownName + " ," + addressLine + " , " + city + "," + state + "," + country + " counter" + counter;// Here 1 represent max location result to returned, by documents it recommended 1 to 5
+            result =  address+","+city + "," + state + "," + country ;// Here 1 represent max location result to returned, by documents it recommended 1 to 5
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+
+    public boolean check() throws ParseException {
+        boolean result;
+           /* if(userInfo().getMakeAdmin().equals(Constants.ADMIN_YES) && checkWithTime(eventDetails.profile_rating.getEvent_date() , Double.parseDouble(eventDetails.getProfile_rating().getInterval()))){
+                addUserIntoEvent(0, null);
+            }
+            else*/ if (activity().getDistance(new Double[]{latitude, longitude, Double.valueOf(activity().getlatlong()[0]), Double.valueOf(activity().getlatlong()[1])}) <= Constants.MAXIMUM_DISTANCE && checkWithTime(eventDetails.profile_rating.getEvent_date() , Double.parseDouble(eventDetails.getProfile_rating().getInterval()) )) {
+            if (eventDetails.getProfile_rating().getKey_in().equals(Constants.KEY_NOTEXIST)) {
+                result = true ;//addUserIntoEvent(0, null);
+            } else result = true;
+        } else {
+            result = false;
+
+        }
+
+
+        return result;
+    }
+
+    void addintoevnt(){
+        if (eventDetails != null && eventDetails.getProfile_rating().getKey_in().equals(Constants.KEY_NOTEXIST)) {
+            try {
+
+
+                if(userInfo().getMakeAdmin().equals(Constants.ADMIN_YES) && checkWithTime(eventDetails.profile_rating.getEvent_date() , Double.parseDouble(eventDetails.getProfile_rating().getInterval()))){
+                    addUserIntoEvent(-1, null);
+                }
+                else if (activity().getDistance(new Double[]{latitude, longitude, Double.valueOf(activity().getlatlong()[0]), Double.valueOf(activity().getlatlong()[1])}) <= Constants.MAXIMUM_DISTANCE && checkWithTime(eventDetails.profile_rating.getEvent_date() , Double.parseDouble(eventDetails.getProfile_rating().getInterval()) )) {
+
+                    addUserIntoEvent(-1, null);
+
+                }
+                else cantJoinDialogue();
+            }
+            catch (ParseException d){
+
+            }
+
+        }
+    }
+
+
 
 }

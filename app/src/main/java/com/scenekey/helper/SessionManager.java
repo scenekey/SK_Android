@@ -43,6 +43,10 @@ public class SessionManager {
         editor.putString(Constants.FACEBOOK_ID, userInfo.getFacebookId());
         editor.putBoolean(Constants.TRYDEMO_FIRST, userInfo.isFirstTimeDemo());
         editor.putString(Constants.ACCESSTOEKN, userInfo.getUserAccessToken());
+        editor.putString(Constants.MAKE_ADMIN, userInfo.getMakeAdmin());
+        editor.putString(Constants.LATITUDE, userInfo.getLatitude());
+        editor.putString(Constants.LONGITUDE, userInfo.getLongitude());
+        editor.putString(Constants.ADDDRESS, userInfo.getAddress());
         editor.putBoolean(IS_LOGGEDIN, true);
         editor.commit();
     }
@@ -65,6 +69,10 @@ public class SessionManager {
         userInfo.setFacebookId(mypref.getString(Constants.FACEBOOK_ID, null));
         userInfo.setFirstTimeDemo(mypref.getBoolean(Constants.TRYDEMO_FIRST, false));
         userInfo.setUserAccessToken(mypref.getString(Constants.ACCESSTOEKN, null));
+        userInfo.setMakeAdmin(mypref.getString(Constants.MAKE_ADMIN, Constants.ADMIN_NO));
+        userInfo.setLatitude(mypref.getString(Constants.LATITUDE, null));
+        userInfo.setLongitude(mypref.getString(Constants.LONGITUDE, null));
+        userInfo.setAddress(mypref.getString(Constants.ADDDRESS, null));
         return userInfo;
     }
 

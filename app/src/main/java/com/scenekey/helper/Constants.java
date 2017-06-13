@@ -15,11 +15,12 @@ public class Constants {
 
     public static final int INTENT_CAMERA = 789;
     public static final int RESULT_LOAD = 156;
+    public static final int  PLACE_AUTOCOMPLETE_REQUEST_CODE = 7845;
 
     /***
      * this is the maximum distance from user location to event location in meters
      */
-    public static final int MAXIMUM_DISTANCE = 2000000000;
+    public static final int MAXIMUM_DISTANCE = 200;
 
 
     public static final String USER_ID = "USER_ID";
@@ -37,11 +38,19 @@ public class Constants {
     public static final String FACEBOOK_ID = "FACEBOOK_ID";
     public static final String TRYDEMO_FIRST = "TRYDEMO_FIRST";
     public static final String ACCESSTOEKN = "ACCESSTOEKN";
+    public static final String MAKE_ADMIN = "MAKE_ADMIN";
+    public static final String LATITUDE = "LATITUDE";
+    public static final String LONGITUDE = "LONGITUDE";
+    public static final String ADDDRESS = "ADDDRESS";
 
-    public static final String NUDGE_YOUR = "You have been nudged";
+    public static final String NUDGE_YOUR = "You have been Nudged!!";
 
     public static final String KEY_NOTEXIST = "no exist";
     public static final String KEY_EXIST = "exist";
+
+
+    public static final String ADMIN_YES = "yes";
+    public static final String ADMIN_NO = "no";
 
     public static String FEED_TYPE_PICTURE = "Picture";
     public static String FEED_TYPE_COMMENT = "Comment";
