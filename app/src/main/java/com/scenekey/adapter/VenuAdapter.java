@@ -38,8 +38,11 @@ public class VenuAdapter extends RecyclerView.Adapter<VenuAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final Venue venue = venuelist.get(position);
-        Picasso.with(activity).invalidate(venue.getImage());
-        Picasso.with(activity).load(venue.getImage()).into(holder.img_venu);
+        if(!venue.isValidate()){
+            Picasso.with(activity).invalidate(venue.getImage());
+            venue.setValidate(true);
+        }
+        Picasso.with(activity).load(venue.getImage()).placeholder(R.drawable.ic_map_marker_gray).into(holder.img_venu);
         holder.txt_venu_name.setText(venue.getVenue_name());
         holder.txt_venu_address.setText(venue.getCity() + " " + venue.getState());
 

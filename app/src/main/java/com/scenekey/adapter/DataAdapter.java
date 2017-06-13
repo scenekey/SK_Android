@@ -17,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.facebook.AccessToken;
@@ -43,10 +44,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Map;
 
 public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
+    private static final String TAG = DataAdapter.class.toString();
     HomeActivity activity;
     Font font;
     Dialog dialog;
@@ -105,12 +108,17 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (attendy.getUserid().equals(HomeActivity.instance.getSessionManager().getUserInfo().getUserID())) {
+                if (attendy.getUserid().equals(HomeActivity.instance.userInfo().getUserID())) {
                     popUpMy(position);
                 } else {
-                    if (fragment.inTime && fragment.inLocation) ;
-                    popupRoom(position);
-                    //else fragment.cantInteract();
+                    try {
+                        if (fragment.check())
+                            popupRoom(position);
+                        else fragment.cantInteract();
+                    } catch (ParseException e) {
+                        activity.showToast(activity.getString(R.string.somethingwentwrong));
+                    }
+
                 }
             }
         });
@@ -221,6 +229,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
         img_reply_img = (ImageView) popupview.findViewById(R.id.img_reply_img);
         next = (ImageView) popupview.findViewById(R.id.next);
         txt_timer = (TextView) popupview.findViewById(R.id.txt_timer);
+        TextView txt_white_circle = (TextView) popupview.findViewById(R.id.txt_white_circle);
         txt_nudge = (TextView) popupview.findViewById(R.id.txt_nudge);
         txt_reply = (TextView) popupview.findViewById(R.id.txt_reply);
         txt_title = (TextView) popupview.findViewById(R.id.txt_title);
@@ -229,6 +238,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
         txt_mutual = (TextView) popupview.findViewById(R.id.txt_mutual);
         nudge = (RelativeLayout) popupview.findViewById(R.id.nudge);
         txt_timer.setVisibility(View.GONE);
+        txt_white_circle.setVisibility(View.GONE);
         profile = (RelativeLayout) popupview.findViewById(R.id.profile);
         mutualFriend(attendy.getUserFacebookId(),txt_mutual);
         Picasso.with(activity).load(attendy.getUserimage()).transform(new CircleTransform()).into(img_p2_profile);
@@ -260,9 +270,16 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
                 dialog.dismiss();
 
 
-                Message_Fargment message_fargment = new Message_Fargment();
-                ((HomeActivity) activity).addFragment(message_fargment, 1);
-                message_fargment.setData(data[0], data[1], attendy, fragment);
+                try {
+                    if(fragment.check()){ Message_Fargment message_fargment = new Message_Fargment();
+                    ((HomeActivity) activity).addFragment(message_fargment, 1);
+                    message_fargment.setData(data[0], data[1], attendy, fragment);}
+                    else {
+                        fragment.cantJoinDialogue();
+                    }
+                } catch (ParseException e) {
+                    activity.showToast(activity.getString(R.string.somethingwentwrong));
+                }
             }
         });
 
@@ -286,16 +303,29 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
 
-                ((HomeActivity) activity).showProgDilog(false);
+                try {
+                    if(fragment.check()){((HomeActivity) activity).showProgDilog(false,TAG);
                 VolleyGetPost volleyGetPost = new VolleyGetPost(activity, HomeActivity.instance, WebService.ADD_NUDGE, false) {
                     @Override
                     public void onVolleyResponse(String response) {
                         Log.e("VolleyRespnce", " Data Adapter " + response);
                         ((HomeActivity) activity).dismissProgDailog();
                         dialog.dismiss();
-                        CustomToastDialog customToastDialogA = new CustomToastDialog(activity);
-                        customToastDialogA.setMessage(activity.getResources().getString(R.string.goodNudge));
-                        customToastDialogA.show();
+                        try {
+                            if ((new JSONObject(response).getInt("success") == 0)) {
+                                CustomToastDialog customToastDialogA = new CustomToastDialog(activity);
+                                customToastDialogA.setMessage(new JSONObject(response).getString("msg"));
+                                customToastDialogA.show();
+
+                            } else {
+                                CustomToastDialog customToastDialogA = new CustomToastDialog(activity);
+                                customToastDialogA.setMessage(activity.getResources().getString(R.string.goodNudge));
+                                customToastDialogA.show();
+                            }
+                        } catch (Exception e) {
+
+                            Toast.makeText(activity, activity.getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
+                        }
 
                     }
 
@@ -327,7 +357,13 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
                         return params;
                     }
                 };
-                volleyGetPost.execute();
+                volleyGetPost.execute();}
+                    else {
+                        fragment.cantJoinDialogue();
+                    }
+                } catch (ParseException e) {
+                    activity.showToast(activity.getString(R.string.somethingwentwrong));
+                }
             }
         });
 
@@ -371,7 +407,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
 
 
     void setUserStatus(final int value){
-       activity.showProgDilog(false);
+       activity.showProgDilog(false,TAG);
         VolleyGetPost userStatus = new VolleyGetPost(activity,activity ,WebService.SET_STATUS,false) {
             @Override
             public void onVolleyResponse(String response) {

@@ -79,10 +79,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Holder
                 }
             }
         });
-        /*if(filteredList.size()==1) holder.txt_category.setBackgroundResource(R.drawable.bg_round_border_primary_single);
-        else if(position == 0)holder.txt_category.setBackgroundResource(R.drawable.bg_round_border_primary_top);
-        else if(position == (filteredList.size()-1))holder.txt_category.setBackgroundResource(R.drawable.bg_round_border_primary_bottom);
-        else holder.txt_category.setBackgroundResource(R.drawable.bg_round_border_primary_side);*/
+
     }
 
     @Override
@@ -93,14 +90,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Holder
 
     @Override
     public Filter getFilter() {
-       /**/// Log.v("RecyclerAdapter", mFilter.toString());
         return mFilter;
     }
 
-    /******************************************************
-     * Filter For Text
-     *****************************************/
-
+    /**
+     * This is class is used for Filter the text
+     */
     public class CustomFilter extends Filter {
         private CategoryAdapter mAdapter;
 

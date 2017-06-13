@@ -60,7 +60,7 @@ public class TreandingAdapter extends RecyclerView.Adapter<TreandingAdapter.Hold
             Bitmap bitmap = ImageUtil.getBitmapByUrl(event.getImage());
             holder.img_event.setImageBitmap(bitmap);
         } catch (Exception e) {
-            Picasso.with(activity).load(event.getImage()).resize(widthA,heightA).into(holder.img_event);
+            Picasso.with(activity).load(event.getImage()).resize(widthA,heightA).placeholder(R.drawable.scene1).into(holder.img_event);
             e.printStackTrace();
         }
 

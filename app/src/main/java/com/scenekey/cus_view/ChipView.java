@@ -7,6 +7,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.scenekey.R;
+import com.scenekey.Utility.Font;
 
 /**
  * Created by mindiii on 9/5/17.
@@ -25,6 +26,7 @@ public abstract class ChipView extends RelativeLayout implements View.OnClickLis
         this.context = context;
         this.Id = Id;
         initiateview();
+        label.setTypeface(new Font(context).RailRegular());
     }
 
 

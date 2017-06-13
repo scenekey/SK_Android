@@ -1,15 +1,19 @@
 package com.scenekey.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Criteria;
 import android.location.Location;
-import android.os.AsyncTask;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -17,8 +21,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
@@ -30,10 +32,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
-import com.facebook.FacebookSdk;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderApi;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.scenekey.R;
-import com.scenekey.Services.TrackGPS;
 import com.scenekey.Utility.CusDialogProg;
 import com.scenekey.Utility.CustomToastDialog;
 import com.scenekey.Utility.Font;
@@ -41,7 +48,6 @@ import com.scenekey.Utility.Permission;
 import com.scenekey.Utility.Util;
 import com.scenekey.Utility.VolleyGetPost;
 import com.scenekey.Utility.WebService;
-import com.scenekey.fcm.MyFirebaseInstanceIDService;
 import com.scenekey.fragments.Add_Event_Fragmet;
 import com.scenekey.fragments.Event_Fragment;
 import com.scenekey.fragments.Home_no_Event;
@@ -49,7 +55,9 @@ import com.scenekey.fragments.Key_In_Event_Fragment;
 import com.scenekey.fragments.Map_Fragment;
 import com.scenekey.fragments.NearEvent_Fargment;
 import com.scenekey.fragments.Profile_Fragment;
+import com.scenekey.fragments.Search_Fragment;
 import com.scenekey.fragments.Trending_Fragment;
+import com.scenekey.fragments.UpdateFragment;
 import com.scenekey.helper.Constants;
 import com.scenekey.helper.SessionManager;
 import com.scenekey.lib_sources.arc_menu.ArcMenu;
@@ -76,7 +84,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 /**
  * Created by mindiii on 10/4/17.
  */
-public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     public static final int CALLBACK_ACTIVITY = 0;
     static final String TAG = HomeActivity.class.toString();
     public static HomeActivity instance;
@@ -84,13 +92,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public static int ActivityHeight;
     public Permission permission;
     RelativeLayout rtlv_one, rtlv_two, rtlv_three, rtlv_four, rtlv_five;
-    /*TextView        txt_one, txt_two ,txt_three,txt_four,txt_five;*/
     RelativeLayout lastclicked;
-    FrameLayout frame_fragments_a3, frm_bottmbar;
+    FrameLayout frame_fragments_a3;
+    private static FrameLayout frm_bottmbar;
     boolean doublebackpress;
     SessionManager sessionManager;
-    UserInfo userInfo;
-    Mytask mytask;
+    static UserInfo userInfo;
     ArrayList<Events> eventsArrayList;
     ArrayList<Events> eventsNearbyList;
     boolean eventAvailable;
@@ -100,19 +107,18 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private static CusDialogProg cusDialogProg;
     private double latitude, longiude;
     private TextView txt_f1_title;
-    private TrackGPS gps;
+
     private RelativeLayout title_view;
     View view;
+
+    private GoogleApiClient googleApiClient;
+    private LocationRequest locationRequest;
+    int position;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //FacebookSdk.sdkInitialize(activity().getApplicationContext());
         overridePendingTransition(0, R.anim.fade_out);
-        //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-//Remove notification bar
-        //this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.a3_home_activity);
         view = this.getWindow().getDecorView();
         Util.setStatusBarColor(this, R.color.colorPrimary);
@@ -128,7 +134,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         cusDialogProg = new CusDialogProg(this, R.layout.custom_progress_dialog_layout);
 
         //TODO TEMP
-        Log.e(TAG," FIREBASE "+ FirebaseInstanceId.getInstance().getToken());
+        Log.e(TAG, " FIREBASE " + FirebaseInstanceId.getInstance().getToken());
 
         /*************************** Arc Menu *****************************************/
         ArcMenu arcMenu = (ArcMenu) findViewById(R.id.arcMenuX);
@@ -158,6 +164,35 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
         initArcMenu(arcMenu, str, ITEM_DRAWABLES, ITEM_DRAWABLES.length);
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        locationRequest = new LocationRequest();
+        locationRequest.setInterval(60 * 1000);
+        locationRequest.setFastestInterval(15 * 1000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        googleApiClient.connect();
+        try {
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            Criteria criteria = new Criteria();
+            String provider = locationManager.getBestProvider(criteria, false);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                return;
+            }
+            Location location = locationManager.getLastKnownLocation(provider);
+            latitude = location.getLatitude();
+            longiude = location.getLongitude();
+            Intent in = getIntent();
+            latitude = Double.parseDouble(in.getStringExtra(Constants.LATITUDE));
+            longiude = Double.parseDouble(in.getStringExtra(Constants.LONGITUDE));
+        }
+        catch (NullPointerException e){
+
+        }
+
 
     }
 
@@ -191,6 +226,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
     public UserInfo userInfo(){
+        if(userInfo == null) userInfo = sessionManager.getUserInfo();
         return userInfo;
     }
     /********************************************************************************/
@@ -201,29 +237,46 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         sessionManager = new SessionManager(instance);
         userInfo = sessionManager.getUserInfo();
         setViews();
+        googleApiClient.connect();
         dimmedEffet();
         permission = new Permission(this, instance);
         permission.askForGps();
-        gps = new TrackGPS(instance) {
-            @Override
-            public String[] onLocationUpdate(double latitude, double longitude) {
-                instance.latitude = latitude;
-                instance.longiude = longitude;
-                Log.e(TAG, "Lat Update" + latitude + " Long Update" + longitude);
-                return new String[0];
-            }
-        };
-        Log.e(TAG, " : " + gps.getLongitude() + " : " + gps.getLatitude());
-
-        mytask = new Mytask();
-        mytask.execute("");
-        //TODO setting the page according events
-        //TODO progress bar for trending and till getting the list.
+        permission.checkLocationPermission();
+        permission.checkForCamera();
         replaceFragment(new Home_no_Event());
+        if(userInfo.getMakeAdmin().equals(Constants.ADMIN_YES)){
+            try {
+                latitude = Double.parseDouble(userInfo.getLatitude());
+                longiude = Double.parseDouble(userInfo.getLongitude());
+            }catch (Exception e){
+
+            }
+
+        }
         rtlv_three.callOnClick();
-        //checkEventAvailablity(true);
 
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        googleApiClient.connect();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (googleApiClient.isConnected()) {
+            requestLocationUpdates();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        googleApiClient.disconnect();
+    }
+
 
     void setViews() {
         rtlv_one = (RelativeLayout) findViewById(R.id.rtlv_one);
@@ -233,16 +286,23 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         rtlv_five = (RelativeLayout) findViewById(R.id.rtlv_five);
         frame_fragments_a3 = (FrameLayout) findViewById(R.id.frame_fragments_a3);
         frm_bottmbar = (FrameLayout) findViewById(R.id.frm_bottmbar);
-        dimmedEffet();
-        setOnClick(rtlv_one, rtlv_two, rtlv_three, rtlv_four, rtlv_five,img_f1_profile);
-
-        dimmedEffet();
+        setOnClick(rtlv_one,
+                rtlv_two,
+                rtlv_three,
+                rtlv_four,
+                rtlv_five,
+                img_f1_profile);
         font = new Font(this);
-        font.setFontFranklinRegular(getAllTextView(rtlv_one, rtlv_two, rtlv_three, rtlv_four, rtlv_five));
+        font.setFontFranklinRegular(getAllTextView(rtlv_one,
+                rtlv_two,
+                rtlv_three,
+                rtlv_four,
+                rtlv_five));
         font.setFontFranklinRegular(txt_f1_title);
         try {
-            Picasso.with(this).load(userInfo.getUserImage()).into(img_f1_profile);
+            Picasso.with(this).load(userInfo.getUserImage()).placeholder(R.drawable.image_defult_profile).into(img_f1_profile);
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -252,46 +312,68 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (v.getId()) {
             case R.id.rtlv_one:
+                position =1;
                 setBottombar((RelativeLayout) v, lastclicked);
                 replaceFragment(new Trending_Fragment());
                 break;
             case R.id.rtlv_two:
+                position =2;
                 setBottombar((RelativeLayout) v, lastclicked);
                 if (map_fragment == null) map_fragment = new Map_Fragment();
                 replaceFragment(map_fragment);
                 break;
             case R.id.rtlv_three:
+                position =3;
+                replaceFragment(new Home_no_Event());
                 setBottombar((RelativeLayout) v, lastclicked);
                 if(eventsArrayList != null)eventsArrayList.clear();
                 if(eventsNearbyList != null)eventsNearbyList.clear();
-                checkEventAvailablity(true);
+                if(latitude == 0.0D && longiude == 0.0D){
+                    if(userInfo.getMakeAdmin().equals(Constants.ADMIN_YES)){
+                        try{
+                            checkEventAvailablity(true);
+                        }catch (IllegalStateException e){
 
+                        }catch (IllegalArgumentException e){
+
+                        }
+                    }else try{
+                        CustomToastDialog customToastDialog = new CustomToastDialog(this);
+                        customToastDialog.setMessage(getString(R.string.elocatoion));
+                        customToastDialog.show();
+                        requestLocationUpdates();
+                    }catch(IllegalStateException e){
+
+                    }
+
+                }
+                else {
+                    try{
+                        checkEventAvailablity(true);
+                    }
+                    catch (IllegalArgumentException e){
+
+                    }
+                    catch (IllegalStateException e){
+
+                    }
+                }
                 break;
             case R.id.rtlv_four:
+                position =4;
                 setBottombar((RelativeLayout) v, lastclicked);
-                // TODO delete temp Chekcing the profile
-                /*try {
-
-                    EventAttendy attendy = new EventAttendy();
-                    attendy.setUserid("163");
-                    attendy.setUserFacebookId("199951490519578");
-                    attendy.setUserimage(userInfo.getUserImage());
-                    attendy.setUsername(userInfo.getUserName());
-                    addFragment(new Profile_Fragment().setData(attendy, true, new Event_Fragment(),0), 1);
-                }catch (Exception e){
-
-                }*/
+                replaceFragment(new Search_Fragment());
                 break;
             case R.id.rtlv_five:
+                position =5;
                 setBottombar((RelativeLayout) v, lastclicked);
                 replaceFragment(new Add_Event_Fragmet());
                 break;
             case R.id.img_f1_profile:
                 try {
-
                     EventAttendy attendy = new EventAttendy();
-                    attendy.setUserid("163");
-                    attendy.setUserFacebookId("199951490519578");
+                    attendy.setUserid(userInfo.getUserID());
+                    attendy.setUserFacebookId(userInfo.getFacebookId());
                     attendy.setUserimage(userInfo.getUserImage());
                     attendy.setUsername(userInfo.getUserName());
                     addFragment(new Profile_Fragment().setData(attendy, true, null,0), 1);
@@ -429,7 +511,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         Runnable runnable;
         Log.e(TAG, "" + getSupportFragmentManager().getBackStackEntryCount());
         if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
-            handler.postDelayed(runnable = new Runnable() {
+           /* handler.postDelayed(runnable = new Runnable() {
                 @Override
                 public void run() {
                     doublebackpress = false;
@@ -437,12 +519,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }, 1000);
             if (doublebackpress) {
                 handler.removeCallbacks(runnable);
-                finish();
+                //finish();
             } else {
-                doublebackpress = true;
+                doublebackpress = false;
                 super.onBackPressed();
 
-            }
+            }*/
+            super.onBackPressed();
         } else {
             Toast.makeText(this, getResources().getString(R.string.alertDoubletap), Toast.LENGTH_SHORT).show();
             handler.postDelayed(runnable = new Runnable() {
@@ -490,7 +573,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     /***
      * @param ViewDot One of {  #VISIBLE}, { #INVISIBLE}, or { #GONE}.
      */
-    public void setBBvisiblity(int ViewDot) {
+    public void setBBvisiblity(int ViewDot,String TAG) {
+        Log.e(TAG," B B visiballity "+ViewDot+" TAG "+TAG);
         frm_bottmbar.setVisibility(ViewDot);
         if (ViewDot == View.GONE) {
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) frame_fragments_a3.getLayoutParams();
@@ -503,7 +587,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void setBBvisiblity(final int ViewDot, final int delay) {
+    public void setBBvisiblity(final int ViewDot, final int delay,String TAG) {
+        Log.e(TAG," B B visiballity "+ViewDot+" TAG "+TAG);
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -530,7 +615,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    public void showProgDilog(boolean b) {
+    public void showProgDilog(boolean b ,String TAG) {
         cusDialogProg.setCanceledOnTouchOutside(b);
         cusDialogProg.setCancelable(b);
         cusDialogProg.show();
@@ -554,18 +639,27 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == Constants.MY_PERMISSIONS_REQUEST_CAMERA) {
-            for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+           if(getSupportFragmentManager().getFragments() != null ) {for (Fragment fragment : getSupportFragmentManager().getFragments()) {
                 try {
                     ((Event_Fragment) fragment).onRequestPermissionsResult(requestCode, permissions, grantResults);
+                        break;
                 } catch (Exception e) {
 
                 }
                 try {
                     ((Key_In_Event_Fragment) fragment).onRequestPermissionsResult(requestCode, permissions, grantResults);
+                    break;
+                } catch (Exception e) {
+
+                }
+                try {
+                    ((UpdateFragment) fragment).onRequestPermissionsResult(requestCode, permissions, grantResults);
+                    break;
                 } catch (Exception e) {
 
                 }
             }
+           }
         }
     }
 
@@ -593,9 +687,35 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                             }
                         }
+                        if (jo.has("userInfo")) {
+                            if(userInfo== null) userInfo = sessionManager.getUserInfo();
+                            Object intervention = jo.get("userInfo");
+                            if (intervention instanceof JSONArray) {
+                                sessionManager.logout(HomeActivity.this);
+                            }
+                            JSONObject user = jo.getJSONObject("userInfo");
+                            if(user.has("makeAdmin"))   userInfo.setMakeAdmin(user.getString("makeAdmin"));
+                            if(user.has("lat"))         userInfo.setLatitude(user.getString("lat"));
+                            if(user.has("longi"))       userInfo.setLongitude(user.getString("longi"));
+                            if(user.has("address"))       userInfo.setAddress(user.getString("address"));
+                            updateSession(userInfo);
+                        }
                         //else if()
                     } else {
-                        if (jo.has("userinfo")) {
+                        if (jo.has("userInfo")) {
+                            if(userInfo== null) userInfo = sessionManager.getUserInfo();
+                            Object intervention = jo.get("userInfo");
+                            if (intervention instanceof JSONArray) {
+                                sessionManager.logout(HomeActivity.this);
+                            }
+                            JSONObject user = jo.getJSONObject("userInfo");
+                            if(user.has("makeAdmin"))   userInfo.setMakeAdmin(user.getString("makeAdmin"));
+                            if(user.has("lat"))         userInfo.setLatitude(user.getString("lat"));
+                            if(user.has("longi"))       userInfo.setLongitude(user.getString("longi"));
+                            if(user.has("adminLat"))    userInfo.setLatitude(user.getString("adminLat"));
+                            if(user.has("adminLong"))   userInfo.setLongitude(user.getString("adminLong"));
+                            if(user.has("address"))     userInfo.setAddress(user.getString("address"));
+                            updateSession(userInfo);
                         }
                         if (jo.has("events")) {
                             if (eventsArrayList == null) eventsArrayList = new ArrayList<>();
@@ -642,11 +762,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     if (cusDialogProg != null) cusDialogProg.dismiss();
                     if(showProgress)Toast.makeText(HomeActivity.this,getString(R.string.somethingwentwrong),Toast.LENGTH_SHORT).show();
                 }
+                try {
+                    Picasso.with(HomeActivity.this).load(userInfo.getUserImage()).placeholder(R.drawable.image_defult_profile).into(img_f1_profile);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
             }
 
             @Override
             public void onVolleyError(VolleyError error) {
+                replaceFragment(new Home_no_Event());
                 if (cusDialogProg != null) cusDialogProg.dismiss();
                 if(showProgress)Toast.makeText(HomeActivity.this,getString(R.string.somethingwentwrong),Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "" + error);
@@ -662,6 +788,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 params.put("lat",getlatlong()[0]);
                 params.put("long",getlatlong()[1]);
                 params.put("user_id",userInfo.getUserID());
+                params.put("updateLocation",Constants.ADMIN_NO);
                 Log.e(TAG," params "+params.toString());
                 return params;
             }
@@ -685,24 +812,37 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public String[] getlatlong() {
+        String[] result ;
         //TODO remove constant Before LIVE
-        if(latitude == 0.0D && longiude == 0.0D){
-            gps.getLocation();
-            latitude = gps.getLatitude();
-            longiude = gps.getLongitude();
-            CustomToastDialog customToastDialog = new CustomToastDialog(instance);
-            customToastDialog.setMessage("There was an error getting your location");
-            customToastDialog.show();
+        if(userInfo.getMakeAdmin().contains(Constants.ADMIN_YES) && islocation()){
 
-
-           // Toast.makeText(HomeActivity.this,"There was an error getting your location",Toast.LENGTH_SHORT).show();
+            result = new String[]{userInfo.getLatitude(),userInfo.getLongitude()};
         }
-        //return new String[]{latitude + "", longiude + ""};
-        return new String[]{38.222046+"",-122.144755+""};
+        else if(latitude == 0.0D && longiude == 0.0D){
+            try{CustomToastDialog customToastDialog = new CustomToastDialog(instance);
+            customToastDialog.setMessage("There was an error getting your location");
+            customToastDialog.show();}
+            catch (Exception e){
+
+            }
+            result = new String[]{latitude + "", longiude + ""};
+        }
+        else{
+            result = new String[]{latitude + "", longiude + ""};
+        }
+        return result;
+       // return new String[]{38.222046+"",-122.144755+""};
     }
 
     public SessionManager getSessionManager() {
         return sessionManager;
+    }
+
+    public void updateSession(UserInfo user){
+
+        sessionManager.createSession(user);
+        userInfo = sessionManager.getUserInfo();
+
     }
 
     public void setTitle(String title) {
@@ -748,10 +888,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
      * Chekcing the Events
      ******************************************************/
 
-    public boolean checkWithTime(final String date , int interval) throws ParseException {
+    public boolean checkWithTime(final String date , double interval) throws ParseException {
         String[] dateSplit = (date.replace("TO", "T")).replace(" ", "T").split("T");
         Date startTime = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).parse(dateSplit[0] + " " + dateSplit[1]);
-        Date endTime = new Date(startTime.getTime()+(interval* 60 * 60 * 1000));
+        Date endTime = new Date(startTime.getTime()+(int)(interval* 60 * 60 * 1000));
         Log.e(TAG, " Date "+date+" : "+startTime+" : "+endTime);
         long currentTime = java.util.Calendar.getInstance().getTime().getTime();
         if (currentTime < endTime.getTime() && currentTime > startTime.getTime()) {
@@ -821,25 +961,102 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    class Mytask extends AsyncTask<String, Void, double[]> {
-        @Override
-        protected double[] doInBackground(String... params) {
-            while (true) {
-
-                if (latitude == 0.0d && longiude == 0.0d) {
-                    latitude = gps.getLatitude();
-                    longiude = gps.getLongitude();
-                } else break;
-            }
-            return new double[]{latitude, longiude};
+    boolean islocation(){
+        try{if(Double.parseDouble(userInfo.getLongitude())==0.0D){
+            return false;
         }
+        else if(Double.parseDouble(userInfo.getLatitude())==0.0D){
+            return false;
+        }
+        else return true;}
+        catch (Exception e){
+            return false;
+        }
+    }
 
-        @Override
-        protected void onPostExecute(double[] s) {
-            //checkEventAvailablity(false);
-            super.onPostExecute(s);
+    public void showToast(String s)  {
+        try {
+            Toast.makeText(this,s,Toast.LENGTH_SHORT).show();
+        }catch (IllegalStateException e){
+
+        }catch (IllegalArgumentException e){
+
         }
     }
 
 
+
+    /********************************************* Location ***********************************************************************/
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        requestLocationUpdates();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    /*ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+    byte[] byteArray = byteArrayOutputStream .toByteArray();
+    to encode base64 from byte array use following method
+    String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);*/
+    private void requestLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        latitude = location.getLatitude();
+        longiude = location.getLongitude();
+    }
+
+    /**
+     * Used this to jump from any page to last bottom bar position
+     */
+    public void backPressToposition(){
+        try{
+            switch (position){
+                case 1:
+                    rtlv_one.callOnClick();
+                    break;
+                case 2:
+                    rtlv_two.callOnClick();
+                    break;
+                case 3:
+                    rtlv_three.callOnClick();
+                    break;
+                case 4:
+                    rtlv_four.callOnClick();
+                    break;
+                case 5:
+                    rtlv_five.callOnClick();
+                    break;
+                default:
+                    rtlv_three.callOnClick();
+                    break;
+            }
+        }catch (IllegalStateException e){
+
+        }
+
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongiude() {
+        return longiude;
+    }
 }

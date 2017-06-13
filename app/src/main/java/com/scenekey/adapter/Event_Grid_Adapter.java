@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -20,86 +21,144 @@ import com.scenekey.R;
 import com.scenekey.Utility.CircleTransform;
 import com.scenekey.Utility.CustomToastDialog;
 import com.scenekey.Utility.Font;
+import com.scenekey.Utility.WebService;
 import com.scenekey.activity.HomeActivity;
 import com.scenekey.fragments.Demo_Event_Fragment;
+import com.scenekey.fragments.Demo_Event_Fragment_ListView;
 import com.scenekey.fragments.Demo_Message_Fargment;
 import com.scenekey.fragments.Demo_Profile_Fragment;
 import com.scenekey.fragments.Home_no_Event;
-import com.scenekey.fragments.Message_Fargment;
 import com.scenekey.fragments.Profile_Fragment;
+import com.scenekey.helper.Constants;
 import com.scenekey.models.EventAttendy;
+import com.scenekey.models.Feeds;
 import com.scenekey.models.RoomPerson;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class DataAdapter_Demo extends RecyclerView.Adapter<DataAdapter_Demo.ViewHolder> {
-    ArrayList<RoomPerson> roomPersons;
-    Context context;
+/**
+ * Created by mindiii on 8/6/17.
+ */
+
+public class Event_Grid_Adapter extends BaseAdapter {
+    ArrayList<RoomPerson> personlist;
     Activity activity;
     View popupview;
     Dialog dialog;
     Font font;
     Bitmap imageArray[];
-    Demo_Event_Fragment demo_event_fragment;
+    Demo_Event_Fragment_ListView demo_event_fragment;
 
+    public Event_Grid_Adapter(ArrayList<RoomPerson> roomPersons) {
+        this.personlist = roomPersons;
+    }
 
-    public DataAdapter_Demo(Context context, ArrayList<RoomPerson> android, Activity activity, Font font, Home_no_Event home_no_event,Demo_Event_Fragment demo_event_fragment) {
-        this.roomPersons = android;
-        this.context = context;
+    public Event_Grid_Adapter(HomeActivity activity, ArrayList<RoomPerson> roomPersons, HomeActivity instance, Font font, Home_no_Event home_no_event, Demo_Event_Fragment_ListView demo_event_fragment_listView) {
+        this.personlist = roomPersons;
         this.activity = activity;
         this.font = font;
         this.imageArray = home_no_event.getImageArrray();
-        this.demo_event_fragment = demo_event_fragment;
+        this.demo_event_fragment = demo_event_fragment_listView;
     }
 
     @Override
-    public DataAdapter_Demo.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.gva1_room_people, viewGroup, false);
+    public int getCount() {
 
-        return new ViewHolder(view);
+        return personlist.size();
     }
 
     @Override
-    public void onBindViewHolder(DataAdapter_Demo.ViewHolder viewHolder, int i) {
-        final RoomPerson person = roomPersons.get(i);
-        final int position = i;
-        viewHolder.txt_name_gvb1.setText(roomPersons.get(i).getAndroid_version_name().split("\\s+")[0]);
-        Font font = new Font(activity);
-        font.setFontArial_Regular(viewHolder.txt_name_gvb1);
-        if (position == 8)
-            Picasso.with(context).load(person.getAndroid_image_url()).transform(new CircleTransform()).into(viewHolder.img_profile_gvb1);
-            // Picasso.with(context).load(Integer.parseInt(person.getAndroid_image_url())).into(viewHolder.img_profile_gvb1);
-        else
-            viewHolder.img_profile_gvb1.setImageBitmap(imageArray[i]);
-        // Picasso.with(context).load(person.getAndroid_image_url()).transform(new CircleTransform()).into(viewHolder.img_profile_gvb1);
-        // Picasso.with(context).load(person.getAndroid_image_url()).into(viewHolder.img_profile_gvb1);
-        switch (person.getStaus()) {
-            case "busy":
-                viewHolder.img_profile_gvb1.setBackgroundResource(R.drawable.bg_yellow_ring);
-                break;
-            case "avilable":
-                viewHolder.img_profile_gvb1.setBackgroundResource(R.drawable.bg_green_ring);
-                break;
-            case "na":
-                viewHolder.img_profile_gvb1.setBackgroundResource(R.drawable.bg_red_ring);
-                break;
-        }
-        viewHolder.img_profile_gvb1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (position == 8) popUpMy();
-                else popupRoom(position);
+    public Object getItem(int position) {
+        return null;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return 0;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View itemView = convertView;
+        final int i = position;
+        if(itemView == null){
+            LayoutInflater inflater = (LayoutInflater) HomeActivity.instance
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            itemView = inflater.inflate(R.layout.gva1_room_people, parent, false);
+            Event_Grid_Adapter.Holder holder = new Event_Grid_Adapter.Holder();
+            holder.txt_name_gvb1 = (TextView) itemView.findViewById(R.id.txt_name_gvb1);
+            holder.img_profile_gvb1 = (ImageView) itemView.findViewById(R.id.img_profile_gvb1);
+            final RoomPerson person = personlist.get(i);
+            Font font = new Font(activity);
+            font.setFontArial_Regular(holder.txt_name_gvb1);
+            holder.txt_name_gvb1.setText(personlist.get(i).getAndroid_version_name().split("\\s+")[0]);
+            if (i == 8)
+                Picasso.with(activity).load(person.getAndroid_image_url()).transform(new CircleTransform()).into(holder.img_profile_gvb1);
+                // Picasso.with(context).load(Integer.parseInt(person.getAndroid_image_url())).into(viewHolder.img_profile_gvb1);
+            else
+                holder.img_profile_gvb1.setImageBitmap(imageArray[i]);
+            // Picasso.with(context).load(person.getAndroid_image_url()).transform(new CircleTransform()).into(viewHolder.img_profile_gvb1);
+            // Picasso.with(context).load(person.getAndroid_image_url()).into(viewHolder.img_profile_gvb1);
+            switch (person.getStaus()) {
+                case "busy":
+                    holder.img_profile_gvb1.setBackgroundResource(R.drawable.bg_yellow_ring);
+                    break;
+                case "avilable":
+                    holder.img_profile_gvb1.setBackgroundResource(R.drawable.bg_green_ring);
+                    break;
+                case "na":
+                    holder.img_profile_gvb1.setBackgroundResource(R.drawable.bg_red_ring);
+                    break;
             }
-        });
+            holder.img_profile_gvb1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    /*if (i == 8) popUpMy();
+                    else popupRoom(position);*/
+                }
+            });
+            itemView.setTag(holder);
+        }
+        else {
+            Event_Grid_Adapter.Holder holder  = (Event_Grid_Adapter.Holder) itemView.getTag();
+            final RoomPerson person = personlist.get(i);
 
-        //Log.e("Person", person.getAndroid_image_url() + "");
+            Font font = new Font(activity);
+            font.setFontArial_Regular(holder.txt_name_gvb1);
+            holder.txt_name_gvb1.setText(personlist.get(i).getAndroid_version_name().split("\\s+")[0]);
+            if (i == 8)
+                Picasso.with(activity).load(person.getAndroid_image_url()).transform(new CircleTransform()).into(holder.img_profile_gvb1);
 
+            else
+                holder.img_profile_gvb1.setImageBitmap(imageArray[i]);
+            switch (person.getStaus()) {
+                case "busy":
+                    holder.img_profile_gvb1.setBackgroundResource(R.drawable.bg_yellow_ring);
+                    break;
+                case "avilable":
+                    holder.img_profile_gvb1.setBackgroundResource(R.drawable.bg_green_ring);
+                    break;
+                case "na":
+                    holder.img_profile_gvb1.setBackgroundResource(R.drawable.bg_red_ring);
+                    break;
+            }
+            holder.img_profile_gvb1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    /*if (i == 8) popUpMy();
+                    else popupRoom(position);*/
+                }
+            });
+            itemView.setTag(holder);
+
+        }
+        return itemView;
     }
 
-    @Override
-    public int getItemCount() {
-        return roomPersons.size();
+    class Holder{
+        ImageView img_profile_gvb1;
+        TextView txt_name_gvb1;
     }
 
     void popUpMy() {
@@ -165,7 +224,7 @@ public class DataAdapter_Demo extends RecyclerView.Adapter<DataAdapter_Demo.View
                 callProfile(eventAttendy,true);
             }
         });
-        switch (roomPersons.get(8).getStaus()) {
+        switch (personlist.get(8).getStaus()) {
             case "na":
                 img_red.setImageResource(R.drawable.bg_red_ring_accept);
                 break;
@@ -180,7 +239,7 @@ public class DataAdapter_Demo extends RecyclerView.Adapter<DataAdapter_Demo.View
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCanceledOnTouchOutside(true);
         dialog.setContentView(popupview);
-        Picasso.with(activity).load(roomPersons.get(8).getAndroid_image_url()).transform(new CircleTransform()).into(img_p1_profile);
+        Picasso.with(activity).load(personlist.get(8).getAndroid_image_url()).transform(new CircleTransform()).into(img_p1_profile);
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.copyFrom(dialog.getWindow().getAttributes());
         lp.gravity = Gravity.CENTER;
@@ -196,7 +255,7 @@ public class DataAdapter_Demo extends RecyclerView.Adapter<DataAdapter_Demo.View
     }
 
     void popupRoom(final int i) {
-        final RoomPerson person = roomPersons.get(i);
+        final RoomPerson person = personlist.get(i);
         ImageView img_p2_profile2, img_p2_profile, next ,img_reply_img;
         RelativeLayout nudge;
         final TextView txt_message, txt_timer;
@@ -274,15 +333,15 @@ public class DataAdapter_Demo extends RecyclerView.Adapter<DataAdapter_Demo.View
 
         switch (i) {
             case 1:
-                roomPersons.get(8).setStaus("busy");
+                personlist.get(8).setStaus("busy");
                 imageView.setImageResource(R.drawable.bg_yellow_ring_accept);
                 break;
             case 2:
-                roomPersons.get(8).setStaus("avilable");
+                personlist.get(8).setStaus("avilable");
                 imageView.setImageResource(R.drawable.bg_green_ring_accept);
                 break;
             case 3:
-                roomPersons.get(8).setStaus("na");
+                personlist.get(8).setStaus("na");
                 imageView.setImageResource(R.drawable.bg_red_ring_accept);
                 break;
 
@@ -325,7 +384,6 @@ public class DataAdapter_Demo extends RecyclerView.Adapter<DataAdapter_Demo.View
 
     void callProfile(EventAttendy attendy ,boolean ownProfile) {
         dialog.dismiss();
-        ((HomeActivity) activity).addFragment(new Profile_Fragment().setData(attendy, ownProfile,demo_event_fragment), 1);
+       // ((HomeActivity) activity).addFragment(new Profile_Fragment().setData(attendy, ownProfile,demo_event_fragment), 1);
     }
-
 }

@@ -91,6 +91,7 @@ public class MapInfoAdapter implements GoogleMap.InfoWindowAdapter {
         });*/
             return myContentsView;
         } catch (Exception e) {
+
             return null;
         }
 
@@ -102,6 +103,10 @@ public class MapInfoAdapter implements GoogleMap.InfoWindowAdapter {
         Date date1 = format.parse(time);
         Date date2 = new Date();
         int milis = Math.abs(date2.getHours() - date1.getHours());
+        if(milis==1){
+            milis = 60 - Math.abs(date2.getMinutes() - date1.getMinutes());
+            return milis + " min";
+        }
         return milis + " hr";
     }
 

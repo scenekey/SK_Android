@@ -95,7 +95,7 @@ public class NearEventAdapter extends RecyclerView.Adapter<NearEventAdapter.Hold
                 v.setClickable(false);
                 if (!clicked) {
                     Key_In_Event_Fragment frg = new Key_In_Event_Fragment();
-                    frg.setData(event.getEvent_id(),venue.getVenue_name());
+                    frg.setData(event.getEvent_id(),venue.getVenue_name(),event.getEvent_name(),event.getEvent_date());
                     activity.addFragment(frg, 0);
                     clicked = true;
                 }
