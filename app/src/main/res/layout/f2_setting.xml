@@ -194,25 +194,49 @@
                 android:clickable="false"/>
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/txt_admin"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_25sdp"
-            android:gravity="center_vertical"
-            android:textColor="#A3A3A3"
-            android:textSize="@dimen/_12sdp"
-            android:text="@string/admin" />
+
 
 
         <RelativeLayout
             android:id="@+id/lnr_location"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_67sdp">
+
+            <TextView
+                android:id="@+id/txt_admin"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_30sdp"
+                android:gravity="center_vertical"
+                android:textColor="#A3A3A3"
+                android:textSize="@dimen/_12sdp"
+                android:text="@string/admin" />
+
+            <TextView
+                android:id="@+id/txt_default_location"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_28sdp"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/_10sdp"
+                android:paddingRight="@dimen/_10sdp"
+                android:textColor="#FFFFFF"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:textSize="@dimen/_12sdp"
+                android:layout_marginBottom="@dimen/_2sdp"
+                android:background="@drawable/bg_def_profile"
+                android:text="@string/deflaoction" />
+
+
+
+        <RelativeLayout
+            android:layout_marginTop="@dimen/_30sdp"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_42sdp">
             <fragment
                 android:id="@+id/autocomplete_fragment"
                 android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="@dimen/_40sdp"
                 android:layout_margin="@dimen/_3sdp"/>
 
             <LinearLayout
@@ -220,6 +244,7 @@
                 android:layout_height="@dimen/_42sdp"
                 android:background="@drawable/text_field_bg"
                 android:paddingBottom="@dimen/_2sdp"
+
                 android:orientation="horizontal">
 
                 <ImageView
@@ -239,6 +264,7 @@
                     android:text="@string/yourlocatoion"
                     />
             </LinearLayout>
+            </RelativeLayout>
         </RelativeLayout>
        <!-- <LinearLayout
             android:id="@+id/lnr_location"

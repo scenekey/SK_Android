@@ -91,7 +91,7 @@
                     android:layout_centerHorizontal="true"
                     android:paddingTop="@dimen/_8sdp"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/trending_icon" />
+                    android:src="@drawable/ic_trending_icon" />
 
 
                 <TextView
@@ -120,7 +120,7 @@
                     android:layout_centerHorizontal="true"
                     android:paddingTop="@dimen/_8sdp"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/map_icon" />
+                    android:src="@drawable/ic_map_icon" />
 
 
                 <TextView
@@ -212,7 +212,7 @@
                     android:layout_centerHorizontal="true"
                     android:paddingTop="@dimen/_8sdp"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/search_icon" />
+                    android:src="@drawable/ic_search_icon" />
 
 
                 <TextView
@@ -241,7 +241,7 @@
                     android:layout_centerHorizontal="true"
                     android:paddingTop="@dimen/_8sdp"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/add_icon" />
+                    android:src="@drawable/ic_add_icon" />
 
 
                 <TextView

@@ -88,7 +88,8 @@
             android:background="@drawable/bg_black_circle"
             android:padding="@dimen/_9sdp"
             android:scaleType="fitCenter"
-            android:src="@drawable/right_arrow_shape" />
+            android:rotationY="180"
+            android:src="@drawable/ic_left_arrow_venue" />
 
     </LinearLayout>
 
