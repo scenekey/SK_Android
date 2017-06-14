@@ -124,8 +124,8 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
         txt_profile_name.setText(attendy.getUsername());
         setClick(view, img_back ,img_setting);
         img_profile_pic.setOnClickListener(this);
-        Picasso.with(activity()).load(attendy.getUserimage()).transform(new CircleTransform()).into(img_profile_pic);
-        Picasso.with(activity()).load(attendy.getUserimage()).transform(new CircleTransform()).into(img_profile_pic2);
+        Picasso.with(activity()).load(attendy.getUserimage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic);
+        Picasso.with(activity()).load(attendy.getUserimage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic2);
         txt_dimmer.setOnClickListener(this);
         img_cross.setOnClickListener(this);
         img_profile_pic2.setVisibility(View.INVISIBLE);

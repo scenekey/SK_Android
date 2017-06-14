@@ -134,6 +134,10 @@ public class VenuSearch_Fragment extends Fragment implements View.OnClickListene
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     if (clear) venuelist.clear();
+                    if(jsonObject.has("staus"))if(jsonObject.getInt("staus")==0 ){
+                        venuelist.clear();
+                        recyvlerview_venu.getAdapter().notifyDataSetChanged();
+                    }
                     setVenueArray(jsonObject.getJSONArray("venue"));
 
                 } catch (JSONException e) {

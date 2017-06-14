@@ -49,7 +49,12 @@ public class VenuAdapter extends RecyclerView.Adapter<VenuAdapter.ViewHolder> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fragment.onrecylcerViewItemClick(position);
+                try {
+                    fragment.onrecylcerViewItemClick(position);
+                }catch (IndexOutOfBoundsException e){
+                    notifyDataSetChanged();
+
+                }
             }
         });
     }

@@ -1443,10 +1443,10 @@ public class Key_In_Event_Fragment extends Fragment implements View.OnClickListe
 
     public boolean check() throws ParseException {
         boolean result;
-           /* if(userInfo().getMakeAdmin().equals(Constants.ADMIN_YES) && checkWithTime(eventDetails.profile_rating.getEvent_date() , Double.parseDouble(eventDetails.getProfile_rating().getInterval()))){
-                addUserIntoEvent(0, null);
+            if(userInfo().getMakeAdmin().equals(Constants.ADMIN_YES) && checkWithTime(eventDetails.profile_rating.getEvent_date() , Double.parseDouble(eventDetails.getProfile_rating().getInterval()))){
+                result = true;
             }
-            else*/ if (activity().getDistance(new Double[]{latitude, longitude, Double.valueOf(activity().getlatlong()[0]), Double.valueOf(activity().getlatlong()[1])}) <= Constants.MAXIMUM_DISTANCE && checkWithTime(eventDetails.profile_rating.getEvent_date() , Double.parseDouble(eventDetails.getProfile_rating().getInterval()) )) {
+            else if (activity().getDistance(new Double[]{latitude, longitude, Double.valueOf(activity().getlatlong()[0]), Double.valueOf(activity().getlatlong()[1])}) <= Constants.MAXIMUM_DISTANCE && checkWithTime(eventDetails.profile_rating.getEvent_date() , Double.parseDouble(eventDetails.getProfile_rating().getInterval()) )) {
             if (eventDetails.getProfile_rating().getKey_in().equals(Constants.KEY_NOTEXIST)) {
                 result = true ;//addUserIntoEvent(0, null);
             } else result = true;

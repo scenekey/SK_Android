@@ -66,7 +66,7 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener{
 
     private static final String TAG = Setting_Fragment.class.toString();
     EditText edt_last_name,edt_first_name,edt_email;
-    TextView edt_location;
+    TextView edt_location ,txt_default_location;
     TextView txt_feedback,txt_logout ,txt_admin;
 
     View pop_up_view;
@@ -101,6 +101,7 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener{
         edt_location = (TextView) view.findViewById(R.id.edt_location);
         txt_logout = (TextView) view.findViewById(R.id.txt_logout);
         txt_feedback = (TextView) view.findViewById(R.id.txt_feedback);
+        txt_default_location = (TextView) view.findViewById(R.id.txt_default_location);
         txt_admin = (TextView) view.findViewById(R.id.txt_admin);
         edt_last_name.setText(activity().userInfo().getLastname());
         cusDialogProg = new CusDialogProg(activity(),R.layout.custom_progress_dialog_layout);
@@ -139,7 +140,7 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener{
         font.setFontLibreFranklin_SemiBold(settingText,edt_privacy);
         font.setFontFrankBookReg(edt_first_name,edt_last_name);*/
         font.setFontFranklinRegular(edt_email,edt_first_name,edt_last_name,settingText,edt_privacy,edt_location,txt_f1_title);
-        setClick(edt_email,edt_last_name,settingText,edt_privacy,txt_f1_title,mainlayout,txt_logout,txt_feedback,img_f1_back,lnr_deatils);
+        setClick(edt_email,edt_last_name,settingText,edt_privacy,txt_f1_title,mainlayout,txt_logout,txt_feedback,img_f1_back,lnr_deatils,txt_default_location);
         font.setFontRailRegular(txt_feedback,txt_logout);
 
 
@@ -157,7 +158,7 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener{
                         userInfo.setLongitude(latLng.longitude+"");
                         userInfo.setAddress(place.getAddress().toString());
                         activity().updateSession(userInfo);
-                        updateLocation();
+                        updateLocation(userInfo);
                     }
 
                 }
@@ -242,6 +243,14 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener{
                 break;
             case R.id.lnr_location:
 
+                break;
+            case R.id.txt_default_location:
+                UserInfo userInfo =  activity().userInfo();
+                userInfo.setLatitude(activity().getLatitude()+"");
+                userInfo.setLongitude(activity().getLongiude()+"");
+                userInfo.setAddress( getAddress(activity().getLatitude(),activity().getLongiude()));
+                activity().updateSession(userInfo);
+                updateLocation(userInfo);
                 break;
 
         }
@@ -330,7 +339,7 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener{
 
     }
 
-    void updateLocation() {
+    void updateLocation(final UserInfo userInfo) {
         cusDialogProg.setCancelable(false);
         cusDialogProg.setCanceledOnTouchOutside(false);
         cusDialogProg.setColor(R.color.transparent);
@@ -395,8 +404,8 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener{
 
             @Override
             public Map<String, String> setParams(Map<String, String> params) {
-                params.put("lat",latLng.latitude+"");
-                params.put("long",latLng.longitude+"");
+                params.put("lat",userInfo.getLatitude()+"");
+                params.put("long",userInfo.getLongitude()+"");
                 params.put("user_id",activity().userInfo().getUserID());
                 params.put("updateLocation", Constants.ADMIN_YES);
                 params.put("fullAddress", edt_location.getText().toString());

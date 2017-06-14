@@ -76,7 +76,7 @@ public class Message_Fargment extends Fragment implements View.OnClickListener {
         Font font = new Font(activity());
         font.setFontFrankBookReg(txt_post_comment, txt_f1_title, edt_comment);
         font.setFontRailRegularLight(txt_char, txt_char1);
-        Picasso.with(activity()).load(userInfo().getUserImage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile);
+        Picasso.with(activity()).load(attendy.getUserimage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile);
         edt_comment.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

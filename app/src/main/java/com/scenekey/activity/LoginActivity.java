@@ -197,9 +197,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         customToastDialog.show();
                     }
                     else {
-                     facebooklogin(socialRegistrationBean, v.getId());
-                    dialogProg = new CusDialogProg(this, R.layout.custom_progress_dialog_layout);
-                    dialogProg.show();}
+                     try {
+                         facebooklogin(socialRegistrationBean, v.getId());
+
+                        dialogProg = new CusDialogProg(this, R.layout.custom_progress_dialog_layout);
+                        dialogProg.show();}
+                     catch (Exception e){
+                         dialogProg.dismiss();
+                     }finally {
+
+                     }
+                     }
 
                 } else {
                     facebookClicked = true;

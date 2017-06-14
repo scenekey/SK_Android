@@ -226,7 +226,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
     public UserInfo userInfo(){
-        if(userInfo == null) userInfo = sessionManager.getUserInfo();
+        if(userInfo == null) {
+            if(sessionManager == null) sessionManager = new SessionManager(getApplicationContext());
+                userInfo = sessionManager.getUserInfo();
+        }
         return userInfo;
     }
     /********************************************************************************/
@@ -399,19 +402,19 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             switch (lastclicked.getId()) {
                 case R.id.rtlv_one:
-                    getImgV(lastclicked).setImageResource(R.drawable.trending_icon);
+                    getImgV(lastclicked).setImageResource(R.drawable.ic_trending_icon);
                     break;
                 case R.id.rtlv_two:
-                    getImgV(lastclicked).setImageResource(R.drawable.map_icon);
+                    getImgV(lastclicked).setImageResource(R.drawable.ic_map_icon);
                     break;
                 case R.id.rtlv_three:
                     getImgV(lastclicked).setImageResource(R.drawable.key_icon);
                     break;
                 case R.id.rtlv_four:
-                    getImgV(lastclicked).setImageResource(R.drawable.search_icon);
+                    getImgV(lastclicked).setImageResource(R.drawable.ic_search_icon);
                     break;
                 case R.id.rtlv_five:
-                    getImgV(lastclicked).setImageResource(R.drawable.add_icon);
+                    getImgV(lastclicked).setImageResource(R.drawable.ic_add_icon);
                     break;
 
             }
@@ -419,16 +422,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         switch (v.getId()) {
             case R.id.rtlv_one:
-                getImgV(v).setImageResource(R.drawable.selected_trending_icon);
+                getImgV(v).setImageResource(R.drawable.ic_selected_trending_icon);
                 break;
             case R.id.rtlv_two:
-                getImgV(v).setImageResource(R.drawable.selected_map_icon);
+                getImgV(v).setImageResource(R.drawable.ic_selected_map_icon);
                 break;
             case R.id.rtlv_three:
                 getImgV(v).setImageResource(R.drawable.selected_key_icon);
                 break;
             case R.id.rtlv_four:
-                getImgV(v).setImageResource(R.drawable.selected_search_icon);
+                getImgV(v).setImageResource(R.drawable.ic_selected_search_icon);
                 break;
             case R.id.rtlv_five:
                 getImgV(v).setImageResource(R.drawable.selected_add_icon);
@@ -465,7 +468,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     void replaceFragment(Fragment fragmentHolder) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-
         fragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         String fragmentName = fragmentHolder.getClass().getName();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -575,7 +577,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
      */
     public void setBBvisiblity(int ViewDot,String TAG) {
         Log.e(TAG," B B visiballity "+ViewDot+" TAG "+TAG);
-        frm_bottmbar.setVisibility(ViewDot);
+        try{frm_bottmbar.setVisibility(ViewDot);
         if (ViewDot == View.GONE) {
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) frame_fragments_a3.getLayoutParams();
             layoutParams.bottomMargin = 0;
@@ -584,6 +586,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) frame_fragments_a3.getLayoutParams();
             layoutParams.bottomMargin = (int) getResources().getDimension(R.dimen.bottomBar_margin);
             title_view.setVisibility(View.VISIBLE);
+        }}
+        catch (NullPointerException e){
+
+        }
+        catch (IllegalArgumentException e){
+
         }
     }
 
@@ -740,7 +748,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            checkedEventtoJoint();
+                            try{
+                                checkedEventtoJoint();
+                            }catch (IllegalStateException e){
+
+                            }
+                            catch (IllegalArgumentException e){
+
+                            }
                             try {
                                 if (eventsNearbyList.size() <= 0) replaceFragment(new Home_no_Event());
                                 else onNearByEventFound();
@@ -751,6 +766,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                                 }catch (Exception ew){
 
                                 }
+                            }
+                            catch (IllegalArgumentException e){
+
                             }
                             //if (showProgress) rtlv_three.callOnClick();
                         }
