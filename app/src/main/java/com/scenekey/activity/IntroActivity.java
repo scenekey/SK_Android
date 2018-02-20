@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.scenekey.R;
 import com.scenekey.helper.SessionManager;
+import com.scenekey.util.StatusBarUtil;
 
 public class IntroActivity extends AppCompatActivity {
 

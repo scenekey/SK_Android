@@ -62,7 +62,7 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener {
     private TextView txt_location,txt_first_name,txt_last_name, txt_email,txt_feedback,txt_logout ,txt_admin;
 
     private LatLng latLng;
-    private PlaceAutocompleteFragment autocompleteFragment;
+    public PlaceAutocompleteFragment autocompleteFragment;
     private View top_status;
     private RelativeLayout lnr_location;
 
@@ -220,7 +220,6 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.txt_bio:
                try {
-                   if(activity!=null)activity.getSupportFragmentManager().beginTransaction().remove(this).commit();
                    activity.addFragment(new Bio_Fragment(),1);
                }catch (Exception e){
                    e.printStackTrace();

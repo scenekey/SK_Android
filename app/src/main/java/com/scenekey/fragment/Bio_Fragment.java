@@ -45,7 +45,7 @@ public class Bio_Fragment extends Fragment implements View.OnClickListener {
     private HomeActivity activity;
     private Context context;
     private String oldBio="";
-    private Setting_Fragment fragment;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,6 +58,7 @@ public class Bio_Fragment extends Fragment implements View.OnClickListener {
         et_for_enterTxt = view.findViewById(R.id.et_for_enterTxt);
 
         view.findViewById(R.id.btn_for_done).setOnClickListener(this);
+        view.findViewById(R.id.img_f1_back).setOnClickListener(this);
 
         TextWatcher  textWatcher = new TextWatcher() {
             @Override
@@ -111,8 +112,7 @@ public class Bio_Fragment extends Fragment implements View.OnClickListener {
                 try {
                     String bio=et_for_enterTxt.getText().toString();
                     if (oldBio.equals(bio)){
-                        activity.getSupportFragmentManager().beginTransaction().remove(Bio_Fragment.this).commit();
-                        activity.addFragment(new Setting_Fragment(),1);
+                      activity.onBackPressed();
                     }else {
                         updateBio(bio);
                     }
@@ -121,7 +121,16 @@ public class Bio_Fragment extends Fragment implements View.OnClickListener {
                     e.printStackTrace();
                 }
                 break;
+
+            case R.id.img_f1_back:
+               activity.onBackPressed();
+                break;
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     private void updateBio(final String bio) {
@@ -145,8 +154,8 @@ public class Bio_Fragment extends Fragment implements View.OnClickListener {
                             UserInfo userInfo=activity.userInfo();
                             userInfo.bio=bio;
                             activity.updateSession(userInfo);
-                            activity.getSupportFragmentManager().beginTransaction().remove(Bio_Fragment.this).commit();
-                            activity.addFragment(new Setting_Fragment(),1);
+                           activity.onBackPressed();
+
                         }else{
                             Utility.showToast(context,message,0);
                         }
@@ -179,6 +188,7 @@ public class Bio_Fragment extends Fragment implements View.OnClickListener {
             activity.dismissProgDailog();
         }
     }
+
 
 
 }

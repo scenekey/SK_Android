@@ -135,20 +135,21 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         isPermissionAvail=permission.checkLocationPermission();
 
         replaceFragment(new Home_No_Event_Fragment());
-        if(userInfo.makeAdmin.equals(Constant.ADMIN_YES)){
-            try {
+        try {
+            if(userInfo.makeAdmin.equals(Constant.ADMIN_YES)){
                 latitude = Double.parseDouble(userInfo.latitude);
                 longitude = Double.parseDouble(userInfo.longitude);
                 latitudeAdmin=latitude;
                 longitudeAdmin=longitude;
-            }catch (Exception e){
-                e.printStackTrace();
+
+            }else{
+                latitude = Double.parseDouble(userInfo.latitude);
+                longitude = Double.parseDouble(userInfo.longitude);
+                latitudeAdmin=latitude;
+                longitudeAdmin=longitude;
             }
-        }else{
-            latitude = Double.parseDouble(userInfo.latitude);
-            longitude = Double.parseDouble(userInfo.longitude);
-            latitudeAdmin=latitude;
-            longitudeAdmin=longitude;
+        }catch (Exception e){
+            e.printStackTrace();
         }
         rtlv_three.callOnClick();
 
@@ -651,7 +652,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         if (jo.has("status")) {
                             int status = jo.getInt("status");
                             if (status == 0) {
-                               // replaceFragment(new Home_No_Event_Fragment());
+                                // replaceFragment(new Home_No_Event_Fragment());
 
                                 Utility.showToast(context,jo.getString("message"),0);
 
@@ -730,7 +731,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                                 try {
                                     Utility.e("Near Event Size", String.valueOf(eventsNearbyList.size()));
                                     if (!(eventsNearbyList.size() <= 0))
-                                     onNearByEventFound();
+                                        onNearByEventFound();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }

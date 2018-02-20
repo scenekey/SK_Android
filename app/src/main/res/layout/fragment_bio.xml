@@ -48,7 +48,6 @@
             android:gravity="top"
             android:paddingLeft="@dimen/_5sdp"
             android:paddingTop="@dimen/_5sdp"
-            android:text="@string/bio"
             android:background="@null"
             android:theme="@style/et_black_cursor"
             android:inputType="textAutoComplete"
