@@ -77,7 +77,7 @@
 
 
     <string name="Search"> Search</string>
-    <string name="Add"> Add Event </string>
+    <string name="Add"> Add</string>
     <string name="Sorry"> Sorry!</string>
     <string name="Sorry2"> You are not currently at a \n Scenekey event</string>
     <!-- <string name="Sorry2_new"> You are not currently at a \n Scenekey event .When you arrive at an event . the icon will appear on this screen . Select the icon to enter the room. </string> -->

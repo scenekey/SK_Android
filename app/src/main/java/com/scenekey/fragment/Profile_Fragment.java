@@ -136,6 +136,12 @@ comment for:- fb and count not show for current scenario
 
         img_profile_pic2.setVisibility(View.INVISIBLE);
 
+       try {
+           Utility.e("profile fragemnt Image",attendy.getUserimage());
+       }catch (Exception e){
+           e.printStackTrace();
+       }
+
         Picasso.with(activity).load(attendy.getUserimage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic);
         Picasso.with(activity).load(attendy.getUserimage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic2);
 
@@ -326,10 +332,14 @@ comment for:- fb and count not show for current scenario
     }
 
     private void setImage(boolean isRight){
-        if(imageList.size()!=0){
-            currentImage=(isRight?(currentImage==imageList.size()-1? 0 : currentImage+1):(currentImage==0? imageList.size()-1 :currentImage-1));
-            Picasso.with(activity).load(imageList.get(currentImage).path).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic2);
-        }
+      try {
+          if(imageList.size()!=0){
+              currentImage=(isRight?(currentImage==imageList.size()-1? 0 : currentImage+1):(currentImage==0? imageList.size()-1 :currentImage-1));
+              Picasso.with(activity).load(imageList.get(currentImage).path).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic2);
+          }
+      }catch (Exception e){
+          e.printStackTrace();
+      }
     }
 
 /* Profile setData start here */
@@ -551,7 +561,7 @@ comment for:- fb and count not show for current scenario
 
     /* get image from server end here*/
 
-    public CognitoCredentialsProvider getCredentials(){
+    private CognitoCredentialsProvider getCredentials(){
         CognitoCredentialsProvider credentialsProvider = new CognitoCredentialsProvider( "us-west-2:86b58a3e-0dbd-4aad-a4eb-e82b1a4ebd91",Regions.US_WEST_2);
         AmazonS3 s3 = new AmazonS3Client(credentialsProvider);
         TransferUtility transferUtility = new TransferUtility(s3, context);

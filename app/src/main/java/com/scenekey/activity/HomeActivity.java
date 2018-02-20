@@ -176,7 +176,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         tv_key_points.setText(userInfo.keyPoints);
         try {
-            Utility.e("Picasso",userInfo.getUserImage());
+            Utility.e("Profile pic Home",userInfo.getUserImage());
 
             Picasso.with(this).load(userInfo.getUserImage()).placeholder(R.drawable.image_defult_profile).into(img_profile);
 

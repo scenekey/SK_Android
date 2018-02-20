@@ -20,7 +20,8 @@ public class EventAttendy implements Serializable {
     private String userimage;
 
     public String getUserimage() {
-        return WebServices.USER_IMAGE+userimage;
+       // return WebServices.USER_IMAGE+userimage;  old
+        return userimage;
     }
 
     public void setUserimage(String userimage) {

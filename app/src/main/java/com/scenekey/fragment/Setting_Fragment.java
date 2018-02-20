@@ -93,11 +93,7 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener {
         txt_feedback =  view.findViewById(R.id.txt_feedback);
         img_default_location =  view.findViewById(R.id.img_default_location);
         txt_admin =  view.findViewById(R.id.txt_admin);
-        txt_first_name.setText(activity.userInfo().firstName);
-        if (!activity.userInfo().lastName.isEmpty())
-        txt_last_name.setText(activity.userInfo().lastName);
-       else
-        txt_last_name.setText(R.string.lastNameNotAvail);
+
 
 
         try{
@@ -119,6 +115,12 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener {
                 }
                 else txt_location.setText(getAddress(Double.parseDouble(activity.userInfo().latitude),Double.parseDouble(activity.userInfo().longitude)));
             }
+
+            txt_first_name.setText(activity.userInfo().firstName);
+            if (!activity.userInfo().lastName.isEmpty())
+                txt_last_name.setText(activity.userInfo().lastName);
+            else
+                txt_last_name.setText(R.string.lastNameNotAvail);
 
             if(!activity.userInfo().email.contains(activity.userInfo().facebookId))
                 txt_email.setText(activity.userInfo().email);

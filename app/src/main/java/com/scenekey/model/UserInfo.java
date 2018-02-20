@@ -1,6 +1,7 @@
 package com.scenekey.model;
 
 import com.scenekey.helper.WebServices;
+import com.scenekey.util.Utility;
 
 import java.io.Serializable;
 

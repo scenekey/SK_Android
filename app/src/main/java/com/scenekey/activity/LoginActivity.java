@@ -617,6 +617,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Utility.e("Auth Token", userInfo.userAccessToken);
             userInfo.firstTimeDemo=(true);
 
+            Utility.e("session data",jsonObject.toString());
             //  Utility.showToast(context, message, 1);
             SceneKey.sessionManager.createSession(userInfo);
 
