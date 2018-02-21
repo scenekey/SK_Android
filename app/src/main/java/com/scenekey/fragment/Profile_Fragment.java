@@ -84,8 +84,8 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v= inflater.inflate(R.layout.fragment_profile, container, false);
-     //   LinearLayout mainLayout = v.findViewById(R.id.mainlayout);
-        listViewFragProfile =  v.findViewById(R.id.listViewFragProfile);
+        // LinearLayout mainLayout = v.findViewById(R.id.mainlayout);
+        listViewFragProfile = v.findViewById(R.id.listViewFragProfile);
         imageList = new ArrayList<>();
         downloadFileFromS3((credentialsProvider==null?credentialsProvider = this.getCredentials():credentialsProvider));
         return v;
@@ -113,22 +113,22 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
         ViewGroup header = (ViewGroup)inflater.inflate(R.layout.adapter_custom_profile_header, listViewFragProfile, false);
         listViewFragProfile.addHeaderView(header, null, false);
 
-        img_profile_pic2 =  view.findViewById(R.id.img_profile_pic2);
+        img_profile_pic2 = view.findViewById(R.id.img_profile_pic2);
         ImageView img_profile_pic = header.findViewById(R.id.img_profile_pic);
-        img_left =  view.findViewById(R.id.img_left);
-        img_right =  view.findViewById(R.id.img_right);
-        img_cross =  view.findViewById(R.id.img_cross);
+        img_left = view.findViewById(R.id.img_left);
+        img_right = view.findViewById(R.id.img_right);
+        img_cross = view.findViewById(R.id.img_cross);
 /*
 comment for:- fb and count not show for current scenario
-        img_fb =  header.findViewById(R.id.img_fb);
-        txt_f2_badge =  header.findViewById(R.id.txt_f2_badge);
+ img_fb = header.findViewById(R.id.img_fb);
+ txt_f2_badge = header.findViewById(R.id.txt_f2_badge);
 */
 
         ImageView img_capture = header.findViewById(R.id.img_capture);
-        ImageView img_setting =  header.findViewById(R.id.img_setting);
-        ImageView img_back =  header.findViewById(R.id.img_back);
-        txt_event_count =  header.findViewById(R.id.txt_event_count);
-        txt_dimmer =  view.findViewById(R.id.txt_dimmer);
+        ImageView img_setting = header.findViewById(R.id.img_setting);
+        ImageView img_back = header.findViewById(R.id.img_back);
+        txt_event_count = header.findViewById(R.id.txt_event_count);
+        txt_dimmer = view.findViewById(R.id.txt_dimmer);
         TextView txt_profile_name = header.findViewById(R.id.txt_profile_name);
         txt_profile_name.setText(attendy.username);
 
@@ -136,28 +136,22 @@ comment for:- fb and count not show for current scenario
 
         img_profile_pic2.setVisibility(View.INVISIBLE);
 
-       try {
-           Utility.e("profile fragemnt Image",attendy.getUserimage());
-       }catch (Exception e){
-           e.printStackTrace();
-       }
-
         Picasso.with(activity).load(attendy.getUserimage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic);
         Picasso.with(activity).load(attendy.getUserimage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic2);
 
-     /*
-        //fb and badge
-        if (myProfile) {
-            img_fb.setVisibility(View.GONE);
-            txt_f2_badge.setVisibility(View.GONE);
+ /*
+ //fb and badge
+ if (myProfile) {
+ img_fb.setVisibility(View.GONE);
+ txt_f2_badge.setVisibility(View.GONE);
 
-        } else {
-            img_capture.setVisibility(View.GONE);
-        }
+ } else {
+ img_capture.setVisibility(View.GONE);
+ }
 
 
-        if(mutulFriendCount<99)txt_f2_badge.setText(mutulFriendCount+"");
-        else txt_f2_badge.setText("99+");*/
+ if(mutulFriendCount<99)txt_f2_badge.setText(mutulFriendCount+"");
+ else txt_f2_badge.setText("99+");*/
 
         activity.setBBVisibility(View.GONE,TAG);
         View top_status = view.findViewById(R.id.top_status);
@@ -204,7 +198,7 @@ comment for:- fb and count not show for current scenario
                     //TODo Remove autocomplete fragment before call.
                     if(myProfile)activity.addFragment(new Setting_Fragment().setData(this),1);//TODO check button color in both case (own ,other)
                     clicked = true;
-                   new Handler().postDelayed(new Runnable() {
+                    new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             clicked = false;
@@ -220,6 +214,9 @@ comment for:- fb and count not show for current scenario
                 break;
             case R.id.img_left:
                 setImage(false);
+                break;
+            case R.id.txt_dimmer:
+                crossImgClicked();
                 break;
         }
     }
@@ -276,14 +273,14 @@ comment for:- fb and count not show for current scenario
                 img_profile_pic2.setAlpha(1.0f);
                 img_profile_pic2.setVisibility(View.VISIBLE);
 
-                /*Animation dimmer = AnimationUtils.loadAnimation(getContext(), R.anim.alpha_to_full);
-                txt_dimmer.startAnimation(dimmer);*/
+ /*Animation dimmer = AnimationUtils.loadAnimation(getContext(), R.anim.alpha_to_full);
+ txt_dimmer.startAnimation(dimmer);*/
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
                 txt_dimmer.setVisibility(View.VISIBLE);
-                img_cross.setVisibility(View.VISIBLE);
+                img_cross.setVisibility(View.GONE);
                 img_right.setVisibility(View.VISIBLE);
                 img_left.setVisibility(View.VISIBLE);
                 //img_profile_pic2.setBorderColor(getResources().getColor(R.color.white));
@@ -332,24 +329,20 @@ comment for:- fb and count not show for current scenario
     }
 
     private void setImage(boolean isRight){
-      try {
-          if(imageList.size()!=0){
-              currentImage=(isRight?(currentImage==imageList.size()-1? 0 : currentImage+1):(currentImage==0? imageList.size()-1 :currentImage-1));
-              Picasso.with(activity).load(imageList.get(currentImage).path).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic2);
-          }
-      }catch (Exception e){
-          e.printStackTrace();
-      }
+        if(imageList.size()!=0){
+            currentImage=(isRight?(currentImage==imageList.size()-1? 0 : currentImage+1):(currentImage==0? imageList.size()-1 :currentImage-1));
+            Picasso.with(activity).load(imageList.get(currentImage).path).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic2);
+        }
     }
 
 /* Profile setData start here */
 
     /**
-     * @param attendy   if do not Eventattendy object just create one , set userId URL and pass it.
+     * @param attendy if do not Eventattendy object just create one , set userId URL and pass it.
      * @param myProfile if user comming to show his own profile then true otherwise false.
      * @return setData content
      */
-    public Profile_Fragment setData(EventAttendy attendy, boolean myProfile,  Event_Fragment fragment,int mutulFriendCount) {
+    public Profile_Fragment setData(EventAttendy attendy, boolean myProfile, Event_Fragment fragment,int mutulFriendCount) {
         this.attendy = attendy;
         this.myProfile = myProfile;
         this.event_fragment = fragment;
@@ -358,11 +351,11 @@ comment for:- fb and count not show for current scenario
     }
 
     /**
-     * @param attendy   if do not Eventattendy object just create one , set userId URL and pass it.
+     * @param attendy if do not Eventattendy object just create one , set userId URL and pass it.
      * @param myProfile if user comming to show his own profile then true otherwise false.
      * @return setData content
      */
-    public Profile_Fragment setData(EventAttendy attendy, boolean myProfile,  Key_In_Event_Fragment fragment) {
+    public Profile_Fragment setData(EventAttendy attendy, boolean myProfile, Key_In_Event_Fragment fragment) {
         this.attendy = attendy;
         this.myProfile = myProfile;
         this.key_in_event_fragment = fragment;
@@ -370,7 +363,7 @@ comment for:- fb and count not show for current scenario
     }
 
     /**
-     * @param attendy   if do not Eventattendy object just create one , set userId URL and pass it.
+     * @param attendy if do not Eventattendy object just create one , set userId URL and pass it.
      * @param myProfile if user comming to show his own profile then true otherwise false.
      * @return setData content
      */
@@ -382,7 +375,7 @@ comment for:- fb and count not show for current scenario
     }
 
     /**
-     * @param attendy   if do not Eventattendy object just create one , set userId URL and pass it.
+     * @param attendy if do not Eventattendy object just create one , set userId URL and pass it.
      * @param myProfile if user comming to show his own profile then true otherwise false.
      * @return setData content
      */
@@ -393,7 +386,7 @@ comment for:- fb and count not show for current scenario
         return this;
     }
 
-    /* Profile setData end here */
+ /* Profile setData end here */
 
     private void getProfileDataApi() {
 
@@ -446,11 +439,11 @@ comment for:- fb and count not show for current scenario
             if (object.has("myInfo")) {
                 UserInfo userInfo = activity.userInfo();
                 JSONObject user = object.getJSONObject("myInfo");
-                if(user.has("makeAdmin"))   userInfo.makeAdmin=(user.getString("makeAdmin"));
-                if(user.has("lat"))         userInfo.latitude=(user.getString("lat"));
-                if(user.has("longi"))       userInfo.longitude=(user.getString("longi"));
-                if(user.has("address"))       userInfo.address=(user.getString("address"));
-                if(user.has("fullname"))       userInfo.fullName=(user.getString("fullname"));
+                if(user.has("makeAdmin")) userInfo.makeAdmin=(user.getString("makeAdmin"));
+                if(user.has("lat")) userInfo.latitude=(user.getString("lat"));
+                if(user.has("longi")) userInfo.longitude=(user.getString("longi"));
+                if(user.has("address")) userInfo.address=(user.getString("address"));
+                if(user.has("fullname")) userInfo.fullName=(user.getString("fullname"));
                 if(user.has("key_points"))userInfo.keyPoints=(user.getString("key_points"));
                 activity.updateSession(userInfo);
             }
@@ -499,7 +492,7 @@ comment for:- fb and count not show for current scenario
     }
 
 
-    /* get image from server start here*/
+ /* get image from server start here*/
 
     private void downloadFileFromS3(CognitoCredentialsProvider credentialsProvider){//, CognitoCachingCredentialsProvider credentialsProvider){
         try {
@@ -543,7 +536,7 @@ comment for:- fb and count not show for current scenario
     }
 
     private void updateImages(final List<S3ObjectSummary> summaries){
-       activity.runOnUiThread(new Runnable() {
+        activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 for(S3ObjectSummary obj :summaries ){
@@ -559,9 +552,9 @@ comment for:- fb and count not show for current scenario
 
     }
 
-    /* get image from server end here*/
+ /* get image from server end here*/
 
-    private CognitoCredentialsProvider getCredentials(){
+    public CognitoCredentialsProvider getCredentials(){
         CognitoCredentialsProvider credentialsProvider = new CognitoCredentialsProvider( "us-west-2:86b58a3e-0dbd-4aad-a4eb-e82b1a4ebd91",Regions.US_WEST_2);
         AmazonS3 s3 = new AmazonS3Client(credentialsProvider);
         TransferUtility transferUtility = new TransferUtility(s3, context);

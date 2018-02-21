@@ -58,7 +58,7 @@
         android:layout_marginTop="@dimen/_115sdp"
         android:alpha="0"
         android:src="@drawable/image_defult_profile"
-        app:civ_border_color="@color/old_primary"
+        app:civ_border_color="@color/white"
         app:civ_border_width="@dimen/_3sdp" />
 
     <android.support.v7.widget.AppCompatImageView

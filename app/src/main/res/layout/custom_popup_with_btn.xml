@@ -14,6 +14,7 @@
         android:layout_marginLeft="1dp"
         android:layout_marginRight="1dp"
         android:layout_marginTop="@dimen/_10sdp"
+        android:fontFamily="@font/raleway_regular"
         android:gravity="bottom|center"
         android:textColor="@color/black"
         android:textSize="@dimen/_16sdp"
@@ -25,6 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:fontFamily="@font/raleway_regular"
         android:layout_marginTop="@dimen/_10sdp"
         android:paddingStart="@dimen/_30sdp"
         android:paddingEnd="@dimen/_30sdp"
@@ -49,6 +51,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
+            android:fontFamily="@font/raleway_medium"
             android:text="@string/cancel"
             android:textColor="@color/blue"
             android:textSize="@dimen/_14sdp" />
@@ -64,6 +67,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
+            android:fontFamily="@font/raleway_medium"
             android:text="@string/try_again"
             android:textColor="@color/blue"
             android:textSize="@dimen/_14sdp" />

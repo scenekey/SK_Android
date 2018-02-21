@@ -13,7 +13,7 @@
 
     <dimen name="top_bar">@dimen/_50sdp</dimen>
     <dimen name="top_bar_profile">@dimen/_40sdp</dimen>
-    <dimen name="top_bar_profile_padding">@dimen/_2sdp</dimen>
+    <dimen name="top_bar_profile_padding">@dimen/_4sdp</dimen>
 
     <dimen name="padding_icon_uploade">@dimen/_100sdp</dimen>
 

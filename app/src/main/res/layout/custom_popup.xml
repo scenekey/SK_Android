@@ -20,6 +20,7 @@
         android:paddingLeft="@dimen/_15sdp"
         android:paddingRight="@dimen/_15sdp"
         android:paddingTop="@dimen/_10sdp"
+        android:fontFamily="@font/raleway_regular"
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp" />
 
@@ -42,6 +43,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
+            android:fontFamily="@font/raleway_medium"
             android:text="OK"
             android:textColor="@color/blue"
             android:textSize="@dimen/_12sdp" />

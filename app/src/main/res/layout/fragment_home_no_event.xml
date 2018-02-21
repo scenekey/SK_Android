@@ -65,6 +65,7 @@
                 android:textColor="@color/gray"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/raleway_regular"
                 android:layout_gravity="center_horizontal"
                 android:text="@string/Sorry2_new"
                 android:textSize="@dimen/_15ssp" />
@@ -85,6 +86,7 @@
                     android:background="@drawable/bg_try_demo"
                     android:gravity="center"
                     android:text="@string/tryDemo"
+                    android:fontFamily="@font/raleway_medium"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_16ssp" />
 
@@ -100,6 +102,7 @@
                     android:background="@drawable/bg_try_demo"
                     android:gravity="center"
                     android:text="@string/search"
+                    android:fontFamily="@font/raleway_medium"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_16ssp" />
 

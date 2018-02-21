@@ -13,7 +13,8 @@
         android:textSize="@dimen/_10sdp"
         android:gravity="center"
         android:layout_gravity="center"
-        android:layout_margin="@dimen/_2sdp"
+        android:layout_margin="@dimen/_5sdp"
+        android:alpha="0.5"
         android:background="@drawable/bg_tag"/>
 
     <TextView
@@ -25,6 +26,7 @@
         android:textSize="@dimen/_10sdp"
         android:paddingBottom="@dimen/_1sdp"
         android:gravity="center"
+        android:alpha="1"
         android:layout_gravity="center"
         android:background="@drawable/btn_bg"/>
 

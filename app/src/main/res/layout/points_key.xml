@@ -37,7 +37,7 @@
             android:layout_gravity="end|center_vertical"
             android:singleLine="true"
             android:textSize="@dimen/_10sdp"
-            android:textColor="@color/black"
+            android:textColor="@color/black90p"
             android:text="0" />
 
     </FrameLayout>

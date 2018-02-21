@@ -17,9 +17,9 @@
             android:layout_width="@dimen/top_bar_profile"
             android:layout_height="@dimen/top_bar_profile"
             android:layout_centerVertical="true"
-            android:paddingTop="@dimen/_8sdp"
-            android:paddingBottom="@dimen/_8sdp"
-            android:paddingRight="@dimen/_10sdp"
+            android:paddingTop="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_10sdp"
+            android:paddingLeft="@dimen/_10sdp"
             app:srcCompat="@drawable/ic_back_icon" />
 
 
@@ -30,6 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/bio"
+            android:fontFamily="@font/montserrat_regular"
             android:textSize="@dimen/_20ssp"/>
 
 
@@ -50,9 +51,10 @@
             android:paddingTop="@dimen/_5sdp"
             android:background="@null"
             android:theme="@style/et_black_cursor"
+            android:fontFamily="@font/raleway_medium"
             android:inputType="textAutoComplete"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_12ssp" />
+            android:textColor="@color/black90p"
+            android:textSize="@dimen/_16ssp" />
 
     </LinearLayout>
 
@@ -67,7 +69,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="60"
-            android:textColor="@color/black"
+            android:fontFamily="@font/raleway_regular"
+            android:textColor="@color/black90p"
             android:textSize="@dimen/_12ssp"
             android:layout_marginRight="@dimen/_2sdp"/>
 
@@ -75,7 +78,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="char remaining"
-            android:textColor="@color/black"
+            android:fontFamily="@font/raleway_regular"
+            android:textColor="@color/black90p"
             android:textSize="@dimen/_12ssp" />
 
     </LinearLayout>
@@ -88,6 +92,7 @@
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="@dimen/_16ssp"
+        android:fontFamily="@font/raleway_medium"
         android:background="@drawable/btn_shape_primarycolor"
         android:layout_margin="@dimen/_20sdp"
         android:layout_gravity="right"/>

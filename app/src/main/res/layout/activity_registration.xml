@@ -112,6 +112,7 @@
                         android:layout_marginStart="@dimen/_10sdp"
                         android:background="@null"
                         android:hint="@string/fullname"
+                        android:fontFamily="@font/raleway_light"
                         android:imeOptions="actionNext"
                         android:inputType="text"
                         android:textColor="@color/white"
@@ -149,6 +150,7 @@
                         android:layout_marginStart="@dimen/_10sdp"
                         android:background="@null"
                         android:hint="@string/email"
+                        android:fontFamily="@font/raleway_light"
                         android:imeOptions="actionNext"
                         android:inputType="textEmailAddress"
                         android:textColor="@color/white"
@@ -186,6 +188,7 @@
                         android:layout_marginStart="@dimen/_10sdp"
                         android:background="@null"
                         android:hint="@string/password"
+                        android:fontFamily="@font/raleway_light"
                         android:imeOptions="actionDone"
                         android:inputType="textPassword"
                         android:textColor="@color/white"
@@ -231,6 +234,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/male"
+                            android:fontFamily="@font/raleway_medium"
                             android:textColor="@color/white"
                             android:layout_gravity="center"                        android:textSize="@dimen/_12ssp"/>
                     </LinearLayout>
@@ -256,6 +260,7 @@
                             android:text="@string/female"
                             android:textColor="@color/white"
                             android:layout_gravity="center"
+                            android:fontFamily="@font/raleway_medium"
                             android:textSize="@dimen/_12ssp"/>
                     </LinearLayout>
 
@@ -274,6 +279,7 @@
                     android:background="@drawable/btn_shape_primarycolor"
                     android:gravity="center"
                     android:text="@string/sign_up"
+                    android:fontFamily="@font/raleway_medium"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_14ssp" />
@@ -299,6 +305,7 @@
             android:layout_height="wrap_content"
             android:text="@string/already_have_an_account"
             android:textColor="@color/white"
+            android:fontFamily="@font/raleway_medium"
             android:textSize="@dimen/_14ssp" />
 
         <TextView
@@ -311,6 +318,7 @@
             android:layout_toEndOf="@+id/alreadyAccount"
             android:layout_toRightOf="@+id/alreadyAccount"
             android:text="@string/login"
+            android:fontFamily="@font/raleway_medium"
             android:textColor="@color/colorPrimary_new"
             android:textSize="@dimen/_14ssp" />
     </RelativeLayout>

@@ -26,9 +26,9 @@
             android:layout_width="@dimen/top_bar_profile"
             android:layout_height="@dimen/top_bar_profile"
             android:layout_centerVertical="true"
-            android:paddingTop="@dimen/_8sdp"
-            android:paddingBottom="@dimen/_8sdp"
-            android:paddingRight="@dimen/_10sdp"
+            android:paddingTop="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_10sdp"
+            android:paddingLeft="@dimen/_10sdp"
             app:srcCompat="@drawable/ic_back_icon" />
 
 
@@ -38,6 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:fontFamily="@font/montserrat_regular"
             android:text="@string/settings"
             android:textSize="@dimen/_20ssp"/>
 
@@ -62,8 +63,8 @@
               android:layout_height="@dimen/_25sdp"
               android:gravity="center_vertical"
               android:textColor="#A3A3A3"
-              android:textSize="@dimen/_12sdp"
-              android:textStyle="bold"
+              android:textSize="@dimen/_12ssp"
+              android:fontFamily="@font/raleway_bold"
               android:text="@string/aboutme" />
 
           <LinearLayout
@@ -90,6 +91,7 @@
                       android:layout_width="match_parent"
                       android:layout_height="match_parent"
                       android:background="@null"
+                      android:fontFamily="@font/raleway_medium"
                       android:gravity="center_vertical"
                       android:text="My details" />
               </LinearLayout>
@@ -116,6 +118,7 @@
                       android:layout_width="match_parent"
                       android:layout_height="match_parent"
                       android:gravity="center_vertical"
+                      android:fontFamily="@font/raleway_medium"
                       android:background="@null"
                       android:text="@string/lastname" />
               </LinearLayout>
@@ -142,6 +145,7 @@
                       android:layout_width="match_parent"
                       android:layout_height="match_parent"
                       android:gravity="center_vertical"
+                      android:fontFamily="@font/raleway_medium"
                       android:background="@null"
                       android:text="@string/email" />
               </LinearLayout>
@@ -171,6 +175,7 @@
                       android:gravity="center_vertical"
                       android:layout_height="match_parent"
                       android:background="@null"
+                      android:fontFamily="@font/raleway_medium"
                       android:text="@string/bio" />
 
                   <android.support.v7.widget.AppCompatImageView
@@ -188,8 +193,8 @@
               android:layout_height="@dimen/_25sdp"
               android:gravity="center_vertical"
               android:textColor="#A3A3A3"
-              android:textSize="@dimen/_12sdp"
-              android:textStyle="bold"
+              android:textSize="@dimen/_12ssp"
+              android:fontFamily="@font/raleway_bold"
               android:text="@string/information" />
 
           <LinearLayout
@@ -211,6 +216,7 @@
                   android:layout_weight="1"
                   android:layout_height="match_parent"
                   android:background="@null"
+                  android:fontFamily="@font/raleway_medium"
                   android:gravity="center_vertical"
                   android:text="@string/termsandcc" />
 
@@ -244,6 +250,7 @@
                   android:background="@null"
                   android:gravity="center_vertical"
                   android:text="@string/privacy"
+                  android:fontFamily="@font/raleway_medium"
                   android:clickable="false"/>
               <android.support.v7.widget.AppCompatImageView
                   android:layout_width="@dimen/_40sdp"
@@ -330,6 +337,7 @@
                           android:maxLines="2"
                           android:gravity="center_vertical"
                           android:textStyle="normal"
+                          android:fontFamily="@font/raleway_medium"
                           android:text="@string/yourlocatoion"
                           />
                   </LinearLayout>
@@ -352,6 +360,7 @@
                   android:layout_height="match_parent"
                   android:layout_weight="1"
                   android:gravity="center"
+                  android:fontFamily="@font/raleway_regular"
                   android:background="@drawable/bg_search_tag_active"
                   android:text="@string/feedback" />
 
@@ -366,6 +375,7 @@
                   android:layout_height="match_parent"
                   android:layout_weight="1"
                   android:gravity="center"
+                  android:fontFamily="@font/raleway_regular"
                   android:background="@drawable/bg_search_tag_active"
                   android:text="@string/logout" />
           </LinearLayout>
