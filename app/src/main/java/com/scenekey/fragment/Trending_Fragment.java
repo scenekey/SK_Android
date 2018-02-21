@@ -79,7 +79,7 @@ public class Trending_Fragment extends Fragment {
             retryLocation();
         }
         else{
-            activity.showProgDailog(false,TAG);
+            activity.showProgDialog(false,TAG);
             getTrendingData();
         }
     }
@@ -105,7 +105,7 @@ public class Trending_Fragment extends Fragment {
             @Override
             public void onClick(View view) {
                 dialog.cancel();
-                activity.showProgDailog(false,TAG);
+                activity.showProgDialog(false,TAG);
                 new Handler().postDelayed(new Runnable() {
                     // Using handler with postDelayed called runnable run method
                     @Override
@@ -125,7 +125,7 @@ public class Trending_Fragment extends Fragment {
         tvCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                activity.dismissProgDailog();
+                activity.dismissProgDialog();
                 dialog.cancel();
 
             }
@@ -161,7 +161,7 @@ public class Trending_Fragment extends Fragment {
             StringRequest request = new StringRequest(Request.Method.POST, WebServices.TRENDING, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
-                    activity.dismissProgDailog();
+                    activity.dismissProgDialog();
                     // get response
                     try {
                         JSONObject jo = new JSONObject(response);
@@ -169,7 +169,7 @@ public class Trending_Fragment extends Fragment {
                         if (jo.has("status")) {
                             int status = jo.getInt("status");
                             if (status == 0){
-                                activity.dismissProgDailog();
+                                activity.dismissProgDialog();
                                 try {
                                     Toast.makeText(activity,jo.getString("message"),Toast.LENGTH_SHORT).show();
                                     if (eventsArrayList == null) eventsArrayList = new ArrayList<>();
@@ -248,10 +248,10 @@ public class Trending_Fragment extends Fragment {
                                 }
                                 setRecyclerView();
                             }
-                            activity.dismissProgDailog();
+                            activity.dismissProgDialog();
                         }
                     } catch (Exception e) {
-                        activity.dismissProgDailog();
+                        activity.dismissProgDialog();
                         Utility.showToast(context,getString(R.string.somethingwentwrong),0);
                     }
                 }
@@ -259,7 +259,7 @@ public class Trending_Fragment extends Fragment {
                 @Override
                 public void onErrorResponse(VolleyError e) {
                     utility.volleyErrorListner(e);
-                    activity.dismissProgDailog();
+                    activity.dismissProgDialog();
                 }
             }) {
                 @Override
@@ -277,7 +277,7 @@ public class Trending_Fragment extends Fragment {
             request.setRetryPolicy(new DefaultRetryPolicy(10000, 0, 1));
         }else{
             utility.snackBar(rcViewTrending,getString(R.string.internetConnectivityError),0);
-            activity.dismissProgDailog();
+            activity.dismissProgDialog();
         }
     }
 

@@ -527,6 +527,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             manageSession(jsonObject,userInfo);
                             callIntent(btnFB.getId(),true);
                         }else if (statusCode==0) {
+                            Utility.showToast(context,message,0);
                             Utility.e(TAG,message);
                         }else{
                             Utility.showToast(context,getString(R.string.somethingwentwrong),0);

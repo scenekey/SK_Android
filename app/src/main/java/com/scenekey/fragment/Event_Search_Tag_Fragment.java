@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.VideoView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -74,7 +73,8 @@ public class Event_Search_Tag_Fragment extends Fragment implements View.OnClickL
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        activity.showProgDailog(false,TAG);
+        view.setOnClickListener(this);
+        activity.showProgDialog(false,TAG);
         view.findViewById(R.id.img_f1_back).setOnClickListener(this);
         View top_status = view.findViewById(R.id.top_status);
 
@@ -129,10 +129,10 @@ public class Event_Search_Tag_Fragment extends Fragment implements View.OnClickL
                         (list_events==null?list_events= new ArrayList<>():list_events).clear();
                         list_events = new Gson().fromJson(response, new TypeToken<ArrayList<EventsBTag>>() {}.getType() );
                         setRecyclerViewEvent();
-                        activity.dismissProgDailog();
+                        activity.dismissProgDialog();
                     } catch (Exception e) {
                         e.printStackTrace();
-                        activity.dismissProgDailog();
+                        activity.dismissProgDialog();
                     }*/
 
                     try{
@@ -171,17 +171,17 @@ public class Event_Search_Tag_Fragment extends Fragment implements View.OnClickL
                             Utility.showToast(context, "No Event found near your location", 0);
                         }
                         setRecyclerViewEvent();
-                        activity.dismissProgDailog();
+                        activity.dismissProgDialog();
                     }catch (Exception e){
                         e.printStackTrace();
-                        activity.dismissProgDailog();
+                        activity.dismissProgDialog();
                     }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Utility.e("LOG_VOLLEY E", error.toString());
-                    activity.dismissProgDailog();
+                    activity.dismissProgDialog();
                 }
             }) {
                 @Override
@@ -216,7 +216,7 @@ public class Event_Search_Tag_Fragment extends Fragment implements View.OnClickL
             requestQueue.add(stringRequest);
         } catch (JSONException e) {
             e.printStackTrace();
-            activity.dismissProgDailog();
+            activity.dismissProgDialog();
         }
     }
 

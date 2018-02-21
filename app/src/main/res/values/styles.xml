@@ -22,7 +22,7 @@
     </style>
 
 
-    <style name="DialogTheme" parent="AppTheme">
+    <style name="DialogTheme" parent="@style/Base.Theme.AppCompat.Light.Dialog">
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowMinWidthMajor">100%</item>

@@ -95,8 +95,8 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        activity.setTitle(context.getResources().getString(R.string.scene));
-        activity.showProgDailog(false,TAG);
+        activity.setTitle(context.getResources().getString(R.string.map));
+        activity.showProgDialog(false,TAG);
         showNearByEventMarker();
     }
 
@@ -156,7 +156,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
         tvCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                activity.dismissProgDailog();
+                activity.dismissProgDialog();
                 dialog.cancel();
 
             }
@@ -184,7 +184,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
                         if (jo.has("status")) {
                             int status = jo.getInt("status");
                             if (status == 0){
-                                activity.dismissProgDailog();
+                                activity.dismissProgDialog();
                                 showNoEventDialog();
                             }
                             if (jo.has("userInfo")) {
@@ -240,15 +240,15 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
                                 mapAsync();
                             }
                         }
-                        activity.dismissProgDailog();
+                        activity.dismissProgDialog();
 
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        activity.dismissProgDailog();
+                        activity.dismissProgDialog();
                         Utility.showToast(context,getResources().getString(R.string.somethingwentwrong),0);
                     } catch (ParseException e) {
                         e.printStackTrace();
-                        activity.dismissProgDailog();
+                        activity.dismissProgDialog();
                     }
 
                 }
@@ -256,7 +256,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
                 @Override
                 public void onErrorResponse(VolleyError e) {
                     utility.volleyErrorListner(e);
-                    activity.dismissProgDailog();
+                    activity.dismissProgDialog();
                 }
             }) {
                 @Override
@@ -276,7 +276,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
             request.setRetryPolicy(new DefaultRetryPolicy(10000, 0, 1));
         }else{
             utility.snackBar(mMapView,getString(R.string.internetConnectivityError),0);
-            activity.dismissProgDailog();
+            activity.dismissProgDialog();
         }
     }
 

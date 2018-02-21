@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -16,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -27,7 +29,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -481,6 +482,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 case R.id.rtlv_three:
                     img_three_logo.setImageResource(R.drawable.ic_logo);
                     img_three_logo.setBackgroundResource(R.drawable.bg_white_key);
+                    img_three_logo.setColorFilter(ContextCompat.getColor(context, R.color.black30p), PorterDuff.Mode.SRC_ATOP);
                     getImgV(lastClicked).setImageResource(R.drawable.transparent);
                     break;
                 case R.id.rtlv_four:
@@ -504,6 +506,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 //img_three_logo.setVisibility(View.VISIBLE);
                 img_three_logo.setBackgroundResource(R.drawable.transparent);
                 img_three_logo.setImageResource(R.drawable.ic_logo_selected);
+                img_three_logo.setColorFilter(ContextCompat.getColor(context, R.color.white), android.graphics.PorterDuff.Mode.MULTIPLY);
                 img_three_one.setVisibility(View.INVISIBLE);
                 ((TextView) v.getChildAt(1)).setTextColor(getResources().getColor(R.color.white));
                 getImgV(v).setImageResource(R.drawable.selected_key_icon4);
@@ -525,7 +528,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (isClicked) {
             ((TextView) rtlv.getChildAt(1)).setTextColor(getResources().getColor(R.color.selected_bb_text));
         } else {
-            ((TextView) rtlv.getChildAt(1)).setTextColor(getResources().getColor(R.color.unselected_bb_txt));
+            ((TextView) rtlv.getChildAt(1)).setTextColor(getResources().getColor(R.color.black));
         }
 
     }
@@ -628,7 +631,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private void checkEventAvailablity(final boolean showProgress) {
         if (latitudeAdmin!=0.0d&&longitudeAdmin!=0.0d)
         {
-            showProgDailog(false,TAG);
+            showProgDialog(false,TAG);
             getEventsByLocationApi();
         }else if (!checkGPS){
             utility.checkGpsStatus();
@@ -644,7 +647,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             StringRequest request = new StringRequest(Request.Method.POST, WebServices.EVENT_BY_LOCAL, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
-                    dismissProgDailog();
+                    dismissProgDialog();
                     // get response
                     try {
                         //{"status":0,"message":"No data were found!","userInfo":{"fullname":"Thomas Lewis","address":"Los Angeles County,California","lat":"22.7051015","longi":"75.9090669","makeAdmin":"yes","key_points":"31"}}
@@ -754,7 +757,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void onErrorResponse(VolleyError e) {
                     utility.volleyErrorListner(e);
-                    dismissProgDailog();
+                    dismissProgDialog();
                 }
             }) {
                 @Override
@@ -774,7 +777,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             request.setRetryPolicy(new DefaultRetryPolicy(10000, 0, 1));
         }else{
             utility.snackBar(frame_fragments,getString(R.string.internetConnectivityError),0);
-            dismissProgDailog();
+            dismissProgDialog();
         }
     }
 
@@ -825,14 +828,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View view) {
                 dialog.cancel();
-                showProgDailog(false,TAG);
+                showProgDialog(false,TAG);
 
 
                 new Handler().postDelayed(new Runnable() {
                     // Using handler with postDelayed called runnable run method
                     @Override
                     public void run() {
-                        dismissProgDailog();
+                        dismissProgDialog();
                         switch (tag){
                             case "checkEventAvailablity":
                                 checkEventAvailablity(true);
@@ -939,13 +942,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         rl_title_view.setVisibility(visibility);
     }
 
-    public void showProgDailog(boolean b , String TAG) {
+    public void showProgDialog(boolean b , String TAG) {
         customProgressBar.setCanceledOnTouchOutside(b);
         customProgressBar.setCancelable(b);
         customProgressBar.show();
     }
 
-    public void dismissProgDailog() {
+    public void dismissProgDialog() {
         if (customProgressBar != null) customProgressBar.dismiss();
     }
 

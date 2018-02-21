@@ -82,7 +82,7 @@
     <string name="Sorry2"> You are not currently at a \n Scenekey event</string>
     <!-- <string name="Sorry2_new"> You are not currently at a \n Scenekey event .When you arrive at an event . the icon will appear on this screen . Select the icon to enter the room. </string> -->
     <string name="Sorry2_new"> You are not currently at a \n Scenekey event .When you arrive at an event . the icon will appear on this screen . Select the icon to enter the room. </string>
-    <string name="sorry3"> Unfortunately, you cannot access this feature right now.Check back for further updates.</string>
+    <string name="sorry3"> Unfortunately, you cannot access this feature right now.Check back for further updates</string>
     <string name="tryDemo"> Try a Demo</string>
     <string name="sample_event"> Michael Jackson live</string>
     <string name="sample_Address"> Staples Center Los Angeles </string>

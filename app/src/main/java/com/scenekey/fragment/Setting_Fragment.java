@@ -31,7 +31,6 @@ import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.scenekey.R;
 import com.scenekey.activity.HomeActivity;
-import com.scenekey.adapter.Profile_Adapter;
 import com.scenekey.helper.Constant;
 import com.scenekey.helper.WebServices;
 import com.scenekey.model.UserInfo;
@@ -309,7 +308,7 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener {
                 @Override
                 public void onResponse(String response) {
                     Utility.printBigLogcat(TAG, response);
-                    activity.dismissProgDailog();
+                    activity.dismissProgDialog();
 
                     try {
                         JSONObject jo = new JSONObject(response);
@@ -349,7 +348,7 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener {
                 @Override
                 public void onErrorResponse(VolleyError e) {
                     utility.volleyErrorListner(e);
-                    activity.dismissProgDailog();
+                    activity.dismissProgDialog();
                 }
             }) {
                 @Override
@@ -369,7 +368,7 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener {
             request.setRetryPolicy(new DefaultRetryPolicy(10000, 0, 1));
         }else{
             utility.snackBar(txt_logout,getString(R.string.internetConnectivityError),0);
-            activity.dismissProgDailog();
+            activity.dismissProgDialog();
         }
 
     }

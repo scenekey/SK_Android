@@ -14,6 +14,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -32,11 +33,22 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.auth.CognitoCredentialsProvider;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.facebook.AccessToken;
 import com.scenekey.R;
 import com.scenekey.helper.Constant;
 import com.scenekey.helper.CustomProgressBar;
@@ -50,9 +62,12 @@ import com.scenekey.volleymultipart.VolleySingleton;
 
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.scenekey.helper.Constant.MY_PERMISSIONS_REQUEST_CAMERA;
 import static com.scenekey.helper.Constant.MY_PERMISSIONS_REQUEST_LOCATION;
@@ -77,7 +92,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
     private  LocationManager locationManager;
     private boolean checkGPS;
-
+    private CognitoCredentialsProvider credentialsProvider;
     private Bitmap profileImageBitmap;
 
     @Override
@@ -329,20 +344,24 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                             userInfo.bio= userDetail.getString("bio");
 
                             sessionManager.createSession(userInfo);
+                            if (profileImageBitmap!=null)
+                            initItem(profileImageBitmap);
 
                             Intent intent = new Intent(RegistrationActivity.this,IntroActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
 
                         } else {
+                            customProgressBar.dismiss();
                             Toast.makeText(RegistrationActivity.this, message, Toast.LENGTH_SHORT).show();
                         }
 
                     } catch (Throwable t) {
+                        customProgressBar.dismiss();
                         Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
                     }
 
-                    customProgressBar.dismiss();
+
 
                 }
             }, new Response.ErrorListener() {
@@ -423,6 +442,108 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             }
         });
         builder.show();
+    }
+
+    private  void  initItem(Bitmap bitmap){
+        try {
+
+            String root = Environment.getExternalStorageDirectory().getAbsolutePath();
+            File myDir = new File(root + "/saved_images");
+            myDir.mkdirs();
+
+            String fname = "Image-"+ UUID.randomUUID()+".jpg";
+            File file = new File (myDir, fname);
+            if (file.exists ()) file.delete ();
+            try {
+                FileOutputStream out = new FileOutputStream(file);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                out.flush();
+                out.close();
+                uploadFBImage(file,credentialsProvider);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            // some action
+            e.printStackTrace();
+        }
+
+    }
+
+    private void uploadFBImage(File mypath, CognitoCredentialsProvider credentialsProvider){
+        // prog.show();
+        AmazonS3Client s3Client;
+        credentialsProvider = getCredentials();
+        s3Client = new AmazonS3Client(credentialsProvider);
+        String fbid = sessionManager.getFacebookId();
+        Utility.e("FBID",fbid);
+
+        // Set the region of your S3 bucket
+        s3Client.setRegion(Region.getRegion(Regions.US_WEST_1));
+        TransferUtility transferUtility = new TransferUtility(s3Client, this);
+        // String  key1 = fbid+"-"+ System.currentTimeMillis()+".jpg";
+
+        String  key1 = fbid+".jpg";
+        TransferObserver observer
+                = transferUtility.upload(
+                Constant.BUCKET+"/"+fbid,     /* The bucket to upload to */
+                key1,    /* The key for the uploaded object */
+                mypath   , CannedAccessControlList.PublicReadWrite  /* The file where the data to upload exists */
+        );
+        Utility.e("OBSERVER KEY",observer.getKey());
+        String key = fbid + "/" + observer.getKey();
+        observer.setTransferListener(new TransferListener() {
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+
+                if(state.equals(TransferState.COMPLETED)){
+
+                    customProgressBar.dismiss();
+                }
+                if(state.equals(TransferState.FAILED)){
+                /*Toast.makeText(Image_uploade_Activity.this, "State Change" + state,
+                        Toast.LENGTH_SHORT).show();*/
+                    customProgressBar.dismiss();
+                }
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+          /*  int percentage = (int) (bytesCurrent/(bytesTotal>0?bytesTotal:1) * 100);
+            Toast.makeText(getApplicationContext(), "Progress in %" + percentage,
+                    Toast.LENGTH_SHORT).show();*/
+                Log.v("value","Progresschange");
+            }
+
+            @Override
+            public void onError(int id, Exception ex) {
+                //prog.dismiss();
+                Utility.e("error","error"+ex);
+            }
+        });
+    }
+
+    public CognitoCredentialsProvider getCredentials(){
+        CognitoCredentialsProvider credentialsProvider = new CognitoCredentialsProvider( "us-west-2:86b58a3e-0dbd-4aad-a4eb-e82b1a4ebd91",Regions.US_WEST_2);
+        AmazonS3 s3 = new AmazonS3Client(credentialsProvider);
+        TransferUtility transferUtility = new TransferUtility(s3, getApplicationContext());
+
+        Map<String, String> logins = new HashMap<String, String>();
+
+        String token = "";
+        try {
+            token = AccessToken.getCurrentAccessToken().getToken();
+        }catch (Exception e){}
+
+        if (token != null && !token.equals("")) {
+            logins.put("graph.facebook.com", AccessToken.getCurrentAccessToken().getToken());
+        }else {
+            logins.put("graph.facebook.com", Constant.Token);
+        }
+        //Utility.printBigLogcat("Acess " , AccessToken.getCurrentAccessToken().getToken());
+        credentialsProvider.setLogins(logins);
+        return credentialsProvider;
     }
 
     @Override

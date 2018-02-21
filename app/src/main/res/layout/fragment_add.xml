@@ -48,7 +48,9 @@
         </LinearLayout>
 
         <TextView
-            android:layout_margin="@dimen/_30sdp"
+           android:layout_marginTop="@dimen/_25sdp"
+            android:layout_marginLeft="@dimen/_18sdp"
+            android:layout_marginRight="@dimen/_18sdp"
             android:id="@+id/txt_sorry3"
             android:gravity="center"
             android:textColor="@color/gray"
@@ -57,7 +59,7 @@
             android:layout_gravity="center_horizontal"
             android:fontFamily="@font/raleway_regular"
             android:text="@string/sorry3"
-            android:textSize="@dimen/_15ssp" />
+            android:textSize="@dimen/_18ssp" />
 
     </LinearLayout>
 

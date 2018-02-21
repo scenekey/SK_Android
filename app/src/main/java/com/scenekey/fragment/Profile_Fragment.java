@@ -1,6 +1,8 @@
 package com.scenekey.fragment;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -12,7 +14,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -32,7 +33,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.facebook.AccessToken;
 import com.scenekey.R;
 import com.scenekey.activity.HomeActivity;
+import com.scenekey.activity.ImageUploadActivity;
 import com.scenekey.adapter.Profile_Adapter;
+import com.scenekey.helper.Constant;
 import com.scenekey.helper.WebServices;
 import com.scenekey.model.EventAttendy;
 import com.scenekey.model.Feeds;
@@ -98,7 +101,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                activity.showProgDailog(false,TAG);
+                activity.showProgDialog(false,TAG);
                 getProfileDataApi();
             }
         },200);
@@ -207,7 +210,12 @@ comment for:- fb and count not show for current scenario
                 }
                 break;
             case R.id.img_capture:
-                if(myProfile)activity.addFragment(new Image_Upload_Fragment(),1);
+                if(myProfile){
+                   Intent i= new Intent(context, ImageUploadActivity.class);
+                   i.putExtra("from","profile");
+                    activity.startActivityForResult(i, Constant.IMAGE_UPLOAD_CALLBACK);
+                }
+               // Utility.showToast(context,getString(R.string.underDevelopment),0);
                 break;
             case R.id.img_right:
                 setImage(true);
@@ -403,13 +411,13 @@ comment for:- fb and count not show for current scenario
                     if (feedsList == null) {
                         feedsList = new ArrayList<>();
                     }
-                    activity.dismissProgDailog();
+                    activity.dismissProgDialog();
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError e) {
                     utility.volleyErrorListner(e);
-                    activity.dismissProgDailog();
+                    activity.dismissProgDialog();
                 }
             }) {
                 @Override
@@ -427,7 +435,7 @@ comment for:- fb and count not show for current scenario
             request.setRetryPolicy(new DefaultRetryPolicy(10000, 0, 1));
         }else{
             utility.snackBar(listViewFragProfile,getString(R.string.internetConnectivityError),0);
-            activity.dismissProgDailog();
+            activity.dismissProgDialog();
         }
     }
 
@@ -473,7 +481,7 @@ comment for:- fb and count not show for current scenario
                 if (feedJson.has("feed")) feeds.feed=(feedJson.getString("feed"));
 
                 feedsList.add(feeds);
-                if(i==1)activity.dismissProgDailog();
+                if(i==1)activity.dismissProgDialog();
 
             }
             adapter.notifyDataSetChanged();
@@ -571,4 +579,18 @@ comment for:- fb and count not show for current scenario
         credentialsProvider.setLogins(logins);
         return credentialsProvider;
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == Constant.IMAGE_UPLOAD_CALLBACK) {
+            if(resultCode == Activity.RESULT_OK){
+                boolean isValue=data.getBooleanExtra("isResult",false);
+                if (isValue){
+                    //reload image
+                }
+            }
+
+        }
+    }//onActivityResult
 }

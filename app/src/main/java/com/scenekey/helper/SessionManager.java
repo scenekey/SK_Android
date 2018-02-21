@@ -112,7 +112,6 @@ public class SessionManager {
         editor.commit();
     }
 
-
     public UserInfo getUserInfo() {
         UserInfo userInfo = new UserInfo();
         userInfo.userID=(mypref.getString(USER_ID, null));
@@ -175,9 +174,17 @@ public class SessionManager {
         editor.putBoolean(SOFT_KEY, value);
         editor.commit();
     }
+
     public void setLogin(boolean value){
         editor.putBoolean(IS_LOGGEDIN2, value);
         editor.commit();
     }
+
+    public String getFacebookId(){
+        String s = mypref.getString(FACEBOOK_ID,"");
+        if (s.equals("")){
+            s = mypref.getString(USER_ID,"");
+        }
+        return s;}
 
 }

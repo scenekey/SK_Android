@@ -13,7 +13,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -35,10 +34,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InvalidObjectException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Search_Fragment extends Fragment implements View.OnClickListener {
 
@@ -71,6 +67,7 @@ public class Search_Fragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         activity.setTitle(context.getResources().getString(R.string.search));
+        view.setOnClickListener(this);
         searchData();
     }
 
@@ -93,7 +90,7 @@ public class Search_Fragment extends Fragment implements View.OnClickListener {
             retryLocation();
         }
         else{
-            activity.showProgDailog(false,TAG);
+            activity.showProgDialog(false,TAG);
             getTags();
         }
     }
@@ -119,7 +116,7 @@ public class Search_Fragment extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(View view) {
                 dialog.cancel();
-                activity.showProgDailog(false,TAG);
+                activity.showProgDialog(false,TAG);
                 new Handler().postDelayed(new Runnable() {
                     // Using handler with postDelayed called runnable run method
                     @Override
@@ -139,7 +136,7 @@ public class Search_Fragment extends Fragment implements View.OnClickListener {
         tvCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                activity.dismissProgDailog();
+                activity.dismissProgDialog();
                 dialog.cancel();
 
             }
@@ -194,7 +191,7 @@ public class Search_Fragment extends Fragment implements View.OnClickListener {
             StringRequest request = new StringRequest(Request.Method.POST, WebServices.EVENT_TAG, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
-                    activity.dismissProgDailog();
+                    activity.dismissProgDialog();
                     Utility.e("LOG_VOLLEY SEARCH ", response);
                     try {
                         JSONArray tag_Arrray = new JSONArray(response);
@@ -212,7 +209,7 @@ public class Search_Fragment extends Fragment implements View.OnClickListener {
                 @Override
                 public void onErrorResponse(VolleyError e) {
                     utility.volleyErrorListner(e);
-                    activity.dismissProgDailog();
+                    activity.dismissProgDialog();
                 }
             }) {
 
@@ -236,7 +233,7 @@ public class Search_Fragment extends Fragment implements View.OnClickListener {
             request.setRetryPolicy(new DefaultRetryPolicy(10000, 0, 1));
         }else{
             utility.snackBar(rcViewSearch,getString(R.string.internetConnectivityError),0);
-            activity.dismissProgDailog();
+            activity.dismissProgDialog();
         }
 
     }

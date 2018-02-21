@@ -1,20 +1,15 @@
 package com.scenekey.fragment;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -23,7 +18,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.scenekey.R;
 import com.scenekey.activity.HomeActivity;
 import com.scenekey.helper.WebServices;
@@ -134,7 +128,7 @@ public class Bio_Fragment extends Fragment implements View.OnClickListener {
     }
 
     private void updateBio(final String bio) {
-        activity.showProgDailog(false,TAG);
+        activity.showProgDialog(false,TAG);
         final Utility utility=new Utility(context);
 
         if (utility.checkInternetConnection()) {
@@ -144,7 +138,7 @@ public class Bio_Fragment extends Fragment implements View.OnClickListener {
                     // get response
                     JSONObject jsonObject;
                     try {
-                        activity.dismissProgDailog();
+                        activity.dismissProgDialog();
                         // System.out.println(" login response" + response);
                         jsonObject = new JSONObject(Response);
                         int statusCode = jsonObject.getInt("status");
@@ -161,7 +155,7 @@ public class Bio_Fragment extends Fragment implements View.OnClickListener {
                         }
 
                     } catch (Exception ex) {
-                        activity.dismissProgDailog();
+                        activity.dismissProgDialog();
                         ex.printStackTrace();
                     }
                 }
@@ -169,7 +163,7 @@ public class Bio_Fragment extends Fragment implements View.OnClickListener {
                 @Override
                 public void onErrorResponse(VolleyError e) {
                     utility.volleyErrorListner(e);
-                    activity.dismissProgDailog();
+                    activity.dismissProgDialog();
                 }
             }) {
                 @Override
@@ -185,10 +179,7 @@ public class Bio_Fragment extends Fragment implements View.OnClickListener {
             request.setRetryPolicy(new DefaultRetryPolicy(10000, 0, 1));
         }else{
             utility.snackBar(et_for_enterTxt,getString(R.string.internetConnectivityError),0);
-            activity.dismissProgDailog();
+            activity.dismissProgDialog();
         }
     }
-
-
-
 }

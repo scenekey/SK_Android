@@ -1,0 +1,162 @@
+package com.scenekey.adapter;
+
+import android.graphics.Bitmap;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.scenekey.R;
+import com.scenekey.activity.ImageUploadActivity;
+import com.scenekey.helper.Pop_Up_Option;
+import com.scenekey.model.ImagesUpload;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+
+/**
+ * Created by mindiii on 21/2/18.
+ */
+
+public class ImageUpload_Adapter extends RecyclerView.Adapter<ImageUpload_Adapter.Holder> {
+
+    private ArrayList<ImagesUpload> list;
+    private ImageUploadActivity activity;
+    private Pop_Up_Option pop_up_option;
+
+    public ImageUpload_Adapter(ImageUploadActivity activity ) {
+        list = new ArrayList<>();
+        this.activity = activity;
+        initializePopup();
+
+    }
+
+    private static Bitmap cropToSquare(Bitmap bitmap) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int newWidth = (height > width) ? width : height;
+        int newHeight = (height > width) ? height - (height - width) : height;
+        int cropW = (width - height) / 2;
+        cropW = (cropW < 0) ? 0 : cropW;
+        int cropH = (height - width) / 2;
+        cropH = (cropH < 0) ? 0 : cropH;
+
+        return Bitmap.createBitmap(bitmap, cropW, cropH, newWidth, newHeight);
+    }
+
+    @Override
+    public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new Holder(LayoutInflater.from(activity).inflate(R.layout.custom_image_upload, null));
+    }
+
+    @Override
+    public void onBindViewHolder(Holder holder, final int position) {
+        if(position >= 6) {
+            holder.itemView.setVisibility(View.GONE);
+            return;
+        }
+        holder.itemView.setVisibility(View.VISIBLE);
+        if (position == list.size()) {
+
+            holder.img_cross.setVisibility(View.GONE);
+            holder.img_pic.setImageBitmap(null);
+            holder.img_pic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(list.size()>=5){
+                        /*CustomToastDialog customToastDialog = new CustomToastDialog(activity);
+                        customToastDialog.setMessage(activity.getString(R.string.w_photo_limit));
+                        customToastDialog.show();*/
+                        Toast.makeText(activity, R.string.w_photo_limit, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    pop_up_option.setObject(null);
+                    pop_up_option.show();
+
+                }
+            });
+        } else {
+            holder.img_cross.setVisibility(View.VISIBLE);
+            if(list.get(position).getBitmap()!= null)holder.img_pic.setImageBitmap(list.get(position).getBitmap());
+            else {
+                Picasso.with(activity).load(list.get(position).getPath()).into(holder.img_pic);
+            }
+            final String s = list.get(position).getPath()+"";
+            holder.img_pic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(s.length()>5)activity.setImage(s);
+                }
+            });
+            holder.img_cross.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    activity.removeImage(position);
+                }
+            });
+        }
+
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return (list!=null ? list.size()+1:1);
+    }
+
+    public void addImage(Bitmap bitmap) {
+        list.add(new ImagesUpload(cropToSquare(bitmap)));
+        //notifyDataSetChanged();
+        notifyItemInserted(list.size() - 1);
+
+    }
+
+    public void addImage(String string) {
+
+        list.add(new ImagesUpload(string));
+        //notifyDataSetChanged();
+        notifyItemInserted(list.size() - 1);
+
+    }
+
+    public void addImage(String string , Bitmap bitmap) {
+        try {
+            list.add(new ImagesUpload(string,cropToSquare(bitmap)));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        notifyItemInserted(list.size() - 1);
+
+    }
+
+    class Holder extends RecyclerView.ViewHolder {
+        ImageView img_cross, img_pic;
+
+        Holder(View itemView) {
+            super(itemView);
+            img_pic =  itemView.findViewById(R.id.img_pic);
+            img_cross =  itemView.findViewById(R.id.img_cross);
+            img_cross.setVisibility(View.GONE);
+        }
+    }
+
+    private void initializePopup(){
+        pop_up_option =  activity.initializePopup();
+    }
+
+    public ImagesUpload getListObject(int position){
+        return  list.get(position);
+    }
+
+    public int getlistSize(){
+        return list.size();
+    }
+
+    public ArrayList<ImagesUpload> getList(){
+        return list;
+    }
+
+}

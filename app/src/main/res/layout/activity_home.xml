@@ -111,6 +111,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:paddingBottom="@dimen/_4sdp"
                 android:background="@color/transparent"
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
@@ -123,6 +124,7 @@
                     android:paddingTop="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_2sdp"
                     android:scaleType="fitCenter"
+                    android:tint="@color/black30p"
                     app:srcCompat="@drawable/flame" />
 
 
@@ -130,8 +132,10 @@
                     android:id="@+id/txt_eventName"
                     style="@style/txt_bottom_bar"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_14sdp"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/_8ssp"
                     android:fontFamily="@font/raleway_bold"
+                    android:textColor="@color/black"
                     android:layout_below="@+id/img_one"
                     android:text="@string/trending" />
 
@@ -142,27 +146,30 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:paddingBottom="@dimen/_4sdp"
                 android:background="@color/transparent"
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/img_two"
-                    android:layout_width="@dimen/_30sdp"
-                    android:layout_height="@dimen/_28sdp"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
                     android:layout_centerHorizontal="true"
-                    android:paddingTop="@dimen/_6sdp"
                     android:scaleType="fitCenter"
+                    android:tint="@color/black30p"
+                    android:paddingBottom="@dimen/_2sdp"
                     app:srcCompat="@drawable/ic_map_icon" />
-
 
                 <TextView
                     android:id="@+id/txt_eventAdress"
                     style="@style/txt_bottom_bar"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_14sdp"
-                    android:layout_below="@+id/img_two"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/_8ssp"
                     android:fontFamily="@font/raleway_bold"
+                    android:textColor="@color/black"
+                    android:layout_below="@+id/img_two"
                     android:text="@string/map" />
 
             </RelativeLayout>
@@ -191,11 +198,14 @@
                     android:id="@+id/txt_eventDate"
                     style="@style/txt_bottom_bar"
                     android:layout_width="@dimen/_45sdp"
-                    android:layout_height="@dimen/_14sdp"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/_8ssp"
+                    android:paddingBottom="@dimen/_4sdp"
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:background="@color/transparent"
                     android:fontFamily="@font/raleway_bold"
+                    android:textColor="@color/black"
                     android:text="@string/enter" />
 
                 <android.support.v7.widget.AppCompatImageView
@@ -218,6 +228,7 @@
                     android:scaleType="fitCenter"
                     android:padding="@dimen/_8sdp"
                     android:visibility="visible"
+                    android:tint="@color/black30p"
                     android:background="@drawable/bg_white_key"
                     app:srcCompat="@drawable/ic_logo" />
 
@@ -240,6 +251,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:paddingBottom="@dimen/_4sdp"
                 android:background="@color/transparent"
                 android:gravity="center_horizontal">
 
@@ -250,6 +262,8 @@
                     android:layout_centerHorizontal="true"
                     android:paddingTop="@dimen/_8sdp"
                     android:scaleType="fitCenter"
+                    android:paddingBottom="@dimen/_2sdp"
+                    android:tint="@color/black30p"
                     app:srcCompat="@drawable/ic_search_icon" />
 
 
@@ -257,9 +271,11 @@
                     android:id="@+id/txt_four"
                     style="@style/txt_bottom_bar"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_14sdp"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/_8ssp"
                     android:layout_below="@+id/img_four"
                     android:fontFamily="@font/raleway_bold"
+                    android:textColor="@color/black"
                     android:text="@string/Search" />
 
             </RelativeLayout>
@@ -269,6 +285,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:paddingBottom="@dimen/_4sdp"
                 android:background="@color/transparent"
                 android:gravity="center_horizontal">
 
@@ -280,6 +297,8 @@
                     android:layout_centerHorizontal="true"
                     android:paddingTop="@dimen/_8sdp"
                     android:scaleType="fitCenter"
+                    android:tint="@color/black70p"
+                    android:paddingBottom="@dimen/_2sdp"
                     app:srcCompat="@drawable/ic_add_icon" />
 
 
@@ -287,9 +306,11 @@
                     android:id="@+id/txt_five"
                     style="@style/txt_bottom_bar"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_14sdp"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/_8ssp"
                     android:layout_below="@+id/img_five"
                     android:fontFamily="@font/raleway_bold"
+                    android:textColor="@color/black"
                     android:text="@string/add" />
 
             </RelativeLayout>

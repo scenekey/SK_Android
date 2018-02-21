@@ -21,7 +21,6 @@ public class ImagesUpload implements Serializable {
         this.bitmap = bitmap;
     }
 
-
     public ImagesUpload( String key) {
         Utility.e("KEY : _only",key);
         this.key = key;
@@ -32,6 +31,30 @@ public class ImagesUpload implements Serializable {
         this.key = key;
         this.path = url+key;
         this.bitmap = bitmap;
+    }
+
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
 }

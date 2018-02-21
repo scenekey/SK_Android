@@ -35,12 +35,8 @@ public class IntroActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StatusBarUtil.setTranslucent(this);
         setContentView(R.layout.activity_intro);
-
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-        }
 
         viewPager = (ViewPager) findViewById(R.id.a6_viewpager);
         dotsLayout = (LinearLayout) findViewById(R.id.layoutDots);
@@ -68,7 +64,11 @@ public class IntroActivity extends AppCompatActivity {
         btnSkip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               Intent intent = new Intent(IntroActivity.this,HomeActivity.class);
+               Intent intent = new Intent(IntroActivity.this,ImageUploadActivity.class);
+               // Closing all the Activities
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                // Add new Flag to start new Activity
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                startActivity(intent);
             }
         });
