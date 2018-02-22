@@ -53,8 +53,11 @@ import com.scenekey.R;
 import com.scenekey.helper.Constant;
 import com.scenekey.helper.CustomProgressBar;
 import com.scenekey.helper.Permission;
+import com.scenekey.helper.Pop_Up_Option;
 import com.scenekey.helper.SessionManager;
 import com.scenekey.helper.Validation;
+import com.scenekey.helper.WebServices;
+import com.scenekey.lib_sources.arc_menu.util.Util;
 import com.scenekey.model.UserInfo;
 import com.scenekey.util.Utility;
 import com.scenekey.volleymultipart.VolleyMultipartRequest;
@@ -86,14 +89,14 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     private CustomProgressBar customProgressBar;
     private SessionManager sessionManager;
 
-    private Permission permission;
     private String maleFemale="male";
     private Double latitude=0.0, longitude =0.0;
-
+    private String imageKey;
     private  LocationManager locationManager;
     private boolean checkGPS;
     private CognitoCredentialsProvider credentialsProvider;
     private Bitmap profileImageBitmap;
+    private   Pop_Up_Option pop_up_option;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,7 +136,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void initMembers() {
-        permission = new Permission(context);
+        Permission permission = new Permission(context);
 
         permission.checkLocationPermission();
     }
@@ -193,25 +196,25 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             case R.id.btnRegiSignUp:
                 Validation  validation=new Validation(context);
                 if (utility.checkInternetConnection()){
-                if (validation.isFullNameValid(etRegiFullName)&&validation.isEmailValid(etRegiEmail)&&validation.isPasswordValid(etRegiPwd))
-                {
-                    String fullName=etRegiFullName.getText().toString().trim();
-                    String email=etRegiEmail.getText().toString().trim();
-                    String pwd=etRegiPwd.getText().toString().trim();
+                    if (validation.isFullNameValid(etRegiFullName)&&validation.isEmailValid(etRegiEmail)&&validation.isPasswordValid(etRegiPwd))
+                    {
+                        String fullName=etRegiFullName.getText().toString().trim();
+                        String email=etRegiEmail.getText().toString().trim();
+                        String pwd=etRegiPwd.getText().toString().trim();
 
-                   // Utility.showToast(context,getString(R.string.underDevelopment),0);
-                    if (latitude!=0.0d&& longitude !=0.0d) {
-                        doRegistration(fullName,email,pwd,maleFemale);
-                    }/*else if (checkGPS&&latitude==0.0&&longitude==0.0){
+                        // Utility.showToast(context,getString(R.string.underDevelopment),0);
+                        if (latitude!=0.0d&& longitude !=0.0d) {
+                            doRegistration(fullName,email,pwd,maleFemale);
+                        }/*else if (checkGPS&&latitude==0.0&&longitude==0.0){
                         showErrorPopup();
                     }*/else if (!checkGPS){
-                        utility.checkGpsStatus();
-                    }else{
-                        showErrorPopup();
+                            utility.checkGpsStatus();
+                        }else{
+                            showErrorPopup();
+                        }
+
+
                     }
-
-
-                }
                 }else{
                     Utility.showToast(context,getString(R.string.internetConnectivityError),0);
                 }
@@ -219,9 +222,9 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                 break;
 
             case R.id.relativeImgProfilePic:
-                if (permission.checkCameraPermission()) {
-                    selectImage();
-                }
+                pop_up_option=  initializePopup();
+                pop_up_option.setObject(null);
+                pop_up_option.show();
                 break;
 
             case R.id.imgRegiMale:
@@ -317,6 +320,16 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                             userInfo.userName = userDetail.getString("userName");
                             userInfo.email = userDetail.getString("userEmail");
                             userInfo.fullName = userDetail.getString("fullname");
+
+                            String[] split=userInfo.fullName.split(" ");
+                            if (split.length==2){
+
+                                userInfo.firstName= split[0].substring(0, 1).toUpperCase() + split[0].substring(1);
+                                userInfo.lastName=split[1].substring(0, 1).toUpperCase() + split[1].substring(1);
+                            }else{
+                                userInfo.firstName=userInfo.fullName.substring(0, 1).toUpperCase() + userInfo.fullName.substring(1);
+                                userInfo.lastName="";
+                            }
                             userInfo.password = userDetail.getString("password");
                             userInfo.userImage = userDetail.getString("userImage");
                             String age = userDetail.getString("age");
@@ -345,7 +358,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
                             sessionManager.createSession(userInfo);
                             if (profileImageBitmap!=null)
-                            initItem(profileImageBitmap);
+                                initItem(profileImageBitmap);
 
                             Intent intent = new Intent(RegistrationActivity.this,IntroActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -376,7 +389,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             }) {
                 @Override
                 protected Map<String, String> getParams() {
-                    Map<String, String> params = new HashMap<String, String>();
+                    Map<String, String> params = new HashMap<>();
 
                     params.put("address", "");
                     params.put("deviceType", "");
@@ -394,9 +407,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                     params.put("userFacebookId", "");
                     params.put("userGender", maleFemale);
 
-                    /*if (profileImageBitmap == null){
-                        params.put("profilePic", "");
-                    }*/
+                    Utility.e("Registration send data",params.toString());
                     return params;
                 }
 
@@ -418,7 +429,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     }
 
 
-    private void selectImage() {
+    /*private void selectImage() {
         final CharSequence[] options = {"Take Photo", "Choose from Gallery", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Add Photo!");
@@ -442,6 +453,71 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             }
         });
         builder.show();
+    }*/
+
+    public Pop_Up_Option initializePopup(){
+        pop_up_option= new Pop_Up_Option(context) {
+            @Override
+            public void onGalleryClick(Pop_Up_Option dialog, Object object) {
+                if (Build.VERSION.SDK_INT >= 23) {
+                    if (getContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        callIntent(Constant.MY_PERMISSIONS_REQUEST_EXTERNAL);
+                    } else {
+                        callIntent(Constant.RESULT_LOAD);
+                    }
+                } else {
+                    callIntent(Constant.RESULT_LOAD);
+                }
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onCameraClick(Pop_Up_Option dialog, Object object) {
+                if (Build.VERSION.SDK_INT >= 23) {
+                    if (getContext().checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        callIntent(Constant.REQUEST_CAMERA);
+                    } else {
+                        callIntent(Constant.INTENT_CAMERA);
+                    }
+                } else {
+                    callIntent(Constant.INTENT_CAMERA);
+                }
+                dialog.dismiss();
+            }
+        };
+        return pop_up_option;
+    }
+
+    public void callIntent(int caseId){
+
+        switch (caseId){
+            case Constant.INTENT_CAMERA:
+                try{Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, Constant.REQUEST_CAMERA);}
+                catch ( Exception e){
+                    e.printStackTrace();
+                }
+                break;
+            case Constant.RESULT_LOAD:
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(photoPickerIntent, Constant.RESULT_LOAD);
+                break;
+            case Constant.REQUEST_CAMERA:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA},
+                            Constant.MY_PERMISSIONS_REQUEST_CAMERA);
+                }
+                break;
+            case Constant.MY_PERMISSIONS_REQUEST_EXTERNAL:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    requestPermissions( new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            Constant.MY_PERMISSIONS_REQUEST_EXTERNAL);
+                }
+                break;
+            /*case Constants.INTENTREQUESTWRITE:
+                break;*/
+
+        }
     }
 
     private  void  initItem(Bitmap bitmap){
@@ -471,7 +547,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-    private void uploadFBImage(File mypath, CognitoCredentialsProvider credentialsProvider){
+    private void uploadFBImage(File myPath, CognitoCredentialsProvider credentialsProvider){
         // prog.show();
         AmazonS3Client s3Client;
         credentialsProvider = getCredentials();
@@ -489,16 +565,16 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                 = transferUtility.upload(
                 Constant.BUCKET+"/"+fbid,     /* The bucket to upload to */
                 key1,    /* The key for the uploaded object */
-                mypath   , CannedAccessControlList.PublicReadWrite  /* The file where the data to upload exists */
+                myPath   , CannedAccessControlList.PublicReadWrite  /* The file where the data to upload exists */
         );
         Utility.e("OBSERVER KEY",observer.getKey());
-        String key = fbid + "/" + observer.getKey();
+        imageKey = fbid + "/" + observer.getKey();
         observer.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState state) {
 
                 if(state.equals(TransferState.COMPLETED)){
-
+                   // Constant.DEF_PROFILE= WebServices.USER_IMAGE+imageKey;
                     customProgressBar.dismiss();
                 }
                 if(state.equals(TransferState.FAILED)){
@@ -559,11 +635,11 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     public void onProviderDisabled(String provider) {
         Utility.e("Latitude","disable");
         if (provider.equals("network")){
-           try {
-               utility.checkGpsStatus();
-           }catch (Exception e){
-               e.printStackTrace();
-           }
+            try {
+                utility.checkGpsStatus();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -582,7 +658,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         //   Bitmap bitmap;
         if (resultCode != 0) {
             switch (requestCode) {
-                case Constant.GALLERY_REQUEST:
+                case Constant.RESULT_LOAD:
                     try {
                         Uri uri = data.getData();
                         profileImageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
@@ -593,7 +669,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                         e.printStackTrace();
                     }
                     break;
-                case Constant.CAMERA_REQUEST:
+                case Constant.REQUEST_CAMERA:
                     profileImageBitmap = (Bitmap) data.getExtras().get("data");
                     imgUserImage.setImageBitmap(profileImageBitmap);
                     break;
@@ -610,24 +686,22 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_CAMERA: {
-                // If request is cancelled, the result arrays are empty.
+            case Constant.MY_PERMISSIONS_REQUEST_EXTERNAL: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted, yay! Do the
-                    // location-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(this,
-                            Manifest.permission.CAMERA)
-                            == PackageManager.PERMISSION_GRANTED) {
-                        //success permission granted & call camera method
-                        selectImage();
-                    }
+                    callIntent(Constant.RESULT_LOAD);
                 } else {
-                    // permission denied, boo! Disable the
-                    Toast.makeText(context, R.string.cameraPermissionDeny, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "You denied permission , can't select image", Toast.LENGTH_LONG).show();
                 }
             }
             break;
+
+            case Constant.MY_PERMISSIONS_REQUEST_CAMERA:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    callIntent(Constant.INTENT_CAMERA);
+                } else {
+                    Toast.makeText(this, "permission denied by user ", Toast.LENGTH_LONG).show();
+                }
+                break;
 
             case MY_PERMISSIONS_REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.

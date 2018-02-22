@@ -5,6 +5,8 @@ import android.content.Context;
 import android.support.multidex.MultiDex;
 
 import com.scenekey.helper.SessionManager;
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by mindiii on 2/2/18.
@@ -32,6 +34,7 @@ public class SceneKey extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
         instance = this;
         sessionManager = new SessionManager(instance.getApplicationContext());
     }

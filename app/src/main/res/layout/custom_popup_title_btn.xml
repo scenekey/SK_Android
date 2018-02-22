@@ -2,10 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/_250sdp"
     android:layout_height="wrap_content"
-    android:animateLayoutChanges="true"
     android:layout_gravity="center"
+    android:animateLayoutChanges="true"
     android:background="@drawable/popup_bg"
     android:orientation="vertical">
+
 
     <TextView
         android:id="@+id/tvTitle"
@@ -28,38 +29,24 @@
         android:gravity="center"
         android:fontFamily="@font/raleway_regular"
         android:layout_marginTop="@dimen/_10sdp"
-        android:paddingStart="@dimen/_30sdp"
-        android:paddingEnd="@dimen/_30sdp"
+        android:paddingBottom="@dimen/_10sdp"
+        android:paddingLeft="@dimen/_10sdp"
+        android:paddingRight="@dimen/_10sdp"
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:background="@color/gray_bottom" />
+        android:layout_margin="@dimen/_2sdp"
+        android:background="@color/gray" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_40sdp"
+        android:layout_height="@dimen/_35sdp"
         android:orientation="horizontal"
-        android:weightSum="2">
-
-        <TextView
-            android:id="@+id/tvPopupCancel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:fontFamily="@font/raleway_medium"
-            android:text="@string/cancel"
-            android:textColor="@color/blue"
-            android:textSize="@dimen/_14sdp" />
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="@color/gray_bottom" />
+        android:padding="@dimen/_4sdp"
+        android:weightSum="1">
 
         <TextView
             android:id="@+id/tvPopupOk"
@@ -68,10 +55,9 @@
             android:layout_weight="1"
             android:gravity="center"
             android:fontFamily="@font/raleway_medium"
-            android:text="@string/try_again"
+            android:text="OK"
             android:textColor="@color/blue"
-            android:textSize="@dimen/_14sdp" />
-
+            android:textSize="@dimen/_12sdp" />
 
     </LinearLayout>
 

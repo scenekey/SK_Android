@@ -1,17 +1,26 @@
 package com.scenekey.adapter;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.scenekey.R;
 import com.scenekey.activity.ImageUploadActivity;
+import com.scenekey.helper.Constant;
 import com.scenekey.helper.Pop_Up_Option;
+import com.scenekey.helper.WebServices;
 import com.scenekey.model.ImagesUpload;
+import com.scenekey.util.SceneKey;
+import com.scenekey.util.Utility;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -25,10 +34,12 @@ public class ImageUpload_Adapter extends RecyclerView.Adapter<ImageUpload_Adapte
     private ArrayList<ImagesUpload> list;
     private ImageUploadActivity activity;
     private Pop_Up_Option pop_up_option;
+    private Context context;
 
     public ImageUpload_Adapter(ImageUploadActivity activity ) {
         list = new ArrayList<>();
         this.activity = activity;
+        context=activity;
         initializePopup();
 
     }
@@ -83,7 +94,7 @@ public class ImageUpload_Adapter extends RecyclerView.Adapter<ImageUpload_Adapte
             else {
                 Picasso.with(activity).load(list.get(position).getPath()).into(holder.img_pic);
             }
-            final String s = list.get(position).getPath()+"";
+            final String s = list.get(position).getKey()+"";
             holder.img_pic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -93,12 +104,90 @@ public class ImageUpload_Adapter extends RecyclerView.Adapter<ImageUpload_Adapte
             holder.img_cross.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    activity.removeImage(position);
+                    Utility.e("adapter",SceneKey.sessionManager.getUserInfo().getUserImage()+" d "+ WebServices.USER_IMAGE+s);
+                    if (SceneKey.sessionManager.getUserInfo().getUserImage().equalsIgnoreCase(WebServices.USER_IMAGE+s)) {
+                        showDefaultDialog(context.getString(R.string.default_deleted_title),context.getString(R.string.default_deleted_msg));
+                    }else {
+                        showDeletePopup(position);
+                    }
                 }
             });
         }
 
 
+    }
+
+    public void showDefaultDialog(String title,String msg) {
+        final Dialog dialog = new Dialog(context);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setContentView(R.layout.custom_popup_title_btn);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        //      deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation; //style id
+
+        TextView  tvPopupOk,tvTitle,tvMessages;
+
+        tvTitle = dialog.findViewById(R.id.tvTitle);
+        tvMessages = dialog.findViewById(R.id.tvMessages);
+
+        tvPopupOk = dialog.findViewById(R.id.tvPopupOk);
+        tvPopupOk.setText(R.string.ok);
+
+        tvTitle.setText(title);
+        tvMessages.setText(msg);
+
+        tvPopupOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Show location settings when the user acknowledges the alert dialog
+                dialog.cancel();
+
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void showDeletePopup(final int position) {
+        final Dialog dialog = new Dialog(context);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setContentView(R.layout.custom_popup_with_btn);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        //      deleteDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation; //style id
+
+        TextView tvTitle,tvPopupOk,tvPopupCancel,tvMessages;
+
+        tvTitle = dialog.findViewById(R.id.tvTitle);
+
+        tvMessages = dialog.findViewById(R.id.tvMessages);
+
+
+        tvPopupOk = dialog.findViewById(R.id.tvPopupOk);
+        tvPopupCancel = dialog.findViewById(R.id.tvPopupCancel);
+
+//for layout position
+        tvPopupCancel.setText(R.string.yes);
+        tvPopupOk.setText(R.string.cancel);
+
+        tvTitle.setText(context.getString(R.string.delete));
+        tvMessages.setText(context.getString(R.string.ques_deleted));
+
+        tvPopupCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Show location settings when the user acknowledges the alert dialog
+                dialog.dismiss();
+                activity.removeImage(position);
+            }
+        });
+
+        tvPopupOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 
     @Override

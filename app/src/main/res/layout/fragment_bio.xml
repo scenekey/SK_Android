@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     android:background="@color/new_white_bg"
     tools:context="com.scenekey.fragment.Bio_Fragment">
 
@@ -50,9 +51,9 @@
             android:paddingLeft="@dimen/_5sdp"
             android:paddingTop="@dimen/_5sdp"
             android:background="@null"
+            android:maxLength="60"
             android:theme="@style/et_black_cursor"
             android:fontFamily="@font/raleway_medium"
-            android:inputType="textAutoComplete"
             android:textColor="@color/black90p"
             android:textSize="@dimen/_16ssp" />
 

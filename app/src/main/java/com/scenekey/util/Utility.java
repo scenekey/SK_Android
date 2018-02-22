@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -26,6 +27,8 @@ import com.scenekey.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import bolts.Bolts;
 
 
 /**
@@ -129,7 +132,7 @@ public class Utility {
         }
     }
 
-    public void showCustomPopup(String message){
+    public void showCustomPopup(String message,String fontType){
         final Dialog dialog = new Dialog(context);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setContentView(R.layout.custom_popup);
@@ -139,6 +142,8 @@ public class Utility {
         TextView  tvPopupOk,tvMessages;
 
         tvMessages = dialog.findViewById(R.id.custom_popup_tvMessage);
+        Typeface typeface=Typeface.create(fontType,Typeface.BOLD);
+        tvMessages.setTypeface(typeface);
         tvPopupOk = dialog.findViewById(R.id.custom_popup_ok);
         tvPopupOk.setText(R.string.ok);
         tvMessages.setText(message);

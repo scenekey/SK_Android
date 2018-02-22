@@ -382,7 +382,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
                             }
                         }
                     }
-                }, 2000);
+                }, 3000);
                 googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(LatLng latLng) {
@@ -418,7 +418,6 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
 
     void showInfo(Marker marker) throws Exception{
 
-
         int position = Integer.parseInt(marker.getSnippet());
         final Events events = eventArrayMarker.get(position);
 
@@ -427,6 +426,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
         View   myContentsView = this.getView();
+        assert myContentsView != null;
         RelativeLayout all =  myContentsView.findViewById(R.id.all);
         all.setVisibility(View.VISIBLE);
         ImageView img_event =  myContentsView.findViewById(R.id.img_event);
@@ -466,7 +466,8 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
             String result=events.getEvent().getImage();
             Utility.e("click image--",result);
 
-            Picasso.with(getContext()).load(events.getEvent().getImage().contains("defaultevent.jpg")?events.getVenue().getImage():events.getEvent().getImage()).resize(img_event.getWidth(),img_event.getHeight()).transform(new RoundedTransformation(radius,0)).into(img_event);
+            String img=events.getEvent().getImage().contains("defaultevent.jpg")?events.getVenue().getImage():events.getEvent().getImage();
+            Picasso.with(context).load(img).resize(img_event.getWidth(),img_event.getHeight()).transform(new RoundedTransformation(radius,0)).into(img_event);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -484,8 +485,6 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
                 heart.setImageResource(R.drawable.ic_favorite_heart);
             }
 
-              /*  if(event.getRating()!=null)holder.txt_like.setText(event.getRating());
-                if(event.getRating()==null)holder.txt_like.setText("--");*/
         }
         else {
             hour.setVisibility(View.VISIBLE);
@@ -532,7 +531,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
     }
 
     private void showNoEventDialog() {
-      utility.showCustomPopup(getString(R.string.mapNoevent));
+        utility.showCustomPopup(getString(R.string.mapNoevent),String.valueOf(R.font.raleway_regular));
         if (eventArrayMarker == null) eventArrayMarker = new ArrayList<>();
         else eventArrayMarker.clear();
     }

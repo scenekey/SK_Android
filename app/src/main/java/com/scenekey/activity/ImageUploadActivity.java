@@ -41,6 +41,16 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.facebook.AccessToken;
 import com.scenekey.R;
 import com.scenekey.adapter.ImageUpload_Adapter;
@@ -48,13 +58,18 @@ import com.scenekey.fragment.Bio_Fragment;
 import com.scenekey.helper.Constant;
 import com.scenekey.helper.CustomProgressBar;
 import com.scenekey.helper.Pop_Up_Option;
+import com.scenekey.helper.WebServices;
 import com.scenekey.model.ImagesUpload;
 import com.scenekey.model.UserInfo;
 import com.scenekey.util.ImageUtil;
 import com.scenekey.util.SceneKey;
+import com.scenekey.util.StatusBarUtil;
 import com.scenekey.util.Utility;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -77,12 +92,15 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
     private CustomProgressBar prog;
     private Bitmap bitmap;
     private boolean isChanged=false;
+    private  Utility utility;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StatusBarUtil.setTranslucent(this);
         setContentView(R.layout.activity_image_upload);
 
+        utility=new Utility(context);
         if (getIntent().getStringExtra("from") != null) {
             //for intent data
             from = getIntent().getStringExtra("from");
@@ -114,7 +132,6 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
         params.height = (ActivityWidth * 3) / 4;
 
         credentialsProvider=  this.getCredentials();
-
 
         downloadFileFromS3((credentialsProvider==null?credentialsProvider = this.getCredentials():credentialsProvider));
         img_profile.setLayoutParams(params);
@@ -186,7 +203,7 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
         TransferUtility transferUtility = new TransferUtility(s3Client, this);
         // String  key1 = fbid+"-"+ System.currentTimeMillis()+".jpg";
 
-        String  key1 = fbId+".jpg";
+        final String  key1 = fbId+".jpg";
         TransferObserver observer
                 = transferUtility.upload(
                 Constant.BUCKET+"/"+fbId,     /* The bucket to upload to */
@@ -203,6 +220,7 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
                     adapter.addImage(key,bitmap);
                     adapter.notifyDataSetChanged();
                     isChanged=true;
+                   // Constant.DEF_PROFILE= WebServices.USER_IMAGE+key;
                     dismissProgDialog();
                 }
                 if(state.equals(TransferState.FAILED)){
@@ -271,10 +289,17 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
                             listing = s3Client.listNextBatchOfObjects (listing);
                             summaries.addAll (listing.getObjectSummaries());
                         }
+
+                            if (summaries.size() > 0) {
+                                updateImages(summaries);
+                                //setImage(summaries.get(1).getKey());
+                            }
+
+
                         if(summaries.size() == 0){
                             fbUploadImagesStart();
                         }
-                        updateImages(summaries);
+
                         value+=summaries.size()-1;
                         dismissProgDialog();
                         // Utility.e(TAG, "listing "+ summaries.get(0).getKey());
@@ -301,10 +326,17 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
             public void run() {
                 boolean isFirst = true;
                 for(S3ObjectSummary obj :summaries ){
-                    if(isFirst){
-                        setImage(obj.getKey());
-                        isFirst= false;
+
+                    String userImage = SceneKey.sessionManager.getUserInfo().getUserImage();
+                    if (userImage != null && !userImage.equals("") && !userImage.equals("https://s3-us-west-1.amazonaws.com/scenekey-profile-images/")) {
+                        Picasso.with(ImageUploadActivity.this).load(userImage).fit().into(img_profile);
+                    }else {
+                        if(isFirst){
+                            setImage(obj.getKey());
+                            isFirst= false;
+                        }
                     }
+
                     adapter.addImage(obj.getKey());
                 }
                 adapter.notifyDataSetChanged();
@@ -359,6 +391,8 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
                     adapter.addImage(key,bitmap);
                     adapter.notifyDataSetChanged();
                     dismissProgDialog();
+                    //success uploaded
+                    utility.showCustomPopup(context.getString(R.string.success_uploaded),String.valueOf(R.font.raleway_bold));
                 }
                 if(state.equals(TransferState.FAILED)){
                     /*Toast.makeText(Image_uploade_Activity.this, "State Change" + state,
@@ -452,10 +486,15 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
     }
 
     public void setImage(String s){
-        Picasso.with(this).load(s).fit().into(img_profile);
-        UserInfo userInfo = SceneKey.sessionManager.getUserInfo();
-        userInfo.userImage=s;
-        SceneKey.sessionManager.createSession(userInfo);
+        Picasso.with(this).load(WebServices.USER_IMAGE+s).fit().into(img_profile);
+        if (SceneKey.sessionManager.getUserInfo().getUserImage().equalsIgnoreCase(WebServices.USER_IMAGE+s)){
+            adapter.showDefaultDialog(getString(R.string.default_profile_title),getString(R.string.default_profile_msg));
+        }else{
+            isChanged=true;
+            showProgDialog(false);
+            setDefaultImageOnServer(WebServices.USER_IMAGE+s);
+        }
+
     }
 
     public void removeImage(final int position) {
@@ -500,6 +539,7 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
                         adapter.getList().remove(position);
                         adapter.notifyDataSetChanged();
                         dismissProgDialog();
+                        utility.showCustomPopup(context.getString(R.string.success_deleted),String.valueOf(R.font.raleway_bold));
                     }
                     else Utility.showToast(context,"Something went wrong",0);
                 }
@@ -598,6 +638,72 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
                 }
                 break;*/
 
+        }
+    }
+
+    private void setDefaultImageOnServer(final String key){
+
+        try {
+            RequestQueue requestQueue = Volley.newRequestQueue(context);
+
+            JSONObject jsonBody = new JSONObject();
+            jsonBody.put("method","PUT");
+            jsonBody.put("action","updateImage");
+            jsonBody.put("userid", SceneKey.sessionManager.getUserInfo().userID);
+            jsonBody.put("userImage",key);
+
+            final String mRequestBody = jsonBody.toString();
+            Utility.e("RequestBody"  , mRequestBody);
+
+            StringRequest stringRequest = new StringRequest(Request.Method.PUT, WebServices.DEFAULT_IMAGE, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Utility.e("server image set", response);
+                    UserInfo userInfo = SceneKey.sessionManager.getUserInfo();
+                    userInfo.userImage=key;
+                   // Constant.DEF_PROFILE=key;
+                    SceneKey.sessionManager.createSession(userInfo);
+                    dismissProgDialog();
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Utility.e("LOG_VOLLEY E", error.toString());
+                   dismissProgDialog();
+                }
+            }) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/json";
+                }
+
+                @Override
+                public byte[] getBody() throws AuthFailureError {
+                    try {
+                        return mRequestBody == null ? null : mRequestBody.getBytes();
+                    } catch (Exception uee) {
+                        //VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
+                        return null;
+                    }
+                }
+
+                @Override
+                protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                    String responseString = "";
+                    if (response != null) {
+
+                        responseString = new String(response.data);
+                        //Util.printLog("RESPONSE", responseString.toString());
+                    }
+                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                }
+            };
+            stringRequest.setShouldCache(false);
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(30000,1,0));
+            requestQueue.add(stringRequest);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            dismissProgDialog();
         }
     }
 }

@@ -21,6 +21,7 @@ import com.scenekey.helper.CustomProgressBar;
 import com.scenekey.helper.WebServices;
 import com.scenekey.model.UserInfo;
 import com.scenekey.util.SceneKey;
+import com.scenekey.util.StatusBarUtil;
 import com.scenekey.util.Utility;
 import com.scenekey.volleymultipart.VolleySingleton;
 
@@ -42,6 +43,7 @@ public class BioActivity extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StatusBarUtil.setTranslucent(this);
         setContentView(R.layout.fragment_bio);
         userInfo = SceneKey.sessionManager.getUserInfo();
         prog = new CustomProgressBar(this);

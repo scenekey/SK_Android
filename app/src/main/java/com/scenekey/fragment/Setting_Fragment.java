@@ -55,7 +55,7 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener {
     private HomeActivity activity;
     private Utility utility;
     private Profile_Fragment fragment;
-    public TextView txt_bio;
+    public LinearLayout linLayBio;
 
     private ImageView img_default_location;
     private TextView txt_location,txt_first_name,txt_last_name, txt_email,txt_feedback,txt_logout ,txt_admin;
@@ -78,22 +78,20 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        TextView termsNCondition =  view.findViewById(R.id.edt_terms);
-        TextView edt_privacy =  view.findViewById(R.id.edt_privacy);
+        LinearLayout linLayTnC =  view.findViewById(R.id.linLayTnC);
+        LinearLayout linLayPriPolicy =  view.findViewById(R.id.linLayPriPolicy);
         ImageView img_f1_back =  view.findViewById(R.id.img_f1_back);
         LinearLayout mainLayout=  view.findViewById(R.id.mainlayout);
         lnr_location=  view.findViewById(R.id.lnr_location);
         txt_first_name =  view.findViewById(R.id.txt_first_name);
         txt_last_name =  view.findViewById(R.id.txt_last_name);
         txt_email =  view.findViewById(R.id.txt_email);
-        txt_bio =  view.findViewById(R.id.txt_bio);
+        linLayBio =  view.findViewById(R.id.linLayBio);
         txt_location =  view.findViewById(R.id.txt_location);
         txt_logout =  view.findViewById(R.id.txt_logout);
         txt_feedback =  view.findViewById(R.id.txt_feedback);
         img_default_location =  view.findViewById(R.id.img_default_location);
         txt_admin =  view.findViewById(R.id.txt_admin);
-
-
 
         try{
             if(activity.userInfo().makeAdmin.contains(Constant.ADMIN_NO)){
@@ -119,7 +117,7 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener {
             if (!activity.userInfo().lastName.isEmpty())
                 txt_last_name.setText(activity.userInfo().lastName);
             else
-                txt_last_name.setText(R.string.lastNameNotAvail);
+                txt_last_name.setText(R.string.na);
 
             if(!activity.userInfo().email.contains(activity.userInfo().facebookId))
                 txt_email.setText(activity.userInfo().email);
@@ -133,7 +131,7 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener {
             e.printStackTrace();
         }
 
-        setClick(txt_email, txt_first_name, txt_last_name,txt_bio,termsNCondition,edt_privacy,mainLayout,txt_logout,txt_feedback,img_f1_back,img_default_location);
+        setClick(txt_email, txt_first_name, txt_last_name,linLayBio,linLayTnC,linLayPriPolicy,mainLayout,txt_logout,txt_feedback,img_f1_back,img_default_location);
 
         try {
             autocompleteFragment = (PlaceAutocompleteFragment) activity.getFragmentManager().findFragmentById(R.id.autocomplete_fragment);
@@ -206,7 +204,7 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener {
                 break;
 
 
-            case R.id.edt_terms:
+            case R.id.linLayTnC:
                 try{
                     Intent i = new Intent(Intent.ACTION_VIEW);
                     i.setData(Uri.parse(WebServices.TERMS_));
@@ -219,7 +217,7 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener {
                     Utility.showToast(context,getString(R.string.somethingwentwrong),0);
                 }
                 break;
-            case R.id.txt_bio:
+            case R.id.linLayBio:
                try {
                    activity.addFragment(new Bio_Fragment(),1);
                }catch (Exception e){
@@ -235,7 +233,7 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener {
                 activity.updateSession(userInfo);
                 updateLocation(userInfo);
                 break;
-            case R.id.edt_privacy :
+            case R.id.linLayPriPolicy :
                 try{Intent i = new Intent(Intent.ACTION_VIEW);
                     i.setData(Uri.parse(WebServices.PRIVACY_));
                     startActivity(i);}

@@ -70,6 +70,7 @@ public class IntroActivity extends AppCompatActivity {
                 // Add new Flag to start new Activity
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                startActivity(intent);
+               finish();
             }
         });
 

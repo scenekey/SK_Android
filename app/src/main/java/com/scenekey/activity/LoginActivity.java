@@ -248,10 +248,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             userInfo.fullName = userDetail.getString("fullname");
                             String[] split=userInfo.fullName.split(" ");
                             if (split.length==2){
-                                userInfo.firstName=split[0];
-                                userInfo.lastName=split[1];
+                                userInfo.firstName= split[0].substring(0, 1).toUpperCase() + split[0].substring(1);
+                                userInfo.lastName=split[1].substring(0, 1).toUpperCase() + split[1].substring(1);
                             }else{
-                                userInfo.firstName=userInfo.fullName;
+                                userInfo.firstName=userInfo.fullName.substring(0, 1).toUpperCase() + userInfo.fullName.substring(1);
                                 userInfo.lastName="";
                             }
                             userInfo.password = userDetail.getString("password");

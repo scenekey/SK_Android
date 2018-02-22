@@ -43,11 +43,10 @@
     <string name="high_accuracy">  please check GPS and set Location Service to high accuracy mode. </string>
     <string name="gps_new"> \"SceneKey\" requires \n Location Service to work. </string>
     <string name="try_again"> Try Again.</string>
-    <string name="ok"> Ok</string>
+    <string name="ok"> OK</string>
     <string name="locationServicesNotActive">Location Services Not Active</string>
     <string name="couldntGetLocation"> Couldn\'t get location. Please try again. </string>
 
-    <string name="lastNameNotAvail"> Last name not provided</string>
 
     <!-- copy paste -->
 
@@ -1181,6 +1180,19 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="na">NA</string>
+    <string name="first_name">First Name</string>
+
+    <!-- image upload popups -->
+    <string name="yes"> Yes </string>
+    <string name="success_uploaded">Photo has successfully\n uploaded.</string>
+    <string name="success_deleted">Photo has successfully\n deleted.</string>
+    <string name="ques_deleted">Are you sure you want to \n Delete Photo ? </string>
+    <string name="default_deleted_title"> Cannot Delete Default Picture </string>
+    <string name="default_deleted_msg"> Sorry you are unable to delete the \n default profile picture </string>
+
+    <string name="default_profile_title"> Default Profile Image </string>
+    <string name="default_profile_msg"> This picture is already your default \n profile image please select other </string>
 
 
 </resources>

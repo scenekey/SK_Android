@@ -42,6 +42,7 @@ import com.scenekey.model.Feeds;
 import com.scenekey.model.ImagesUpload;
 import com.scenekey.model.UserInfo;
 import com.scenekey.util.CircleTransform;
+import com.scenekey.util.SceneKey;
 import com.scenekey.util.Utility;
 import com.scenekey.volleymultipart.VolleySingleton;
 import com.squareup.picasso.Picasso;
@@ -64,7 +65,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
 
     private final String TAG = Profile_Fragment.class.toString();
 
-    private ImageView img_profile_pic2;
+    private ImageView img_profile_pic,img_profile_pic2;
     private EventAttendy attendy;
     private boolean myProfile;
     private Event_Fragment event_fragment;
@@ -117,7 +118,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
         listViewFragProfile.addHeaderView(header, null, false);
 
         img_profile_pic2 = view.findViewById(R.id.img_profile_pic2);
-        ImageView img_profile_pic = header.findViewById(R.id.img_profile_pic);
+         img_profile_pic = header.findViewById(R.id.img_profile_pic);
         img_left = view.findViewById(R.id.img_left);
         img_right = view.findViewById(R.id.img_right);
         img_cross = view.findViewById(R.id.img_cross);
@@ -138,9 +139,10 @@ comment for:- fb and count not show for current scenario
         setClick(view, img_back ,img_setting, img_profile_pic,txt_dimmer,img_cross, img_capture,img_right,img_left);
 
         img_profile_pic2.setVisibility(View.INVISIBLE);
-
-        Picasso.with(activity).load(attendy.getUserimage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic);
-        Picasso.with(activity).load(attendy.getUserimage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic2);
+//attendy.getUserimage()
+        Utility.e(TAG,SceneKey.sessionManager.getUserInfo().getUserImage());
+        Picasso.with(activity).load(SceneKey.sessionManager.getUserInfo().getUserImage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic);
+        Picasso.with(activity).load(SceneKey.sessionManager.getUserInfo().getUserImage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic2);
 
  /*
  //fb and badge
@@ -453,6 +455,8 @@ comment for:- fb and count not show for current scenario
                 if(user.has("address")) userInfo.address=(user.getString("address"));
                 if(user.has("fullname")) userInfo.fullName=(user.getString("fullname"));
                 if(user.has("key_points"))userInfo.keyPoints=(user.getString("key_points"));
+
+                Utility.e("Profile session update.",userInfo.getUserImage());
                 activity.updateSession(userInfo);
             }
         }catch (Exception e){
@@ -513,7 +517,7 @@ comment for:- fb and count not show for current scenario
                 @Override
                 public void run() {
                     try {
-                        ObjectListing listing = s3Client.listObjects( "scenekey-profile-images", attendy.userFacebookId );
+                        ObjectListing listing = s3Client.listObjects( "scenekey-profile-images", SceneKey.sessionManager.getFacebookId());
                         List<S3ObjectSummary> summaries = listing.getObjectSummaries();
 
 
@@ -588,6 +592,13 @@ comment for:- fb and count not show for current scenario
                 boolean isValue=data.getBooleanExtra("isResult",false);
                 if (isValue){
                     //reload image
+                   UserInfo userInfo= SceneKey.sessionManager.getUserInfo();
+                   userInfo.userImage=SceneKey.sessionManager.getUserInfo().getUserImage();
+                   activity.updateSession(userInfo);
+                    Picasso.with(activity).load(SceneKey.sessionManager.getUserInfo().getUserImage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic);
+                    Picasso.with(activity).load(SceneKey.sessionManager.getUserInfo().getUserImage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic2);
+                    Picasso.with(activity).load(SceneKey.sessionManager.getUserInfo().getUserImage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(activity.img_profile);
+                    downloadFileFromS3((credentialsProvider==null?credentialsProvider = this.getCredentials():credentialsProvider));
                 }
             }
 

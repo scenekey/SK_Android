@@ -1,8 +1,10 @@
 package com.scenekey.activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
@@ -52,6 +54,7 @@ import com.scenekey.listener.BackPressListner;
 import com.scenekey.model.EventAttendy;
 import com.scenekey.model.Events;
 import com.scenekey.model.UserInfo;
+import com.scenekey.util.CircleTransform;
 import com.scenekey.util.SceneKey;
 import com.scenekey.util.StatusBarUtil;
 import com.scenekey.util.Utility;
@@ -79,7 +82,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private FrameLayout frame_fragments;
     private TextView tvHomeTitle,tv_key_points;
-    private ImageView img_profile;
+    public ImageView img_profile;
     private RelativeLayout rl_title_view;
 
     private ArcMenu arcMenu;
@@ -911,7 +914,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         Date startTime = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())).parse(dateSplit[0] + " " + dateSplit[1]);
         Date endTime = new Date(startTime.getTime()+(long) (interval* 60 * 60 * 1000));
 
-        Utility.e(TAG, " Date "+date+" : "+startTime+" : "+endTime);
+        //Utility.e(TAG, " Date "+date+" : "+startTime+" : "+endTime);
 
         long currentTime = Calendar.getInstance().getTime().getTime();
         return currentTime < endTime.getTime() && currentTime > startTime.getTime();
@@ -1134,5 +1137,24 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
         Utility.e("Latitude","status");
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Constant.IMAGE_UPLOAD_CALLBACK) {
+            if(resultCode == Activity.RESULT_OK){
+                if (getCurrentFragment() != null) {
+                    try {
+                        getCurrentFragment().onActivityResult(requestCode, resultCode, data);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+
     }
 }

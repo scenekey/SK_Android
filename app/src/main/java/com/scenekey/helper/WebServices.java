@@ -59,10 +59,13 @@ public class WebServices {
     public final static String EVENT_BY_TAG = "https://0kh929t4ng.execute-api.us-west-1.amazonaws.com/dev/events/search";
     public final static String EVENT_TAG = "https://0kh929t4ng.execute-api.us-west-1.amazonaws.com/dev/tags";
 
+    public final static String DEFAULT_IMAGE = "https://0kh929t4ng.execute-api.us-west-1.amazonaws.com/dev/users";
+
     public final static String FEED_IMAGE   = "https://s3-us-west-1.amazonaws.com/scenekey-events/dev/";
     public final static String VENUE_IMAGE  = "https://s3-us-west-1.amazonaws.com/scenekey-venues/dev/";   //prod
     public final static String EVENT_IMAGE  = "https://s3-us-west-1.amazonaws.com/scenekey-events/dev/";  //dev is environment type=development
     public final static String USER_IMAGE   = "https://s3-us-west-1.amazonaws.com/scenekey-profile-images/";
+
 
 
 }

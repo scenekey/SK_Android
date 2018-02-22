@@ -6,8 +6,6 @@ package com.scenekey.helper;
 
 public class Constant {
 
-    public final static int CAMERA_REQUEST=1;
-    public final static int GALLERY_REQUEST=2;
 
     public static final int REQUEST_CAMERA = 478;
     public static final int INTENT_CAMERA = 789;
@@ -33,7 +31,9 @@ public class Constant {
     public static String FEED_TYPE_PICTURE = "Picture";
     public static String FEED_TYPE_COMMENT = "Comment";
 
-    public static String BUCKET = "scenekey-profile-images";
-    public static final String Token = "EAAWxUPz63GcBAKUNF95SWacpqaGazQBNhzMgKPEAEsuko0iYR7OwND1MWMhjTWUGCKY59Mgfa4xUrfEys2cb5GRjD7qjTO8ZBBC7pzbT8vOWwKpF1tj1jg9TCY8GDoNJSoftIGLub1S8cYtQZB9ohW3ZBRuiUanI4RMUYQxz9ZADGbW8hSiZBxVZA5kS4KtvjN6BAYnuUtFiv4B2Yy2sVrepUtBTeDcmUZD";
+   // public static String DEF_PROFILE="";
 
+    public static String BUCKET = "scenekey-profile-images";
+  //  public static final String Token = "EAAWxUPz63GcBAKUNF95SWacpqaGazQBNhzMgKPEAEsuko0iYR7OwND1MWMhjTWUGCKY59Mgfa4xUrfEys2cb5GRjD7qjTO8ZBBC7pzbT8vOWwKpF1tj1jg9TCY8GDoNJSoftIGLub1S8cYtQZB9ohW3ZBRuiUanI4RMUYQxz9ZADGbW8hSiZBxVZA5kS4KtvjN6BAYnuUtFiv4B2Yy2sVrepUtBTeDcmUZD";
+  public static final String Token ="EAAWxUPz63GcBANQyOySfaWDc4HZCJdtRWvcvoXb2sQYO2LJM1cC4gFE1G8mCVqHJLFBwLe2PucClz29OJxXC6IZAZC56M1zIMj8gLBUPDirSVQNrXbR5ysKN87psZC69lOY8qbZClmSmtnwPwTW0bkwASu5pksqBC0x1ydxVsNQIg0Ntowa0asHNMuRpo2eSrHsQZBHovpfVRB4iihaUIdsgIaeeZDZD";
 }
