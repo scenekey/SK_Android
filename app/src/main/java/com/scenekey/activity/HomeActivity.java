@@ -917,7 +917,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         //Utility.e(TAG, " Date "+date+" : "+startTime+" : "+endTime);
 
         long currentTime = Calendar.getInstance().getTime().getTime();
+
+        //return  currentTime > startTime.getTime();  //old ios logic
+
         return currentTime < endTime.getTime() && currentTime > startTime.getTime();
+
     }
 
     private boolean onNearByEventFound() {
@@ -938,11 +942,19 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     /*public common methods start */
 
     public void setTitle(String title) {
-        tvHomeTitle.setText(title);
+        try {
+            tvHomeTitle.setText(title);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void setTitleVisibility(int visibility) {
-        rl_title_view.setVisibility(visibility);
+        try {
+            rl_title_view.setVisibility(visibility);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void showProgDialog(boolean b , String TAG) {

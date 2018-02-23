@@ -18,6 +18,6 @@ public class SortByPoint implements Comparator<Events> {
 
 
         //Utility.e("check", p1.getEvent().trending_point+" event name"+p1.getEvent().event_name);
-        return (i==0)?p2.getEvent().distance.compareTo(p1.getEvent().distance):i;
+        return (i==0)?p1.getEvent().distance.compareTo(p2.getEvent().distance):i;
     }
 }

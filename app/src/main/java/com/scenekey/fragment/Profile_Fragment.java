@@ -43,6 +43,7 @@ import com.scenekey.model.ImagesUpload;
 import com.scenekey.model.UserInfo;
 import com.scenekey.util.CircleTransform;
 import com.scenekey.util.SceneKey;
+import com.scenekey.util.StatusBarUtil;
 import com.scenekey.util.Utility;
 import com.scenekey.volleymultipart.VolleySingleton;
 import com.squareup.picasso.Picasso;
@@ -91,7 +92,7 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
         // LinearLayout mainLayout = v.findViewById(R.id.mainlayout);
         listViewFragProfile = v.findViewById(R.id.listViewFragProfile);
         imageList = new ArrayList<>();
-        downloadFileFromS3((credentialsProvider==null?credentialsProvider = this.getCredentials():credentialsProvider));
+
         return v;
     }
 
@@ -103,10 +104,10 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener {
             @Override
             public void run() {
                 activity.showProgDialog(false,TAG);
-                getProfileDataApi();
+                downloadFileFromS3((credentialsProvider==null?credentialsProvider = getCredentials():credentialsProvider));
+
             }
         },200);
-
 
         feedsList = new ArrayList<>();
         adapter = new Profile_Adapter(context,feedsList,myProfile);
@@ -216,6 +217,7 @@ comment for:- fb and count not show for current scenario
                    Intent i= new Intent(context, ImageUploadActivity.class);
                    i.putExtra("from","profile");
                     activity.startActivityForResult(i, Constant.IMAGE_UPLOAD_CALLBACK);
+                    Constant.DONE_BUTTON_CHECK=1;
                 }
                // Utility.showToast(context,getString(R.string.underDevelopment),0);
                 break;
@@ -290,9 +292,10 @@ comment for:- fb and count not show for current scenario
             @Override
             public void onAnimationEnd(Animation animation) {
                 txt_dimmer.setVisibility(View.VISIBLE);
-                img_cross.setVisibility(View.GONE);
+                img_cross.setVisibility(View.VISIBLE);
                 img_right.setVisibility(View.VISIBLE);
                 img_left.setVisibility(View.VISIBLE);
+                StatusBarUtil.setColorNoTranslucent(activity,getResources().getColor(R.color.black70p));
                 //img_profile_pic2.setBorderColor(getResources().getColor(R.color.white));
             }
 
@@ -328,6 +331,7 @@ comment for:- fb and count not show for current scenario
 
                 img_right.setVisibility(View.GONE);
                 img_left.setVisibility(View.GONE);
+                StatusBarUtil.setColorNoTranslucent(activity,getResources().getColor(R.color.white));
             }
 
             @Override
@@ -528,6 +532,7 @@ comment for:- fb and count not show for current scenario
 
                         }
                         updateImages(summaries);
+                        getProfileData();
 
                         Utility.e(TAG, "listing "+ summaries.get(0).getKey()+"no of image "+summaries.size());
 
@@ -535,7 +540,7 @@ comment for:- fb and count not show for current scenario
                     catch (Exception e) {
                         e.printStackTrace();
                         Utility.e(TAG, "Exception found while listing "+ e);
-
+                        getProfileData();
                     }
                 }
             });
@@ -543,7 +548,17 @@ comment for:- fb and count not show for current scenario
             thread.start();
         }
         catch (Exception e){
+            getProfileData();
             Utility.e("AMAZON",e.toString());
+        }
+    }
+
+    private void getProfileData() {
+        if (feedsList.size()==0) {
+            activity.showProgDialog(false,TAG);
+            getProfileDataApi();
+        }else{
+            activity.dismissProgDialog();
         }
     }
 
@@ -592,12 +607,14 @@ comment for:- fb and count not show for current scenario
                 boolean isValue=data.getBooleanExtra("isResult",false);
                 if (isValue){
                     //reload image
+                    imageList.clear();
                    UserInfo userInfo= SceneKey.sessionManager.getUserInfo();
                    userInfo.userImage=SceneKey.sessionManager.getUserInfo().getUserImage();
                    activity.updateSession(userInfo);
                     Picasso.with(activity).load(SceneKey.sessionManager.getUserInfo().getUserImage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic);
                     Picasso.with(activity).load(SceneKey.sessionManager.getUserInfo().getUserImage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic2);
                     Picasso.with(activity).load(SceneKey.sessionManager.getUserInfo().getUserImage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(activity.img_profile);
+                    activity.showProgDialog(false,TAG);
                     downloadFileFromS3((credentialsProvider==null?credentialsProvider = this.getCredentials():credentialsProvider));
                 }
             }

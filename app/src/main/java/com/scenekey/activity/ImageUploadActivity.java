@@ -84,14 +84,14 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
     private final String TAG = ImageUploadActivity.class.toString();
     private Context context=this;
     private ImageUpload_Adapter adapter;
-    private ImageView img_profile;
+    private ImageView img_profile,img_f1_back;
 
     private CognitoCredentialsProvider credentialsProvider;
     private int value = 0;
     private String key,from="";
     private CustomProgressBar prog;
     private Bitmap bitmap;
-    private boolean isChanged=false;
+    public boolean isChanged=false;
     private  Utility utility;
 
     @Override
@@ -108,9 +108,17 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
 
         RecyclerView recyclerView = findViewById(R.id.recyvlerview);
         img_profile =  findViewById(R.id.img_profile);
+        img_f1_back =  findViewById(R.id.img_f1_back);
+
 
         TextView tv_done = findViewById(R.id.tv_done);
         tv_done.setOnClickListener(this);
+        img_f1_back.setOnClickListener(this);
+
+        if (Constant.DONE_BUTTON_CHECK==1){
+            tv_done.setVisibility(View.GONE);
+            img_f1_back.setVisibility(View.VISIBLE);
+        }
 
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 3);
         adapter = new ImageUpload_Adapter(this);
@@ -359,6 +367,10 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
                 }else
                     startActivity(new Intent(context,BioActivity.class));
                 break;
+
+            case R.id.img_f1_back:
+                onBackPressed();
+                break;
         }
     }
 
@@ -391,6 +403,7 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
                     adapter.addImage(key,bitmap);
                     adapter.notifyDataSetChanged();
                     dismissProgDialog();
+                    isChanged=true;
                     //success uploaded
                     utility.showCustomPopup(context.getString(R.string.success_uploaded),String.valueOf(R.font.raleway_bold));
                 }
@@ -539,6 +552,7 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
                         adapter.getList().remove(position);
                         adapter.notifyDataSetChanged();
                         dismissProgDialog();
+                        isChanged=true;
                         utility.showCustomPopup(context.getString(R.string.success_deleted),String.valueOf(R.font.raleway_bold));
                     }
                     else Utility.showToast(context,"Something went wrong",0);
@@ -555,11 +569,18 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+
+        Constant.DONE_BUTTON_CHECK = 0;
         if (from.equalsIgnoreCase("profile")){
             //call detail activity
-            this.finish();
-        }
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("isResult",isChanged);
+            setResult(Activity.RESULT_OK,returnIntent);
+            finish();
+        }else
+            startActivity(new Intent(context,BioActivity.class));
+
+        super.onBackPressed();
     }
 
     @Override
@@ -592,9 +613,14 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
             cursor.close();
         }
         if (requestCode == Constant.REQUEST_CAMERA ) {
-            if(data==null) return;
-            bitmap = (Bitmap) data.getExtras().get("data");
-            File file = ImageUtil.saveToInternalfile(bitmap,this);
+         try{
+             if(data==null) return;
+             bitmap = (Bitmap) data.getExtras().get("data");
+             File file = ImageUtil.saveToInternalfile(bitmap,this);
+             upload((credentialsProvider==null?credentialsProvider = this.getCredentials():credentialsProvider),file);
+         }catch (Exception e){
+             e.printStackTrace();
+         }
             /*try {
                  Util.printLog("path",file.getPath()+"\n"+file.getCanonicalPath());
 
@@ -603,7 +629,7 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
             } catch (IOException e) {
                 e.printStackTrace();
             }*/
-            upload((credentialsProvider==null?credentialsProvider = this.getCredentials():credentialsProvider),file);
+
         }
     }
 

@@ -175,10 +175,10 @@ public class Utility {
         if (networkResponse == null) {
             if (error.getClass().equals(TimeoutError.class)) {
                 errorMessage = "Request timeout";
-                Utility.showToast(context, errorMessage, Toast.LENGTH_SHORT);
+                Utility.showToast(context, errorMessage, 0);
             } else if (error.getClass().equals(NoConnectionError.class)) {
                 errorMessage = "Failed to connect server";
-                Utility.showToast(context, errorMessage, Toast.LENGTH_SHORT);
+                Utility.showToast(context, errorMessage, 0);
             }
         } else {
             String result = new String(networkResponse.data);
@@ -191,6 +191,22 @@ public class Utility {
                 Log.e("Error Status", "" + status);
                 Log.e("Error Message", message);
                 errorMessage = message;
+
+                if(error.networkResponse.statusCode==400 && new JSONObject(new String(error.networkResponse.data)).getString("message").equals("Invalid Auth Token")){
+                    // Build the alert dialog
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle("Session Expired");
+                    builder.setMessage("Your session is expired please login again");
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            SceneKey.sessionManager.logout(((Activity) context));
+                            // ((Activity) context).finishAffinity();
+                        }
+                    });
+                    Dialog alertDialog = builder.create();
+                    alertDialog.setCancelable(false);
+                    alertDialog.show();
+                }
 
                 if (status.equals("300")) {
                     // Build the alert dialog
@@ -207,7 +223,7 @@ public class Utility {
                     alertDialog.setCancelable(false);
                     alertDialog.show();
                 } else if (!(errorMessage.equals("Invalid Auth Token"))) {
-                    Utility.showToast(context, errorMessage, Toast.LENGTH_SHORT);
+                    Utility.showToast(context, errorMessage, 0);
                 }
                 /*  if (networkResponse.statusCode == 300) {
                     errorMessage = message + "Please login again";

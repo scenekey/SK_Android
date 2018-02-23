@@ -23,7 +23,7 @@ public class Constant {
     public static final String LATITUDE = "LATITUDE";
     public static final String LONGITUDE = "LONGITUDE";
 
-    public static final int MAXIMUM_DISTANCE = 200;
+    public static final int MAXIMUM_DISTANCE = 50;
 
     public static final String ADMIN_YES = "yes";
     public static final String ADMIN_NO = "no";
@@ -31,7 +31,8 @@ public class Constant {
     public static String FEED_TYPE_PICTURE = "Picture";
     public static String FEED_TYPE_COMMENT = "Comment";
 
-   // public static String DEF_PROFILE="";
+
+    public static int DONE_BUTTON_CHECK = 0;
 
     public static String BUCKET = "scenekey-profile-images";
   //  public static final String Token = "EAAWxUPz63GcBAKUNF95SWacpqaGazQBNhzMgKPEAEsuko0iYR7OwND1MWMhjTWUGCKY59Mgfa4xUrfEys2cb5GRjD7qjTO8ZBBC7pzbT8vOWwKpF1tj1jg9TCY8GDoNJSoftIGLub1S8cYtQZB9ohW3ZBRuiUanI4RMUYQxz9ZADGbW8hSiZBxVZA5kS4KtvjN6BAYnuUtFiv4B2Yy2sVrepUtBTeDcmUZD";
