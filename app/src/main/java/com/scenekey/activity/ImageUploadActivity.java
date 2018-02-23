@@ -147,7 +147,7 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void fbUploadImagesStart(){
-        String image = SceneKey.sessionManager.getUserInfo().userImage;
+        String image = SceneKey.sessionManager.getUserInfo().getUserImage();
         if (image != null && !image.equals("")) {
             Picasso.with(this).load(image).into(new Target() {
                 @Override

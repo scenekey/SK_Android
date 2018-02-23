@@ -598,7 +598,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             userInfo.fullName = (objUserDetails.getString("fullname"));
             userInfo.userName = (objUserDetails.getString("userName"));
             userInfo.userGender = (objUserDetails.getString("userGender"));
-            userInfo.userImage = (objUserDetails.getString("userImage"));
+            if (objUserDetails.getString("userImage").isEmpty()){
+                userInfo.userImage=uInfo.userImage;
+            }else {
+                userInfo.userImage = (objUserDetails.getString("userImage"));
+            }
             userInfo.loginTime = (objUserDetails.getString("logintime"));
             userInfo.stageName = (objUserDetails.getString("stagename"));
             userInfo.venuName = (objUserDetails.getString("venuename"));
