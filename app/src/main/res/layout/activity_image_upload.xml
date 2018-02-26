@@ -41,7 +41,7 @@
         android:layout_centerInParent="true"
         android:gravity="center"
         android:fontFamily="@font/montserrat_regular"
-        android:textSize="@dimen/_20ssp"
+        android:textSize="@dimen/_21ssp"
         android:text="@string/uploads" />
 
 </RelativeLayout>
@@ -49,7 +49,7 @@
 <ImageView
     android:id="@+id/img_profile"
     android:layout_width="@dimen/_250sdp"
-    android:layout_height="@dimen/_200sdp"
+    android:layout_height="@dimen/_180sdp"
     android:layout_marginTop="@dimen/_5sdp"
     android:layout_gravity="center_horizontal"
     android:background="@drawable/image_defult_profile"
@@ -64,8 +64,9 @@
         android:orientation="vertical">
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyvlerview"
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/_250sdp"
             android:layout_height="@dimen/_180sdp"
+            android:layout_gravity="center"
             android:layout_marginTop="@dimen/_10sdp">
 
         </android.support.v7.widget.RecyclerView>

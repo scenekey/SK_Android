@@ -9,18 +9,22 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -97,7 +101,7 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarUtil.setTranslucent(this);
+       // StatusBarUtil.setTranslucent(this);
         setContentView(R.layout.activity_image_upload);
 
         utility=new Utility(context);
@@ -109,7 +113,6 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
         RecyclerView recyclerView = findViewById(R.id.recyvlerview);
         img_profile =  findViewById(R.id.img_profile);
         img_f1_back =  findViewById(R.id.img_f1_back);
-
 
         TextView tv_done = findViewById(R.id.tv_done);
         tv_done.setOnClickListener(this);
@@ -128,7 +131,23 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
         prog = new CustomProgressBar(this);
         showProgDialog(false);
 
-        View top_status = findViewById(R.id.top_status);
+       View top_status = findViewById(R.id.top_status);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            setStatusBarTranslucent(true);
+        }else{
+            top_status.setVisibility(View.GONE);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View decor = getWindow().getDecorView();
+            decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            top_status.setBackgroundResource(R.color.white);
+        }
+        else {
+            StatusBarUtil.setStatusBarColor(this,R.color.new_white_bg);
+            top_status.setVisibility(View.VISIBLE);
+        }
 
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int width = metrics.widthPixels;
@@ -145,6 +164,18 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
         img_profile.setLayoutParams(params);
         img_profile.setImageResource(R.drawable.image_defult_profile);
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public void setStatusBarTranslucent(boolean makeTranslucent) {
+        if (makeTranslucent) {
+            Window w = getWindow(); // in Activity's onCreate() for instance
+            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
+    }
+
 
     private void fbUploadImagesStart(){
         String image = SceneKey.sessionManager.getUserInfo().getUserImage();

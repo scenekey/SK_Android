@@ -54,29 +54,29 @@
 
     <LinearLayout
         android:id="@+id/lnr_event_count"
-        android:layout_width="@dimen/_80sdp"
-        android:layout_height="@dimen/_25sdp"
-        android:layout_marginLeft="@dimen/_10sdp"
+        android:layout_width="@dimen/_70sdp"
+        android:layout_height="@dimen/_20sdp"
+        android:layout_marginLeft="@dimen/_5sdp"
         android:layout_marginTop="@dimen/_180sdp"
         android:background="@drawable/rounded_rect_box"
-        android:padding="@dimen/_3sdp">
+        >
 
         <ImageView
-            android:layout_width="@dimen/_20sdp"
+            android:layout_width="@dimen/_15sdp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/_1sdp"
-            android:paddingBottom="@dimen/_2sdp"
+           android:padding="@dimen/_2sdp"
+            android:layout_gravity="center"
             android:src="@drawable/key" />
         <TextView
             android:id="@+id/txt_event_count"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="top|center_horizontal"
-            android:paddingTop="@dimen/_2sdp"
+           android:gravity="left|center_vertical"
+
             android:fontFamily="@font/raleway_bold"
             android:text="0 events"
             android:textColor="@color/old_primary"
-            android:textSize="@dimen/_10sdp" />
+            android:textSize="@dimen/_10ssp" />
     </LinearLayout>
 
     <View
@@ -120,8 +120,8 @@
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/img_capture"
-        android:layout_width="@dimen/_40sdp"
-        android:layout_height="@dimen/_25sdp"
+        android:layout_width="@dimen/_35sdp"
+        android:layout_height="@dimen/_20sdp"
         android:layout_alignParentRight="true"
         android:layout_marginRight="@dimen/_10sdp"
         android:layout_marginTop="@dimen/_180sdp"

@@ -15,7 +15,7 @@ import com.scenekey.activity.HomeActivity;
 
 public class Add_Fragment extends Fragment {
 
-    private final String TAG = Bio_Fragment.class.toString();
+    private final String TAG = Add_Fragment.class.toString();
 
     private HomeActivity activity;
     private Context context;

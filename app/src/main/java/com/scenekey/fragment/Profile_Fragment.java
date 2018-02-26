@@ -37,6 +37,7 @@ import com.scenekey.activity.ImageUploadActivity;
 import com.scenekey.adapter.Profile_Adapter;
 import com.scenekey.helper.Constant;
 import com.scenekey.helper.WebServices;
+import com.scenekey.listener.StatusBarHide;
 import com.scenekey.model.EventAttendy;
 import com.scenekey.model.Feeds;
 import com.scenekey.model.ImagesUpload;
@@ -57,7 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Profile_Fragment extends Fragment implements View.OnClickListener {
+public class Profile_Fragment extends Fragment implements View.OnClickListener,StatusBarHide {
 
     private Context context;
     private HomeActivity activity;
@@ -621,4 +622,9 @@ comment for:- fb and count not show for current scenario
 
         }
     }//onActivityResult
+
+    @Override
+    public boolean onStatusBarHide() {
+        return false;
+    }
 }

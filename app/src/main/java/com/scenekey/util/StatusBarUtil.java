@@ -98,6 +98,16 @@ public class StatusBarUtil {
         setTranslucent(activity, DEFAULT_STATUS_BAR_ALPHA);
     }
 
+    public static void setStatusBarColor(Activity activity, int color) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (color == 0)
+                activity.getWindow().setStatusBarColor(activity.getResources().getColor(R.color.colorprimarytop));
+            else activity.getWindow().setStatusBarColor(activity.getResources().getColor(color));
+        }
+
+    }
+
     public static void setTranslucent(Activity activity, @IntRange(from = 0, to = 255) int statusBarAlpha) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             return;

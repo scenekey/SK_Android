@@ -8,6 +8,13 @@
     android:background="@color/new_white_bg"
     tools:context="com.scenekey.fragment.Bio_Fragment">
 
+    <View
+        android:id="@+id/top_status"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:visibility="gone"
+        android:background="@color/black"/>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/_50sdp"
@@ -32,7 +39,7 @@
             android:layout_centerInParent="true"
             android:text="@string/bio"
             android:fontFamily="@font/montserrat_regular"
-            android:textSize="@dimen/_20ssp"/>
+            android:textSize="@dimen/_21ssp"/>
 
 
     </RelativeLayout>

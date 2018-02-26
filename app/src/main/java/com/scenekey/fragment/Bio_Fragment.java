@@ -40,7 +40,6 @@ public class Bio_Fragment extends Fragment implements View.OnClickListener {
     private Context context;
     private String oldBio="";
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -70,6 +69,17 @@ public class Bio_Fragment extends Fragment implements View.OnClickListener {
             }
         };
         et_for_enterTxt.addTextChangedListener(textWatcher);
+
+        View top_status = view.findViewById(R.id.top_status);
+
+        if(activity.isKitKat){
+            top_status.setVisibility(View.VISIBLE);
+            top_status.setBackgroundResource(R.color.black);
+        }
+        if(activity.isApiM){
+            top_status.setVisibility(View.VISIBLE);
+            top_status.setBackgroundResource(R.color.white);
+        }
 
         return view;
     }

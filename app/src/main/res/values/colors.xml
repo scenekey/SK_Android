@@ -8,6 +8,8 @@
     <color name="colorPrimaryDark_new">#1f9796</color>
     <color name="colorAccent_new">#FFFF</color>
 
+    <color name="bg_scenepage">#eeeeee</color>
+    <color name="colorprimarytop">#4D000000</color>
     <color name="white">#ffff</color>
     <color name="black">#333333</color>
     <color name="blue">#FF0140C4</color>

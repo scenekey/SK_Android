@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,6 +24,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
@@ -51,10 +54,10 @@ import com.scenekey.helper.Permission;
 import com.scenekey.helper.WebServices;
 import com.scenekey.lib_sources.arc_menu.ArcMenu;
 import com.scenekey.listener.BackPressListner;
+import com.scenekey.listener.StatusBarHide;
 import com.scenekey.model.EventAttendy;
 import com.scenekey.model.Events;
 import com.scenekey.model.UserInfo;
-import com.scenekey.util.CircleTransform;
 import com.scenekey.util.SceneKey;
 import com.scenekey.util.StatusBarUtil;
 import com.scenekey.util.Utility;
@@ -107,7 +110,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private boolean checkGPS;
 
-    private Permission permission;
     private CustomProgressBar customProgressBar;
     private  LocationManager locationManager;
     private Utility utility;
@@ -118,9 +120,27 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarUtil.setTranslucent(this);
+        //StatusBarUtil.setTranslucent(this);
         setContentView(R.layout.activity_home);
+        top_status = findViewById(R.id.top_status);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            setStatusBarTranslucent(true);
+        }else{
+            top_status.setVisibility(View.GONE);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View decor = getWindow().getDecorView();
+            decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            top_status.setBackgroundResource(R.color.white);
+            isApiM = true;
+        }
+        else {
+            StatusBarUtil.setStatusBarColor(this,R.color.new_white_bg);
+            top_status.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -132,11 +152,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        permission =new Permission(context);
+        Permission permission = new Permission(context);
         userInfo = SceneKey.sessionManager.getUserInfo();
         initView();
         dimmedEffect();
-        isPermissionAvail=permission.checkLocationPermission();
+        isPermissionAvail= permission.checkLocationPermission();
 
         replaceFragment(new Home_No_Event_Fragment());
         try {
@@ -157,6 +177,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         rtlv_three.callOnClick();
 
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public void setStatusBarTranslucent(boolean makeTranslucent) {
+        if (makeTranslucent) {
+            Window w = getWindow(); // in Activity's onCreate() for instance
+            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
     }
 
     private void initView() {
@@ -559,9 +590,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public Fragment addFragment(Fragment fragmentHolder, int animationValue) {
         try{ FragmentManager fragmentManager = getSupportFragmentManager();
             String fragmentName = fragmentHolder.getClass().getName();
-            // if(!(fragmentHolder instanceof Statusbarhide))showStatusbar();  replace with showStatusbar();
-            //check it
-            //showStatusBar();
+            if(!(fragmentHolder instanceof StatusBarHide)) showStatusBar();
+
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             if (animationValue == 0) {
 
@@ -593,8 +623,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 if(((BackPressListner) getCurrentFragment()).onKeyBackPress()) return;
             }
             super.onBackPressed();
-            //check
-            //onPopUpBackstage();
+
+            onPopUpBackstage();
         } else {
 
             if(getCurrentFragment() instanceof BackPressListner){
@@ -1043,7 +1073,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 frame_fragments.setLayoutParams(layoutParams);
                 bottom_margin_view.setVisibility(View.VISIBLE);
                 rl_title_view.setVisibility(View.VISIBLE);
-                top_status.setVisibility(View.VISIBLE);
+               top_status.setVisibility(View.VISIBLE);
             }
         }
         catch (Exception e){
@@ -1067,7 +1097,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     rl_title_view.setVisibility(View.GONE);
                     frm_bottmbar.setVisibility(View.GONE);
                     bottom_margin_view.setVisibility(View.GONE);
-                    top_status.setVisibility(View.GONE);
+                   top_status.setVisibility(View.GONE);
 
                 } else {
                     Animation animation = AnimationUtils.loadAnimation(context, R.anim.slide_up);
@@ -1116,9 +1146,30 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void hideStatusBar(){
-    /*    View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);*/
+      View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
+    public void showStatusBar(){
+        getWindow().clearFlags((WindowManager.LayoutParams.FLAG_FULLSCREEN));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View decor = getWindow().getDecorView();
+            decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            top_status.setBackgroundResource(R.color.white);
+            isApiM = true;
+        }
+        else {
+            StatusBarUtil.setStatusBarColor(this,R.color.new_white_bg);
+            top_status.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void onPopUpBackstage(){
+        if(getCurrentFragment() instanceof StatusBarHide){
+            hideStatusBar();
+        }
+        else showStatusBar();
+    }
+
 
     /*public common methods end*/
 

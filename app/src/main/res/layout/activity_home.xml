@@ -54,7 +54,7 @@
                 android:textColor="@color/top_bar_text"
                 android:gravity="center"
                 android:fontFamily="@font/montserrat_regular"
-                android:textSize="@dimen/_20ssp"
+                android:textSize="@dimen/_21ssp"
                 android:text="@string/enter" />
 
             <include layout="@layout/points_key"

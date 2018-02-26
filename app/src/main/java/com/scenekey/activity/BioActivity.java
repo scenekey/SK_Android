@@ -2,11 +2,16 @@ package com.scenekey.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.LocationManager;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -43,8 +48,10 @@ public class BioActivity extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarUtil.setTranslucent(this);
+      //  StatusBarUtil.setTranslucent(this);
         setContentView(R.layout.fragment_bio);
+
+        setStatusBar();
         userInfo = SceneKey.sessionManager.getUserInfo();
         prog = new CustomProgressBar(this);
 
@@ -71,6 +78,37 @@ public class BioActivity extends AppCompatActivity implements View.OnClickListen
         };
         et_for_enterTxt.addTextChangedListener(textWatcher);
 
+    }
+
+    private void setStatusBar() {
+        View top_status = findViewById(R.id.top_status);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            setStatusBarTranslucent(true);
+        }else{
+            top_status.setVisibility(View.GONE);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View decor = getWindow().getDecorView();
+            decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            top_status.setBackgroundResource(R.color.white);
+        }
+        else {
+            StatusBarUtil.setStatusBarColor(this,R.color.new_white_bg);
+            top_status.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public void setStatusBarTranslucent(boolean makeTranslucent) {
+        if (makeTranslucent) {
+            Window w = getWindow(); // in Activity's onCreate() for instance
+            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
     }
 
     private void showProgDialog(boolean cancelable){
