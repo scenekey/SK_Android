@@ -70,16 +70,8 @@ public class Bio_Fragment extends Fragment implements View.OnClickListener {
         };
         et_for_enterTxt.addTextChangedListener(textWatcher);
 
-        View top_status = view.findViewById(R.id.top_status);
-
-        if(activity.isKitKat){
-            top_status.setVisibility(View.VISIBLE);
-            top_status.setBackgroundResource(R.color.black);
-        }
-        if(activity.isApiM){
-            top_status.setVisibility(View.VISIBLE);
-            top_status.setBackgroundResource(R.color.white);
-        }
+        //for status bar manage
+        activity.setTopStatus();
 
         return view;
     }
@@ -116,7 +108,7 @@ public class Bio_Fragment extends Fragment implements View.OnClickListener {
                 try {
                     String bio=et_for_enterTxt.getText().toString();
                     if (oldBio.equals(bio)){
-                      activity.onBackPressed();
+                        activity.onBackPressed();
                     }else {
                         updateBio(bio);
                     }
@@ -127,7 +119,7 @@ public class Bio_Fragment extends Fragment implements View.OnClickListener {
                 break;
 
             case R.id.img_f1_back:
-               activity.onBackPressed();
+                activity.onBackPressed();
                 break;
         }
     }
@@ -158,7 +150,7 @@ public class Bio_Fragment extends Fragment implements View.OnClickListener {
                             UserInfo userInfo=activity.userInfo();
                             userInfo.bio=bio;
                             activity.updateSession(userInfo);
-                           activity.onBackPressed();
+                            activity.onBackPressed();
 
                         }else{
                             Utility.showToast(context,message,0);

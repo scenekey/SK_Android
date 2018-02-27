@@ -87,7 +87,7 @@
     <string name="sample_Address"> Staples Center Los Angeles </string>
     <string name="description">Description </string>
     <string name="TheRoom">The Room</string>
-    <string name="PTBS"> Post to the big screen!</string>
+    <string name="PTBS"> Like this event, and \n share a pic or comment \n to the big screen!</string>  <!--Post to the big screen!-->
     <string name="myprofile"> My Profile</string>
     <string name="Go"> Go</string>
     <string name="stop"> Stop</string>

@@ -84,6 +84,7 @@
             android:layout_marginRight="@dimen/_10sdp"
             android:background="@drawable/bg_search_tag_active"
             />
+
     </LinearLayout>
 </ScrollView>
 

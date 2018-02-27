@@ -1,6 +1,7 @@
 package com.scenekey.lib_sources.SwipeCard;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,16 +26,17 @@ public class CardsAdapter extends ArrayAdapter<Card> {
         this.layoutInflater = LayoutInflater.from(context);
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         final Card card = cards.get(position);
         final View view = layoutInflater.inflate(R.layout.z_cus_swipe_view_item, parent, false);
-        // ImageView img= (ImageView) view.findViewById(R.id.img_user);
+         ImageView img=  view.findViewById(R.id.img_user);
         if (card.imageUrl != null) {
             try {
                 Picasso.with(getContext()).load(WebServices.FEED_IMAGE+card.imageUrl).into((ImageView) view.findViewById(R.id.card_image));
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
         } else if (card.imageId != 0) {
             ((ImageView) view.findViewById(R.id.card_image)).setImageResource(card.imageId);
@@ -48,7 +50,7 @@ public class CardsAdapter extends ArrayAdapter<Card> {
         }
         if(card.userImage != null){
             try {
-                Picasso.with(getContext()).load( card.userImage).transform(new CircleTransform()).into(((ImageView)view.findViewById(R.id.img_user)));
+                Picasso.with(getContext()).load( card.userImage).transform(new CircleTransform()).into(img);
                 ((TextView) view.findViewById(R.id.txt_time)).setText(getTimeInFormat(card.date));
             }catch (Exception e) {
                 e.printStackTrace();
@@ -56,7 +58,7 @@ public class CardsAdapter extends ArrayAdapter<Card> {
 
         }
         else if(card.imageint != 0){
-            Picasso.with(getContext()).load(card.imageint).transform(new CircleTransform()).into(((ImageView)view.findViewById(R.id.img_user)));
+            Picasso.with(getContext()).load(card.imageint).transform(new CircleTransform()).into(img);
         }
 
         return view;
@@ -72,7 +74,7 @@ public class CardsAdapter extends ArrayAdapter<Card> {
         return cards.size();
     }
 
-    String getTimeInFormat(String date) {
+   private String getTimeInFormat(String date) {
         String dateS = date.split(" ")[1];
         String dateArray[] = dateS.split(":");
         if (Integer.parseInt(dateArray[0]) > 12) {

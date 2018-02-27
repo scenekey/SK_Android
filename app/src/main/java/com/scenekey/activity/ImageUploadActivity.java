@@ -101,9 +101,9 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       // StatusBarUtil.setTranslucent(this);
+        // StatusBarUtil.setTranslucent(this);
         setContentView(R.layout.activity_image_upload);
-
+        setStatusBar();
         utility=new Utility(context);
         if (getIntent().getStringExtra("from") != null) {
             //for intent data
@@ -131,23 +131,6 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
         prog = new CustomProgressBar(this);
         showProgDialog(false);
 
-       View top_status = findViewById(R.id.top_status);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            setStatusBarTranslucent(true);
-        }else{
-            top_status.setVisibility(View.GONE);
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            View decor = getWindow().getDecorView();
-            decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            top_status.setBackgroundResource(R.color.white);
-        }
-        else {
-            StatusBarUtil.setStatusBarColor(this,R.color.new_white_bg);
-            top_status.setVisibility(View.VISIBLE);
-        }
 
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int width = metrics.widthPixels;
@@ -165,17 +148,38 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
         img_profile.setImageResource(R.drawable.image_defult_profile);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public void setStatusBarTranslucent(boolean makeTranslucent) {
-        if (makeTranslucent) {
-            Window w = getWindow(); // in Activity's onCreate() for instance
-            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        } else {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+    private void setStatusBar() {
+        View top_status = findViewById(R.id.top_status);
+
+        if (!(SceneKey.sessionManager.isSoftKey())) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                StatusBarUtil.setStatusBarTranslucent(this, true);
+            } else {
+                top_status.setVisibility(View.GONE);
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                View decor = getWindow().getDecorView();
+                decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                top_status.setBackgroundResource(R.color.white);
+                top_status.setVisibility(View.VISIBLE);
+            } else {
+                StatusBarUtil.setStatusBarColor(this, R.color.new_white_bg);
+                top_status.setVisibility(View.VISIBLE);
+            }
+        }else{
+            StatusBarUtil.setStatusBarColor(this,R.color.white);
+            top_status.setVisibility(View.GONE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                View decor = getWindow().getDecorView();
+                decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                top_status.setBackgroundResource(R.color.white);
+            } else {
+                StatusBarUtil.setStatusBarColor(this, R.color.new_white_bg);
+            }
         }
     }
-
 
     private void fbUploadImagesStart(){
         String image = SceneKey.sessionManager.getUserInfo().getUserImage();
@@ -259,7 +263,7 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
                     adapter.addImage(key,bitmap);
                     adapter.notifyDataSetChanged();
                     isChanged=true;
-                   // Constant.DEF_PROFILE= WebServices.USER_IMAGE+key;
+                    // Constant.DEF_PROFILE= WebServices.USER_IMAGE+key;
                     dismissProgDialog();
                 }
                 if(state.equals(TransferState.FAILED)){
@@ -329,10 +333,10 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
                             summaries.addAll (listing.getObjectSummaries());
                         }
 
-                            if (summaries.size() > 0) {
-                                updateImages(summaries);
-                                //setImage(summaries.get(1).getKey());
-                            }
+                        if (summaries.size() > 0) {
+                            updateImages(summaries);
+                            //setImage(summaries.get(1).getKey());
+                        }
 
 
                         if(summaries.size() == 0){
@@ -644,14 +648,14 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
             cursor.close();
         }
         if (requestCode == Constant.REQUEST_CAMERA ) {
-         try{
-             if(data==null) return;
-             bitmap = (Bitmap) data.getExtras().get("data");
-             File file = ImageUtil.saveToInternalfile(bitmap,this);
-             upload((credentialsProvider==null?credentialsProvider = this.getCredentials():credentialsProvider),file);
-         }catch (Exception e){
-             e.printStackTrace();
-         }
+            try{
+                if(data==null) return;
+                bitmap = (Bitmap) data.getExtras().get("data");
+                File file = ImageUtil.saveToInternalfile(bitmap,this);
+                upload((credentialsProvider==null?credentialsProvider = this.getCredentials():credentialsProvider),file);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
             /*try {
                  Util.printLog("path",file.getPath()+"\n"+file.getCanonicalPath());
 
@@ -718,7 +722,7 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
                     Utility.e("server image set", response);
                     UserInfo userInfo = SceneKey.sessionManager.getUserInfo();
                     userInfo.userImage=key;
-                   // Constant.DEF_PROFILE=key;
+                    // Constant.DEF_PROFILE=key;
                     SceneKey.sessionManager.createSession(userInfo);
                     dismissProgDialog();
                 }
@@ -726,7 +730,7 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Utility.e("LOG_VOLLEY E", error.toString());
-                   dismissProgDialog();
+                    dismissProgDialog();
                 }
             }) {
                 @Override

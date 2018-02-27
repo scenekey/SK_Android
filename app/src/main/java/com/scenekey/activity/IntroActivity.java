@@ -17,10 +17,13 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.scenekey.R;
 import com.scenekey.helper.SessionManager;
+import com.scenekey.listener.StatusBarHide;
+import com.scenekey.util.SceneKey;
 import com.scenekey.util.StatusBarUtil;
 
 public class IntroActivity extends AppCompatActivity {
@@ -36,7 +39,7 @@ public class IntroActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-      //  StatusBarUtil.setTranslucent(this);
+        //  StatusBarUtil.setTranslucent(this);
 
         setContentView(R.layout.activity_intro);
         viewPager =  findViewById(R.id.a6_viewpager);
@@ -65,13 +68,13 @@ public class IntroActivity extends AppCompatActivity {
         btnSkip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               Intent intent = new Intent(IntroActivity.this,ImageUploadActivity.class);
-               // Closing all the Activities
+                Intent intent = new Intent(IntroActivity.this,ImageUploadActivity.class);
+                // Closing all the Activities
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 // Add new Flag to start new Activity
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-               startActivity(intent);
-               finish();
+                startActivity(intent);
+                finish();
             }
         });
 
@@ -85,10 +88,11 @@ public class IntroActivity extends AppCompatActivity {
                     // move to next screen
                     viewPager.setCurrentItem(current);
                 } else {
-                   // launchHomeScreen();
+                    // launchHomeScreen();
                 }
             }
         });
+
     }
 
     private void addBottomDots(int currentPage) {
@@ -169,35 +173,37 @@ public class IntroActivity extends AppCompatActivity {
         }*/
 
         View top_status = findViewById(R.id.top_status);
+        if (!(SceneKey.sessionManager.isSoftKey())) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            setStatusBarTranslucent(true);
+                StatusBarUtil.setStatusBarTranslucent(this, true);
+
+            } else {
+                top_status.setVisibility(View.GONE);
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                View decor = getWindow().getDecorView();
+                decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                top_status.setBackgroundResource(R.color.white);
+            } else {
+                StatusBarUtil.setStatusBarColor(this, R.color.new_white_bg);
+                top_status.setVisibility(View.VISIBLE);
+            }
         }else{
+            StatusBarUtil.setStatusBarColor(this,R.color.white);
             top_status.setVisibility(View.GONE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                View decor = getWindow().getDecorView();
+                decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                top_status.setBackgroundResource(R.color.white);
+            } else {
+                StatusBarUtil.setStatusBarColor(this, R.color.new_white_bg);
+            }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            View decor = getWindow().getDecorView();
-            decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            top_status.setBackgroundResource(R.color.white);
-        }
-        else {
-            StatusBarUtil.setStatusBarColor(this,R.color.new_white_bg);
-            top_status.setVisibility(View.VISIBLE);
-        }
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public void setStatusBarTranslucent(boolean makeTranslucent) {
-        if (makeTranslucent) {
-            Window w = getWindow(); // in Activity's onCreate() for instance
-            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        } else {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        }
-    }
-
 
     /**
      * View pager adapter

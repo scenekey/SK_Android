@@ -45,7 +45,6 @@ import com.scenekey.lib_sources.SwipeCard.SwipeCardView;
 import com.scenekey.listener.StatusBarHide;
 import com.scenekey.model.RoomPerson;
 import com.scenekey.model.UserInfo;
-import com.scenekey.util.Utility;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -68,7 +67,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
     private TextView txt_discrp,txt_room,txt_f2_badge,txt_discipI_f2;
 
     private SwipeCardView card_stack_view;
-    private ArrayList<Card> cardlist;
+    private ArrayList<Card> cardList;
     //  private ArrayList<NotificationData> nlist;
     private CardsAdapter arrayAdapter;
     private boolean liked;
@@ -174,9 +173,9 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         activity.dismissProgDialog();
 
         //TinderSwipe
-        cardlist = new ArrayList<>();
-        getDummyData(cardlist);
-        arrayAdapter = new CardsAdapter(getContext(), cardlist);
+        cardList = new ArrayList<>();
+        getDummyData(cardList);
+        arrayAdapter = new CardsAdapter(getContext(), cardList);
         card_stack_view.setAdapter(arrayAdapter);
         noNotify = 5;
 
@@ -247,6 +246,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
     public void onResume() {
         super.onResume();
         activity.setBBVisibility(View.GONE,TAG);
+        activity.hideStatusBar();
     }
 
     @Override
@@ -497,70 +497,70 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         card3.imageId = R.drawable.demo_2;
         card3.imageint = R.drawable.room_3;
         card3.date = "2017-5-16 20:45:00";
-        cardlist.add(card3);
+        cardList.add(card3);
 
         Card card4 = new Card();
         card4.name = "Card4";
         card4.text = getResources().getString(R.string.i_have_best);
         card4.imageint = R.drawable.room_4;
         card4.date = "2017-5-16 22:26:00";
-        cardlist.add(card4);
+        cardList.add(card4);
 
         Card card5 = new Card();
         card5.name = "Card5";
         card5.imageId = R.drawable.demo_3;
         card5.imageint = R.drawable.room_5;
         card5.date = "2017-5-16 17:22:00";
-        cardlist.add(card5);
+        cardList.add(card5);
 
         Card card6 = new Card();
         card6.name = "Card6";
         card6.imageId = R.drawable.demo_4;
         card6.imageint = R.drawable.room_6;
         card6.date = "2017-5-16 18:46:00";
-        cardlist.add(card6);
+        cardList.add(card6);
 
         Card card7 = new Card();
         card7.name = "Card7";
         card7.text = getResources().getString(R.string.omg__smooth);
         card7.imageint = R.drawable.room_7;
         card7.date = "2017-5-16 9:12:00";
-        cardlist.add(card7);
+        cardList.add(card7);
 
         Card card8 = new Card();
         card8.name = "Card8";
         card8.imageId =R.drawable.demo_5;
         card8.imageint = R.drawable.room_8;
         card8.date = "2017-5-16 20:20:00";
-        cardlist.add(card8);
+        cardList.add(card8);
 
         Card card9 = new Card();
         card9.name = "card9";
         card9.text = getResources().getString(R.string.i_have_best);
         card9.imageint = R.drawable.room_1;
         card9.date = "2017-5-16 22:45:00";
-        cardlist.add(card9);
+        cardList.add(card9);
 
         Card card10 = new Card();
         card10.name = "card10";
         card10.imageId =R.drawable.demo_6;
         card10.imageint = R.drawable.room_2;
         card10.date = "2017-5-16 19:12:00";
-        cardlist.add(card10);
+        cardList.add(card10);
 
         Card card11 = new Card();
         card11.name = "Card8";
         card11.imageId =R.drawable.demo_7;
         card11.imageint = R.drawable.room_3;
         card11.date = "2017-5-16 18:46:00";
-        cardlist.add(card11);
+        cardList.add(card11);
 
         Card card12 = new Card();
         card12.name = "card9";
         card12.text = getResources().getString(R.string.ilovemike);
         card12.imageint = R.drawable.room_5;
         card12.date = "2017-5-16 23:12:00";
-        cardlist.add(card12);
+        cardList.add(card12);
 
         arrayAdapter.notifyDataSetChanged();
     }

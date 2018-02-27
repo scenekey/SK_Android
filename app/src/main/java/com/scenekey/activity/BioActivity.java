@@ -48,7 +48,7 @@ public class BioActivity extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-      //  StatusBarUtil.setTranslucent(this);
+        //  StatusBarUtil.setTranslucent(this);
         setContentView(R.layout.fragment_bio);
 
         setStatusBar();
@@ -82,34 +82,38 @@ public class BioActivity extends AppCompatActivity implements View.OnClickListen
 
     private void setStatusBar() {
         View top_status = findViewById(R.id.top_status);
+        if (!(SceneKey.sessionManager.isSoftKey())) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                StatusBarUtil.setStatusBarTranslucent(this,true);
+            }else{
+                top_status.setVisibility(View.GONE);
+            }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            setStatusBarTranslucent(true);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                View decor = getWindow().getDecorView();
+                decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                top_status.setBackgroundResource(R.color.white);
+                top_status.setVisibility(View.VISIBLE);
+            }
+            else {
+                StatusBarUtil.setStatusBarColor(this,R.color.new_white_bg);
+                top_status.setVisibility(View.VISIBLE);
+            }
         }else{
+            StatusBarUtil.setStatusBarColor(this,R.color.white);
             top_status.setVisibility(View.GONE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                View decor = getWindow().getDecorView();
+                decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                top_status.setBackgroundResource(R.color.white);
+            } else {
+                StatusBarUtil.setStatusBarColor(this, R.color.new_white_bg);
+            }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            View decor = getWindow().getDecorView();
-            decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            top_status.setBackgroundResource(R.color.white);
-        }
-        else {
-            StatusBarUtil.setStatusBarColor(this,R.color.new_white_bg);
-            top_status.setVisibility(View.VISIBLE);
-        }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public void setStatusBarTranslucent(boolean makeTranslucent) {
-        if (makeTranslucent) {
-            Window w = getWindow(); // in Activity's onCreate() for instance
-            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        } else {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        }
-    }
 
     private void showProgDialog(boolean cancelable){
         prog.setCancelable(cancelable);

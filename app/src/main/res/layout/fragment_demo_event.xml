@@ -68,6 +68,7 @@
                 android:layout_height="@dimen/_35sdp"
                 android:maxWidth="@dimen/_230sdp"
                 android:singleLine="true"
+                android:fontFamily="@font/montserrat_medium"
                 android:textSize="@dimen/_15sdp"
                 android:gravity="center_vertical"
                 android:layout_marginTop="@dimen/_12sdp"
@@ -101,11 +102,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/black80p"
-            android:paddingLeft="@dimen/_60sdp"
-            android:paddingTop="@dimen/_25sdp"
+            android:paddingTop="@dimen/_18sdp"
             android:text="@string/PTBS"
+            android:fontFamily="@font/franklin_gothic_reg"
             android:textColor="@color/white"
-            android:textSize="@dimen/_20sdp"
+            android:gravity="center_horizontal"
+            android:textSize="@dimen/_16ssp"
             android:visibility="gone" />
 
 
@@ -118,7 +120,7 @@
 
         <com.scenekey.lib_sources.Floting_menuAction.FloatingActionMenu
             android:id="@+id/menu_blue"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="@dimen/fab_size_normal"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
@@ -200,6 +202,7 @@
                         android:layout_height="@dimen/_30sdp"
                         android:layout_marginTop="@dimen/_5sdp"
                         android:paddingRight="@dimen/_5sdp"
+                        android:fontFamily="@font/raleway_regular"
                         android:layout_centerHorizontal="true"
                         android:visibility="visible"
                         android:background="@drawable/bg_tags"
@@ -269,6 +272,7 @@
                         android:layout_gravity="bottom|center"
                         android:background="@color/white80p"
                         android:gravity="center"
+                        android:fontFamily="@font/raleway_regular"
                         android:padding="@dimen/_5sdp"
                         android:textSize="@dimen/_8sdp"
                         android:textColor="@color/txt_discrip" />
@@ -347,6 +351,7 @@
                     android:layout_height="@dimen/_30sdp"
                     android:layout_centerVertical="true"
                     android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="@font/raleway_regular"
                     android:background="@drawable/bg_tags"
                     android:paddingRight="@dimen/_5sdp"
                     android:layout_centerHorizontal="true"
@@ -410,6 +415,7 @@
             android:layout_centerHorizontal="true"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="@dimen/_65sdp"
+            android:fontFamily="@font/franklin_gothic_reg"
             android:background="@drawable/transparent"/>
     </RelativeLayout>
 

@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.graphics.Xfermode;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -25,6 +26,8 @@ import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.view.animation.Animation;
 import android.widget.TextView;
+
+import com.scenekey.R;
 
 public class Label extends TextView {
 
@@ -70,6 +73,8 @@ public class Label extends TextView {
 
     public Label(Context context) {
         super(context);
+        Typeface typeface=Typeface.create(String.valueOf(R.font.montserrat_light),Typeface.NORMAL);
+        this.setTypeface(typeface);
     }
 
     public Label(Context context, AttributeSet attrs) {

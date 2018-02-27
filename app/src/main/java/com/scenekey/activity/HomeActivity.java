@@ -125,21 +125,34 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         top_status = findViewById(R.id.top_status);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            setStatusBarTranslucent(true);
-        }else{
-            top_status.setVisibility(View.GONE);
-        }
+        if (!(SceneKey.sessionManager.isSoftKey())) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            View decor = getWindow().getDecorView();
-            decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            top_status.setBackgroundResource(R.color.white);
-            isApiM = true;
-        }
-        else {
-            StatusBarUtil.setStatusBarColor(this,R.color.new_white_bg);
-            top_status.setVisibility(View.VISIBLE);
+                StatusBarUtil.setStatusBarTranslucent(this, true);
+            } else {
+                top_status.setVisibility(View.GONE);
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                View decor = getWindow().getDecorView();
+                decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                top_status.setBackgroundResource(R.color.white);
+                isApiM = true;
+            } else {
+                StatusBarUtil.setStatusBarColor(this, R.color.new_white_bg);
+                top_status.setVisibility(View.VISIBLE);
+            }
+        }else{
+            StatusBarUtil.setStatusBarColor(this,R.color.white);
+            top_status.setVisibility(View.GONE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                View decor = getWindow().getDecorView();
+                decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                top_status.setBackgroundResource(R.color.white);
+            } else {
+                StatusBarUtil.setStatusBarColor(this, R.color.new_white_bg);
+            }
         }
     }
 
@@ -179,16 +192,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public void setStatusBarTranslucent(boolean makeTranslucent) {
-        if (makeTranslucent) {
-            Window w = getWindow(); // in Activity's onCreate() for instance
-            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        } else {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        }
-    }
 
     private void initView() {
         frame_fragments =  findViewById(R.id.frame_fragments);
@@ -1066,14 +1069,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 frame_fragments.setLayoutParams(layoutParams);
                 bottom_margin_view.setVisibility(View.GONE);
                 rl_title_view.setVisibility(View.GONE);
-                top_status.setVisibility(View.GONE);
+                setTopStatus();
+              //  top_status.setVisibility(View.GONE);
             } else {
                 LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) frame_fragments.getLayoutParams();
                 layoutParams.bottomMargin = (int) getResources().getDimension(R.dimen.bottomBar_margin);
                 frame_fragments.setLayoutParams(layoutParams);
                 bottom_margin_view.setVisibility(View.VISIBLE);
                 rl_title_view.setVisibility(View.VISIBLE);
-               top_status.setVisibility(View.VISIBLE);
+                setTopStatus();
+              // top_status.setVisibility(View.VISIBLE);
             }
         }
         catch (Exception e){
@@ -1081,6 +1086,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
+
 
     public void setBBVisibility(final int ViewDot, final int delay, String TAG) {
         Utility.e(TAG," B B visiballity "+ViewDot+" TAG "+TAG);
@@ -1097,7 +1103,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     rl_title_view.setVisibility(View.GONE);
                     frm_bottmbar.setVisibility(View.GONE);
                     bottom_margin_view.setVisibility(View.GONE);
-                   top_status.setVisibility(View.GONE);
+             //  top_status.setVisibility(View.GONE);
+                    setTopStatus();
 
                 } else {
                     Animation animation = AnimationUtils.loadAnimation(context, R.anim.slide_up);
@@ -1108,7 +1115,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     rl_title_view.setVisibility(View.VISIBLE);
                     rl_title_view.startAnimation(animation1);
                     bottom_margin_view.setVisibility(View.VISIBLE);
-                    top_status.setVisibility(View.VISIBLE);
+                 //   top_status.setVisibility(View.VISIBLE);
+                    setTopStatus();
                     frm_bottmbar.setVisibility(View.VISIBLE);
                     frm_bottmbar.startAnimation(animation);
                 }
@@ -1148,6 +1156,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void hideStatusBar(){
       View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+        top_status.setVisibility(View.GONE);
     }
     public void showStatusBar(){
         getWindow().clearFlags((WindowManager.LayoutParams.FLAG_FULLSCREEN));
@@ -1159,6 +1168,24 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         else {
             StatusBarUtil.setStatusBarColor(this,R.color.new_white_bg);
+            setStatusBarVisible();
+        }
+    }
+
+    public void setTopStatus(){
+
+            if (isKitKat) {
+                setStatusBarVisible();
+                top_status.setBackgroundResource(R.color.black);
+            }
+            if (isApiM) {
+                setStatusBarVisible();
+                top_status.setBackgroundResource(R.color.white);
+            }
+    }
+
+    private void setStatusBarVisible(){
+        if (!(SceneKey.sessionManager.isSoftKey())) {
             top_status.setVisibility(View.VISIBLE);
         }
     }

@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.scenekey.R;
 import com.scenekey.activity.HomeActivity;
+import com.scenekey.fragment.Home_No_Event_Fragment;
 import com.scenekey.helper.SortByPoint;
 import com.scenekey.model.Event;
 import com.scenekey.model.Events;

@@ -59,7 +59,6 @@ public class TryDemo_Adapter extends RecyclerView.Adapter<TryDemo_Adapter.ViewHo
         final int position = i;
         if(person != null){
             holder.txt_name_gvb1.setText(person.android_version_name.split("\\s+")[0]);
-            Utility.e("imgDemo adapter url", String.valueOf(imageArray[i]));
             if (position == 8)
             {
                 try {

@@ -58,7 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Profile_Fragment extends Fragment implements View.OnClickListener,StatusBarHide {
+public class Profile_Fragment extends Fragment implements View.OnClickListener {
 
     private Context context;
     private HomeActivity activity;
@@ -101,12 +101,20 @@ public class Profile_Fragment extends Fragment implements View.OnClickListener,S
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        new Handler().postDelayed(new Runnable() {
+      Handler handler=  new Handler();
+
+      handler.post(new Runnable() {
+          @Override
+          public void run() {
+              downloadFileFromS3((credentialsProvider==null?credentialsProvider = getCredentials():credentialsProvider));
+          }
+      });
+
+      handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 activity.showProgDialog(false,TAG);
-                downloadFileFromS3((credentialsProvider==null?credentialsProvider = getCredentials():credentialsProvider));
-
+                getProfileDataApi();
             }
         },200);
 
@@ -160,17 +168,6 @@ comment for:- fb and count not show for current scenario
  if(mutulFriendCount<99)txt_f2_badge.setText(mutulFriendCount+"");
  else txt_f2_badge.setText("99+");*/
 
-        activity.setBBVisibility(View.GONE,TAG);
-        View top_status = view.findViewById(R.id.top_status);
-
-        if(activity.isKitKat){
-            top_status.setVisibility(View.VISIBLE);
-            top_status.setBackgroundResource(R.color.black);
-        }
-        if(activity.isApiM){
-            top_status.setVisibility(View.VISIBLE);
-            top_status.setBackgroundResource(R.color.white);
-        }
     }
 
     private void setClick(View... views) {
@@ -239,6 +236,7 @@ comment for:- fb and count not show for current scenario
     public void onStart() {
         super.onStart();
         activity.setBBVisibility(View.GONE,TAG);
+        //activity.setTopStatus();
         if(event_fragment != null)event_fragment.canCallWebservice = false;
         if(key_in_event_fragment != null)key_in_event_fragment.canCallWebservice = false;
     }
@@ -246,6 +244,7 @@ comment for:- fb and count not show for current scenario
     @Override
     public void onResume() {
         activity.setBBVisibility(View.GONE,TAG);
+      //  activity.setTopStatus();
         if(event_fragment != null)event_fragment.canCallWebservice = false;
         if(key_in_event_fragment != null)key_in_event_fragment.canCallWebservice = false;
         super.onResume();
@@ -533,7 +532,6 @@ comment for:- fb and count not show for current scenario
 
                         }
                         updateImages(summaries);
-                        getProfileData();
 
                         Utility.e(TAG, "listing "+ summaries.get(0).getKey()+"no of image "+summaries.size());
 
@@ -541,27 +539,19 @@ comment for:- fb and count not show for current scenario
                     catch (Exception e) {
                         e.printStackTrace();
                         Utility.e(TAG, "Exception found while listing "+ e);
-                        getProfileData();
                     }
                 }
             });
 
             thread.start();
+            activity.dismissProgDialog();
         }
         catch (Exception e){
-            getProfileData();
             Utility.e("AMAZON",e.toString());
-        }
-    }
-
-    private void getProfileData() {
-        if (feedsList.size()==0) {
-            activity.showProgDialog(false,TAG);
-            getProfileDataApi();
-        }else{
             activity.dismissProgDialog();
         }
     }
+
 
     private void updateImages(final List<S3ObjectSummary> summaries){
         activity.runOnUiThread(new Runnable() {
@@ -623,8 +613,4 @@ comment for:- fb and count not show for current scenario
         }
     }//onActivityResult
 
-    @Override
-    public boolean onStatusBarHide() {
-        return false;
-    }
 }

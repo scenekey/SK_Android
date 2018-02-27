@@ -39,15 +39,15 @@
 
             <ImageView
                 android:id="@+id/img_user"
-                android:layout_width="@dimen/_45sdp"
-                android:layout_height="@dimen/_45sdp"
-                android:padding="@dimen/_4sdp"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:padding="@dimen/_3sdp"
                 android:layout_alignParentEnd="true"
                 android:background="@drawable/bg_blue_ring"
                 android:scaleType="centerInside"
                 android:src="@drawable/image_defult_profile"
-                android:layout_marginRight="@dimen/_5sdp"
-                android:layout_marginTop="@dimen/right_margin_event"
+                android:layout_marginRight="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_25sdp"
                 android:layout_alignParentRight="true" />
 
             <TextView

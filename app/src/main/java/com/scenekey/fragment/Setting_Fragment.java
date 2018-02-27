@@ -62,7 +62,7 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener {
 
     private LatLng latLng;
     public PlaceAutocompleteFragment autocompleteFragment;
-    private View top_status;
+
     private RelativeLayout lnr_location;
 
     @Override
@@ -159,17 +159,6 @@ public class Setting_Fragment extends Fragment implements View.OnClickListener {
         }
         catch (Exception e){
             e.printStackTrace();
-        }
-
-        top_status =  view.findViewById(R.id.top_status);
-
-        if(activity.isKitKat){
-            top_status.setVisibility(View.VISIBLE);
-            top_status.setBackgroundResource(R.color.black);
-        }
-        if(activity.isApiM){
-            top_status.setVisibility(View.VISIBLE);
-            top_status.setBackgroundResource(R.color.white);
         }
     }
 
