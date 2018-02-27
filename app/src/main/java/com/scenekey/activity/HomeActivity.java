@@ -1155,7 +1155,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     public void hideStatusBar(){
       View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+       if (!(SceneKey.sessionManager.isSoftKey()))
+           decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+       else
+           decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         top_status.setVisibility(View.GONE);
     }
     public void showStatusBar(){

@@ -70,8 +70,8 @@
 
     </android.support.v7.widget.CardView>
 
-    <View
+    <!--<View
         android:layout_width="match_parent"
         android:layout_height="2.0dp"
-        android:background="@drawable/app_icon" />
+        android:background="@drawable/app_icon" />-->
 </LinearLayout>

@@ -324,7 +324,7 @@ try{
                        try {
                            mFlingListener.onCardExitLeft(dataObject);
                        }catch (Exception e){
-
+e.printStackTrace();
                        }
                     }
 
@@ -332,7 +332,7 @@ try{
                     public void rightExit(Object dataObject) {
                         try {mFlingListener.onCardExitRight(dataObject);
                         }catch (Exception e){
-
+e.printStackTrace();
                         }
                     }
 
@@ -362,12 +362,20 @@ try{
 
                     @Override
                     public void topExit(Object dataObject) {
-                        mFlingListener.onCardExitTop(dataObject);
+                       try {
+                           mFlingListener.onCardExitTop(dataObject);
+                       }catch (Exception e){
+                           e.printStackTrace();
+                       }
                     }
 
                     @Override
                     public void bottomExit(Object dataObject) {
-                        mFlingListener.onCardExitBottom(dataObject);
+                      try {
+                          mFlingListener.onCardExitBottom(dataObject);
+                      }catch (Exception e){
+                          e.printStackTrace();
+                      }
                     }
                 });
 

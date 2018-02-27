@@ -3,14 +3,18 @@ package com.scenekey.fragment;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -24,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -37,6 +42,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.scenekey.R;
 import com.scenekey.activity.HomeActivity;
 import com.scenekey.adapter.TryDemo_Adapter;
+import com.scenekey.helper.Constant;
+import com.scenekey.helper.Permission;
 import com.scenekey.lib_sources.Floting_menuAction.FloatingActionButton;
 import com.scenekey.lib_sources.Floting_menuAction.FloatingActionMenu;
 import com.scenekey.lib_sources.SwipeCard.Card;
@@ -45,11 +52,13 @@ import com.scenekey.lib_sources.SwipeCard.SwipeCardView;
 import com.scenekey.listener.StatusBarHide;
 import com.scenekey.model.RoomPerson;
 import com.scenekey.model.UserInfo;
+import com.scenekey.util.Utility;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
 
@@ -94,7 +103,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
     private boolean initialized = false,isInfoVisible;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.fragment_demo_event, container, false);
@@ -265,30 +274,30 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
                 break;
             case R.id.fabMenu1_like:
                 menu_blue.close(true);
-              /*  if(!liked){
+                Utility utility=new Utility(context);
+                if(!liked){
+                    liked=true;
                     fabMenu1.setImageDrawable(getResources().getDrawable(R.drawable.red_heart));
-                    CustomToastDialog customToastDialog = new CustomToastDialog(activity());
-                    customToastDialog.setMessage("You liked the event.");
-                    customToastDialog.show();
+
+                    utility.showCustomPopup("You liked the event.",String.valueOf(R.font.raleway_regular));
                 }
-                else if(liked){
+                else {
+                    liked=false;
                     fabMenu1.setImageDrawable(getResources().getDrawable(R.drawable.heart));
-                    CustomToastDialog customToastDialog = new CustomToastDialog(activity());
-                    customToastDialog.setMessage("You unliked the event.");
-                    customToastDialog.show();
-                }*/
+                    utility.showCustomPopup("You unliked the event.",String.valueOf(R.font.raleway_regular));
+                }
                 break;
             case R.id.fabMenu2_picture:
                 menu_blue.close(true);
-               // captureImage();
+                captureImage();
                 break;
             case R.id.fabMenu3_comment:
                 menu_blue.close(true);
-               /* try {
-                    activity.addFragment(new Demo_Comment_Fargment().setData(this),1);
+                try {
+                    activity.addFragment(new Demo_Comment_Fragment().setData(this),1);
                 }catch (NullPointerException e){
                     e.printStackTrace();
-                }*/
+                }
                 break;
             case R.id.txt_hide_all_two:
                 menu_blue.close(true);
@@ -309,7 +318,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
     @Override
     public void onDestroyView() {
         handler.removeCallbacksAndMessages(null);
-       activity.setBBVisibility(View.VISIBLE, 300,TAG);
+        activity.setBBVisibility(View.VISIBLE, 300,TAG);
         initialized = false;
         super.onDestroyView();
     }
@@ -357,6 +366,16 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         card2.date = "2017-5-16 16:18:00";
         al.add(card2);
 
+    }
+
+    public void addUserComment(String comment){
+        Card card = new Card();
+        card.text = comment;
+        card.userImage = activity.userInfo().getUserImage();
+        cardList.add(0,card);
+        arrayAdapter.notifyDataSetChanged();
+        card_stack_view.setAdapter(arrayAdapter);
+        card_stack_view.restart();
     }
 
     private void setTextBadge() {
@@ -590,7 +609,6 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
                 // For dropping a marker at a point on the Map
                 LatLng sydney = new LatLng(lat,lng);
 
-
                 Marker mr = googleMap.addMarker(new MarkerOptions()
                         .position(new LatLng(lat, lng))
                         .anchor(0.5f, 0.5f)
@@ -627,11 +645,70 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
                     }
                 }, 2000);
 
-
             }
         });
 
 
+    }
+
+    private void captureImage() {
+        Permission permission = new Permission(activity);
+        if (permission.checkCameraPermission()) callIntent(Constant.INTENT_CAMERA);
+    }
+
+    public void callIntent(int caseId) {
+
+        switch (caseId) {
+            case Constant.INTENT_CAMERA:
+                try {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+                    startActivityForResult(intent, Constant.INTENT_CAMERA);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+        }
+    }
+
+    private String getCurrentTimeInFormat() {
+        return (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.getDefault())).format(new Date(System.currentTimeMillis()));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        activity.setBBVisibility(View.GONE,TAG);
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == -1) {
+
+            if (requestCode == Constant.INTENT_CAMERA && data != null) {
+                final Bitmap eventImg = (Bitmap) data.getExtras().get("data");
+                Card card = new Card();
+                card.bitmap = eventImg;
+                card.name = "Card";
+                card.userImage =activity.userInfo().getUserImage();
+                card.date = getCurrentTimeInFormat();
+                cardList.add(0,card);
+              //  activity.setBBvisiblity(View.GONE,TAG);
+                arrayAdapter.notifyDataSetChanged();
+                card_stack_view.restart();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode) {
+
+            case Constant.MY_PERMISSIONS_REQUEST_CAMERA:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    captureImage();
+                } else {
+                    Utility.showToast(context, "permission denied by user ", Toast.LENGTH_LONG);
+                }
+                break;
+        }
     }
 
     @Override

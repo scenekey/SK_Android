@@ -4,12 +4,17 @@ package com.scenekey.adapter;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,6 +22,8 @@ import com.scenekey.R;
 import com.scenekey.activity.HomeActivity;
 import com.scenekey.fragment.Demo_Event_Fragment;
 import com.scenekey.fragment.Home_No_Event_Fragment;
+import com.scenekey.fragment.Profile_Fragment;
+import com.scenekey.model.EventAttendy;
 import com.scenekey.model.RoomPerson;
 import com.scenekey.util.CircleTransform;
 import com.scenekey.util.Utility;
@@ -31,7 +38,7 @@ import java.util.ArrayList;
 public class TryDemo_Adapter extends RecyclerView.Adapter<TryDemo_Adapter.ViewHolder> {
 
     private ArrayList<RoomPerson> roomPersonList;
-    private Activity activity;
+    private HomeActivity activity;
     private View popupview;
     private Dialog dialog;
 
@@ -89,9 +96,9 @@ public class TryDemo_Adapter extends RecyclerView.Adapter<TryDemo_Adapter.ViewHo
             holder.img_profile_gvb1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                   /* if (position == 8) popUpMy();
-                    else newPopUp(position);*/
                     Utility.showToast(activity,activity.getResources().getString(R.string.underDevelopment),0);
+                    if (position == 8) popUpMyProfile();
+                   // else newPopUp(position);
                 }
             });
         }
@@ -108,11 +115,156 @@ public class TryDemo_Adapter extends RecyclerView.Adapter<TryDemo_Adapter.ViewHo
 
         ViewHolder(View view) {
             super(view);
-
             txt_name_gvb1 =  view.findViewById(R.id.txt_name_gvb1);
             img_profile_gvb1 =  view.findViewById(R.id.img_profile_gvb1);
         }
     }
+
+   /* on Click popUpMyProfile start here  */
+
+    private void popUpMyProfile() {
+        final ImageView img_red, img_yellow, img_green, img_p1_profile;
+        dialog = new Dialog(activity);
+        final TextView txt_stop, txt_caution, txt_go;
+        final TextView txt_title ,txt_my_details;
+
+        popupview = LayoutInflater.from(activity).inflate(R.layout.custom_my_profile_popup, null);
+        img_p1_profile =  popupview.findViewById(R.id.img_p1_profile);
+        img_green =  popupview.findViewById(R.id.img_green);
+        img_yellow =  popupview.findViewById(R.id.img_yellow);
+        img_red =  popupview.findViewById(R.id.img_red);
+        txt_stop =  popupview.findViewById(R.id.txt_stop);
+        txt_caution =  popupview.findViewById(R.id.txt_caution);
+        txt_go =  popupview.findViewById(R.id.txt_go);
+        txt_my_details =  popupview.findViewById(R.id.txt_my_details);
+        ImageView img_cross =  popupview.findViewById(R.id.img_cross);
+        txt_title =  popupview.findViewById(R.id.txt_title);
+        img_green.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                img_red.setImageResource(R.drawable.bg_red_ring_2);
+                img_yellow.setImageResource(R.drawable.bg_yellow_ring);
+                setUserStatus(2, (ImageView) v);
+
+            }
+        });
+        img_yellow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                img_green.setImageResource(R.drawable.bg_green_ring);
+                img_red.setImageResource(R.drawable.bg_red_ring_2);
+                setUserStatus(1, (ImageView) v);
+            }
+        });
+        img_red.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                img_yellow.setImageResource(R.drawable.bg_yellow_ring);
+                img_green.setImageResource(R.drawable.bg_green_ring);
+                setUserStatus(3, (ImageView) v);
+            }
+        });
+        img_p1_profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventAttendy eventAttendy = new EventAttendy();
+                eventAttendy.setUserimage(activity.userInfo().getUserImage());
+                eventAttendy.username=(activity.userInfo().userName);
+                eventAttendy.userid=(activity.userInfo().userID);
+                eventAttendy.userFacebookId=(activity.userInfo().facebookId);
+                callProfile(eventAttendy,true);
+            }
+        });
+        txt_my_details.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventAttendy eventAttendy = new EventAttendy();
+                eventAttendy.setUserimage(activity.userInfo().getUserImage());
+                eventAttendy.username=(activity.userInfo().userName);
+                eventAttendy.userid=(activity.userInfo().userID);
+                eventAttendy.userFacebookId=(activity.userInfo().facebookId);
+                callProfile(eventAttendy,true);
+            }
+        });
+
+        img_cross.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        switch (roomPersonList.get(8).status) {
+            case "na":
+                img_red.setImageResource(R.drawable.bg_red_ring_accept);
+                break;
+            case "busy":
+                img_yellow.setImageResource(R.drawable.bg_yellow_ring_accept);
+                break;
+            case "avilable":
+                img_green.setImageResource(R.drawable.bg_green_ring_accept);
+                break;
+        }
+
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setContentView(popupview);
+        Picasso.with(activity).load(roomPersonList.get(8).android_image_url).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_p1_profile);
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.gravity = Gravity.CENTER;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.width = HomeActivity.ActivityWidth ;
+        dialog.getWindow().setAttributes(lp);
+
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                activity.hideStatusBar();
+            }
+        });
+        dialog.show();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+    }
+
+    private void setUserStatus(int i, ImageView imageView) {
+        switch (i) {
+            case 1:
+                roomPersonList.get(8).status="busy";
+                imageView.setImageResource(R.drawable.bg_yellow_ring_accept);
+                break;
+            case 2:
+                roomPersonList.get(8).status="avilable";
+                imageView.setImageResource(R.drawable.bg_green_ring_accept);
+                break;
+            case 3:
+                roomPersonList.get(8).status="na";
+                imageView.setImageResource(R.drawable.bg_red_ring_accept);
+                break;
+
+        }
+        notifyDataSetChanged();
+    }
+
+    private void callProfile(RoomPerson attendy , boolean ownProfile) {
+        dialog.dismiss();
+        try {
+            //activity.addFragment(new Demo_Profile_Fragment().setData(attendy, ownProfile), 1);
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void callProfile(EventAttendy attendy ,boolean ownProfile) {
+        dialog.dismiss();
+        try {
+            activity.addFragment(new Profile_Fragment().setData(attendy, ownProfile,demo_event_fragment), 1);
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
+    }
+
+    /* on Click popUpMyProfile end here */
 
 
 }

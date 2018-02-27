@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import com.scenekey.R;
 import com.scenekey.activity.HomeActivity;
 import com.scenekey.util.CircleTransform;
+import com.scenekey.util.Utility;
 
 public class Home_No_Event_Fragment extends Fragment implements View.OnClickListener {
 
@@ -43,11 +44,17 @@ public class Home_No_Event_Fragment extends Fragment implements View.OnClickList
         activity.setTitle(context.getResources().getString(R.string.enter));
 
         demo_event_fragment=new Demo_Event_Fragment();
-        try {
-            createBitmap();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    createBitmap();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 
     @Override
@@ -83,13 +90,12 @@ public class Home_No_Event_Fragment extends Fragment implements View.OnClickList
                         clicked = true;
                     }
 
-
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             clicked = false;
                         }
-                    }, 5000);
+                    }, 3000);
                 }catch (Exception e){
                     e.printStackTrace();
                 }
