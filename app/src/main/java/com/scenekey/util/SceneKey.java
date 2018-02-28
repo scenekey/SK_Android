@@ -6,6 +6,9 @@ import android.support.multidex.MultiDex;
 
 import com.scenekey.helper.SessionManager;
 import com.crashlytics.android.Crashlytics;
+import com.vanniktech.emoji.EmojiManager;
+import com.vanniktech.emoji.ios.IosEmojiProvider;
+
 import io.fabric.sdk.android.Fabric;
 
 /**
@@ -37,6 +40,7 @@ public class SceneKey extends Application {
         Fabric.with(this, new Crashlytics());
         instance = this;
         sessionManager = new SessionManager(instance.getApplicationContext());
+        EmojiManager.install(new IosEmojiProvider());
     }
 
 

@@ -5,11 +5,14 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -43,6 +46,7 @@ import com.facebook.login.LoginResult;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.scenekey.R;
+import com.scenekey.helper.AWSImage;
 import com.scenekey.helper.Constant;
 import com.scenekey.helper.CustomProgressBar;
 import com.scenekey.helper.Permission;
@@ -54,13 +58,18 @@ import com.scenekey.util.SceneKey;
 import com.scenekey.util.Utility;
 import com.scenekey.volleymultipart.VolleyMultipartRequest;
 import com.scenekey.volleymultipart.VolleySingleton;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.scenekey.helper.Constant.REQUEST_ID_MULTIPLE_PERMISSIONS;
 
@@ -220,8 +229,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (utility.checkInternetConnection()) {
 
             customProgressBar=new CustomProgressBar(context);
-            customProgressBar.setCancelable(false);
-            customProgressBar.show();
+            showProgDialog(false);
 
             VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, "http://dev.scenekey.com/event/webservices/login", new Response.Listener<NetworkResponse>() {
                 @Override
@@ -236,7 +244,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         String message = jsonObject.getString("message");
 
                         if (status.equalsIgnoreCase("SUCCESS")) {
-                            customProgressBar.dismiss();
+                            dismissProgDialog();
 
                             JSONObject userDetail = jsonObject.getJSONObject("userDetail");
                             UserInfo userInfo = new UserInfo();
@@ -290,12 +298,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                         } else {
                             Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
-                            customProgressBar.dismiss();
+                            dismissProgDialog();
                         }
 
                     } catch (Throwable t) {
                         Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
-                        customProgressBar.dismiss();
+                        dismissProgDialog();
                     }
                 }
             }, new Response.ErrorListener() {
@@ -304,7 +312,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     NetworkResponse networkResponse = error.networkResponse;
                     Log.i("Error", networkResponse + "");
                     Toast.makeText(LoginActivity.this, networkResponse + "", Toast.LENGTH_SHORT).show();
-                    customProgressBar.dismiss();
+                    dismissProgDialog();
                     error.printStackTrace();
                 }
             }) {
@@ -426,8 +434,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 /* facebook api end here */
 
     private void checkSocialDetail(final UserInfo userInfo) {
-        customProgressBar.setCancelable(false);
-        customProgressBar.show();
+        showProgDialog(false);
 
         if (utility.checkInternetConnection()) {
             StringRequest request = new StringRequest(Request.Method.POST, WebServices.CHK_LOGIN, new Response.Listener<String>() {
@@ -506,8 +513,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void registerSocialDetails(final UserInfo userInfo) {
-        customProgressBar.setCancelable(false);
-        customProgressBar.show();
+        showProgDialog(false);
 
         if (utility.checkInternetConnection()) {
             StringRequest request = new StringRequest(Request.Method.POST, WebServices.LOGIN, new Response.Listener<String>() {
@@ -526,6 +532,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         if (statusCode==1) {
                             manageSession(jsonObject,userInfo);
                             callIntent(btnFB.getId(),true);
+                            new Handler().post(new Runnable() {
+                                @Override
+                                public void run() {
+                                   try {
+                                     showProgDialog(false);
+                                       urlToBitmap();
+                                   }catch (Exception e){
+                                       e.printStackTrace();
+                                   }
+                                }
+                            });
+
                         }else if (statusCode==0) {
                             Utility.showToast(context,message,0);
                             Utility.e(TAG,message);
@@ -568,6 +586,38 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             utility.snackBar(etEmail,getString(R.string.internetConnectivityError),0);
             customProgressBar.cancel();
         }
+    }
+
+    private void urlToBitmap() {
+        final AWSImage awsImage=new AWSImage(context);
+
+        String image = sessionManager.getUserInfo().getUserImage();
+        if (image != null && !image.equals("")) {
+            Picasso.with(this).load(image).into(new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    dismissProgDialog();
+                    try {
+                        if (bitmap!=null)
+                            awsImage.initItem(bitmap);
+                    } catch (Exception e) {
+                        // some action
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                    dismissProgDialog();
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                    dismissProgDialog();
+                }
+            });
+        }
+        dismissProgDialog();
     }
 
     private void callIntent(int id , boolean isShow) {
@@ -631,6 +681,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             e.printStackTrace();
             return false;
         }
+    }
+
+    private void showProgDialog(boolean b) {
+        customProgressBar.setCanceledOnTouchOutside(b);
+        customProgressBar.setCancelable(b);
+        customProgressBar.show();
+    }
+
+    private void dismissProgDialog() {
+        if (customProgressBar != null) customProgressBar.dismiss();
     }
 
     @Override

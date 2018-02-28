@@ -296,7 +296,6 @@ comment for:- fb and count not show for current scenario
                 img_right.setVisibility(View.VISIBLE);
                 img_left.setVisibility(View.VISIBLE);
                 StatusBarUtil.setColorNoTranslucent(activity,getResources().getColor(R.color.black70p));
-                //img_profile_pic2.setBorderColor(getResources().getColor(R.color.white));
             }
 
             @Override

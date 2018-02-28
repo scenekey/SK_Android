@@ -2,6 +2,7 @@ package com.scenekey.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +16,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,7 +24,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -77,6 +76,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import static android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
+import static android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener,LocationListener {
 
@@ -1070,7 +1072,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 bottom_margin_view.setVisibility(View.GONE);
                 rl_title_view.setVisibility(View.GONE);
                 setTopStatus();
-              //  top_status.setVisibility(View.GONE);
+                //  top_status.setVisibility(View.GONE);
             } else {
                 LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) frame_fragments.getLayoutParams();
                 layoutParams.bottomMargin = (int) getResources().getDimension(R.dimen.bottomBar_margin);
@@ -1078,7 +1080,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 bottom_margin_view.setVisibility(View.VISIBLE);
                 rl_title_view.setVisibility(View.VISIBLE);
                 setTopStatus();
-              // top_status.setVisibility(View.VISIBLE);
+                // top_status.setVisibility(View.VISIBLE);
             }
         }
         catch (Exception e){
@@ -1103,7 +1105,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     rl_title_view.setVisibility(View.GONE);
                     frm_bottmbar.setVisibility(View.GONE);
                     bottom_margin_view.setVisibility(View.GONE);
-             //  top_status.setVisibility(View.GONE);
+                    //  top_status.setVisibility(View.GONE);
                     setTopStatus();
 
                 } else {
@@ -1115,7 +1117,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     rl_title_view.setVisibility(View.VISIBLE);
                     rl_title_view.startAnimation(animation1);
                     bottom_margin_view.setVisibility(View.VISIBLE);
-                 //   top_status.setVisibility(View.VISIBLE);
+                    //   top_status.setVisibility(View.VISIBLE);
                     setTopStatus();
                     frm_bottmbar.setVisibility(View.VISIBLE);
                     frm_bottmbar.startAnimation(animation);
@@ -1154,11 +1156,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void hideStatusBar(){
-      View decorView = getWindow().getDecorView();
-       if (!(SceneKey.sessionManager.isSoftKey()))
-           decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-       else
-           decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        View decorView = getWindow().getDecorView();
+        if (!(SceneKey.sessionManager.isSoftKey()))
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+        else
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         top_status.setVisibility(View.GONE);
     }
     public void showStatusBar(){
@@ -1177,14 +1179,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     public void setTopStatus(){
 
-            if (isKitKat) {
-                setStatusBarVisible();
-                top_status.setBackgroundResource(R.color.black);
-            }
-            if (isApiM) {
-                setStatusBarVisible();
-                top_status.setBackgroundResource(R.color.white);
-            }
+        if (isKitKat) {
+            setStatusBarVisible();
+            top_status.setBackgroundResource(R.color.black);
+        }
+        if (isApiM) {
+            setStatusBarVisible();
+            top_status.setBackgroundResource(R.color.white);
+        }
     }
 
     private void setStatusBarVisible(){
@@ -1199,6 +1201,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         else showStatusBar();
     }
+
+/*    public boolean isForeground() {
+        ActivityManager.RunningAppProcessInfo appProcessInfo = new ActivityManager.RunningAppProcessInfo();
+        ActivityManager.getMyMemoryState(appProcessInfo);
+        return (appProcessInfo.importance == IMPORTANCE_FOREGROUND || appProcessInfo.importance == IMPORTANCE_VISIBLE);
+    }*/
 
 
     /*public common methods end*/
@@ -1250,4 +1258,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
     }
+
+
 }

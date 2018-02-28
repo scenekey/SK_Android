@@ -58,9 +58,13 @@ public class Event_Search_Tag_Fragment extends Fragment implements View.OnClickL
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // activity.setBBVisibility(View.GONE,this.getClass().getSimpleName());
+
+        View view= inflater.inflate(R.layout.fragment_event_search_tag,container,false);
         activity.setBBVisibility(View.GONE,TAG);
         activity.frm_bottmbar.setVisibility(View.VISIBLE);
-        return inflater.inflate(R.layout.fragment_event_search_tag,container,false);
+        activity.showStatusBar();
+        return view;
+
     }
 
     @Override
@@ -76,19 +80,10 @@ public class Event_Search_Tag_Fragment extends Fragment implements View.OnClickL
         view.setOnClickListener(this);
         activity.showProgDialog(false,TAG);
         view.findViewById(R.id.img_f1_back).setOnClickListener(this);
-        View top_status = view.findViewById(R.id.top_status);
 
         setRecyclerView();
         getSearched();
         ((TextView)view.findViewById(R.id.tv_key_points)).setText(activity.userInfo().keyPoints);
-        if(activity.isKitKat){
-            top_status.setVisibility(View.VISIBLE);
-            top_status.setBackgroundResource(R.color.black);
-        }
-        if(activity.isApiM){
-            top_status.setVisibility(View.VISIBLE);
-            top_status.setBackgroundResource(R.color.white);
-        }
     }
 
     Event_Search_Tag_Fragment setData(String lat, String lng, String selected, ArrayList<Tags> list){

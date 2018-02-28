@@ -540,7 +540,7 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
         }else{
             isChanged=true;
             showProgDialog(false);
-            setDefaultImageOnServer(WebServices.USER_IMAGE+s);
+            setDefaultImageOnServer(WebServices.USER_IMAGE+s,s);
         }
 
     }
@@ -702,7 +702,7 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    private void setDefaultImageOnServer(final String key){
+    private void setDefaultImageOnServer(final String key, String s){
 
         try {
             RequestQueue requestQueue = Volley.newRequestQueue(context);
@@ -711,7 +711,7 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
             jsonBody.put("method","PUT");
             jsonBody.put("action","updateImage");
             jsonBody.put("userid", SceneKey.sessionManager.getUserInfo().userID);
-            jsonBody.put("userImage",key);
+            jsonBody.put("userImage",s);
 
             final String mRequestBody = jsonBody.toString();
             Utility.e("RequestBody"  , mRequestBody);

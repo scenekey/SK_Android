@@ -1,9 +1,7 @@
 package com.scenekey.adapter;
 
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
@@ -16,16 +14,20 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.scenekey.R;
 import com.scenekey.activity.HomeActivity;
+import com.scenekey.cus_view.ProfilePopUp_Demo;
 import com.scenekey.fragment.Demo_Event_Fragment;
 import com.scenekey.fragment.Home_No_Event_Fragment;
 import com.scenekey.fragment.Profile_Fragment;
 import com.scenekey.model.EventAttendy;
+import com.scenekey.model.NotificationData;
 import com.scenekey.model.RoomPerson;
 import com.scenekey.util.CircleTransform;
+import com.scenekey.util.SceneKey;
 import com.scenekey.util.Utility;
 import com.squareup.picasso.Picasso;
 
@@ -39,7 +41,7 @@ public class TryDemo_Adapter extends RecyclerView.Adapter<TryDemo_Adapter.ViewHo
 
     private ArrayList<RoomPerson> roomPersonList;
     private HomeActivity activity;
-    private View popupview;
+    private View popupView;
     private Dialog dialog;
 
     private Bitmap imageArray[];
@@ -96,9 +98,8 @@ public class TryDemo_Adapter extends RecyclerView.Adapter<TryDemo_Adapter.ViewHo
             holder.img_profile_gvb1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Utility.showToast(activity,activity.getResources().getString(R.string.underDevelopment),0);
                     if (position == 8) popUpMyProfile();
-                   // else newPopUp(position);
+                    else newPopUp(position);
                 }
             });
         }
@@ -120,25 +121,41 @@ public class TryDemo_Adapter extends RecyclerView.Adapter<TryDemo_Adapter.ViewHo
         }
     }
 
+
    /* on Click popUpMyProfile start here  */
 
     private void popUpMyProfile() {
         final ImageView img_red, img_yellow, img_green, img_p1_profile;
         dialog = new Dialog(activity);
         final TextView txt_stop, txt_caution, txt_go;
-        final TextView txt_title ,txt_my_details;
+        final TextView tv_userName ,txt_my_details;
 
-        popupview = LayoutInflater.from(activity).inflate(R.layout.custom_my_profile_popup, null);
-        img_p1_profile =  popupview.findViewById(R.id.img_p1_profile);
-        img_green =  popupview.findViewById(R.id.img_green);
-        img_yellow =  popupview.findViewById(R.id.img_yellow);
-        img_red =  popupview.findViewById(R.id.img_red);
-        txt_stop =  popupview.findViewById(R.id.txt_stop);
-        txt_caution =  popupview.findViewById(R.id.txt_caution);
-        txt_go =  popupview.findViewById(R.id.txt_go);
-        txt_my_details =  popupview.findViewById(R.id.txt_my_details);
-        ImageView img_cross =  popupview.findViewById(R.id.img_cross);
-        txt_title =  popupview.findViewById(R.id.txt_title);
+        popupView = LayoutInflater.from(activity).inflate(R.layout.custom_my_profile_popup, null);
+        LinearLayout llMyProfile =  popupView.findViewById(R.id.llMyProfile);
+        img_p1_profile =  popupView.findViewById(R.id.img_p1_profile);
+        img_green =  popupView.findViewById(R.id.img_green);
+        img_yellow =  popupView.findViewById(R.id.img_yellow);
+        img_red =  popupView.findViewById(R.id.img_red);
+        txt_stop =  popupView.findViewById(R.id.txt_stop);
+        txt_caution =  popupView.findViewById(R.id.txt_caution);
+        txt_go =  popupView.findViewById(R.id.txt_go);
+        txt_my_details =  popupView.findViewById(R.id.txt_my_details);
+        ImageView img_cross =  popupView.findViewById(R.id.img_cross);
+        tv_userName =  popupView.findViewById(R.id.tv_userName);
+        TextView txt_bio =  popupView.findViewById(R.id.tv_my_bio);
+
+        tv_userName.setText(activity.getString(R.string.me));
+        Utility.e("bio check",activity.userInfo().bio);
+        txt_bio.setText(activity.userInfo().bio);
+
+        llMyProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                activity.hideStatusBar();
+            }
+        });
+
         img_green.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -207,8 +224,9 @@ public class TryDemo_Adapter extends RecyclerView.Adapter<TryDemo_Adapter.ViewHo
         }
 
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(popupView);
         dialog.setCanceledOnTouchOutside(true);
-        dialog.setContentView(popupview);
+        dialog.setCancelable(true);
         Picasso.with(activity).load(roomPersonList.get(8).android_image_url).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_p1_profile);
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.copyFrom(dialog.getWindow().getAttributes());
@@ -223,8 +241,9 @@ public class TryDemo_Adapter extends RecyclerView.Adapter<TryDemo_Adapter.ViewHo
                 activity.hideStatusBar();
             }
         });
-        dialog.show();
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.show();
+
     }
 
     private void setUserStatus(int i, ImageView imageView) {
@@ -266,5 +285,49 @@ public class TryDemo_Adapter extends RecyclerView.Adapter<TryDemo_Adapter.ViewHo
 
     /* on Click popUpMyProfile end here */
 
+    private void newPopUp(final int value){
+        final NotificationData person = demo_event_fragment.getData(value);
+        new ProfilePopUp_Demo(activity, 4, person ,View.VISIBLE) {
+            @Override
+            public void onClickView(TextView textView, ProfilePopUp_Demo profilePopUp) {
+                profilePopUp.setText(textView.getText().toString());
+            }
+
+            @Override
+            public void onSendCLick(TextView textView, ProfilePopUp_Demo profilePopUp, NotificationData obj) {
+                dismiss();
+                activity.hideStatusBar();
+                Utility utility=new Utility(activity);
+                utility.showCustomPopup("Good Nudge!", String.valueOf(R.font.raleway_bold));
+            }
+
+            @Override
+            public void onPrevClick(ImageView textView, ProfilePopUp_Demo profilePopUp) {
+
+            }
+
+            @Override
+            public void onNextClick(ImageView textView, ProfilePopUp_Demo profilePopUp) {
+
+            }
+
+            @Override
+            public void onDismiss(ProfilePopUp_Demo profilePopUp) {
+
+            }
+        }.show();
+        /*new ProfilePopUp(context,4,obj) {
+            @Override
+            public void onClickView(TextView textView, ProfilePopUp profilePopUp) {
+                profilePopUp.setText(textView.getText().toString());
+
+            }
+
+            @Override
+            public void onSendCLick(TextView textView, ProfilePopUp profilePopUp) {
+                Log.e("Value " , profilePopUp.list.toString());
+            }
+        }.show();*/
+    }
 
 }

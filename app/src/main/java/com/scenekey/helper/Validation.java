@@ -1,9 +1,11 @@
 package com.scenekey.helper;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.widget.EditText;
 
 import com.scenekey.R;
+import com.scenekey.util.Utility;
 
 /**
  * Created by mindiii on 5/2/18.
@@ -66,6 +68,13 @@ public class Validation {
             editText.requestFocus();
             return false;
         }
+    }
+
+    public boolean isImageUpload(Bitmap profileImageBitmap){
+        if (profileImageBitmap==null){
+            Utility.showToast(context,"Please select image",0);
+            return false;
+        }else return true;
     }
 
 

@@ -50,6 +50,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.facebook.AccessToken;
 import com.scenekey.R;
+import com.scenekey.helper.AWSImage;
 import com.scenekey.helper.Constant;
 import com.scenekey.helper.CustomProgressBar;
 import com.scenekey.helper.Permission;
@@ -196,7 +197,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             case R.id.btnRegiSignUp:
                 Validation  validation=new Validation(context);
                 if (utility.checkInternetConnection()){
-                    if (validation.isFullNameValid(etRegiFullName)&&validation.isEmailValid(etRegiEmail)&&validation.isPasswordValid(etRegiPwd))
+                    if (validation.isImageUpload(profileImageBitmap)&&validation.isFullNameValid(etRegiFullName)&&validation.isEmailValid(etRegiEmail)&&validation.isPasswordValid(etRegiPwd))
                     {
                         String fullName=etRegiFullName.getText().toString().trim();
                         String email=etRegiEmail.getText().toString().trim();
@@ -212,9 +213,8 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                         }else{
                             showErrorPopup();
                         }
-
-
                     }
+
                 }else{
                     Utility.showToast(context,getString(R.string.internetConnectivityError),0);
                 }
@@ -293,8 +293,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         if (utility.checkInternetConnection()) {
 
             customProgressBar=new CustomProgressBar(context);
-            customProgressBar.setCancelable(false);
-            customProgressBar.show();
+            showProgDialog(false);
 
             VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, "http://dev.scenekey.com/event/webservices/registration", new Response.Listener<NetworkResponse>() {
                 @Override
@@ -310,7 +309,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                         String messageCode = jsonObject.getString("messageCode");
 
                         if (status.equalsIgnoreCase("success")) {
-                            customProgressBar.dismiss();
+
 
                             JSONObject userDetail = jsonObject.getJSONObject("userDetail");
                             UserInfo userInfo = new UserInfo();
@@ -357,20 +356,30 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                             userInfo.bio= userDetail.getString("bio");
 
                             sessionManager.createSession(userInfo);
-                            if (profileImageBitmap!=null)
-                                initItem(profileImageBitmap);
+                            AWSImage awsImage=new AWSImage(context);
+                            try{
+                                if (profileImageBitmap!=null) {
+                                    awsImage.initItem(profileImageBitmap);
+                                    dismissProgDialog();
+                                }
+                            }catch (Exception e){
+                                e.printStackTrace();
+                                dismissProgDialog();
+                            }
+                            dismissProgDialog();
 
                             Intent intent = new Intent(RegistrationActivity.this,IntroActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
 
+
                         } else {
-                            customProgressBar.dismiss();
+                            dismissProgDialog();
                             Toast.makeText(RegistrationActivity.this, message, Toast.LENGTH_SHORT).show();
                         }
 
                     } catch (Throwable t) {
-                        customProgressBar.dismiss();
+                        dismissProgDialog();
                         Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
                     }
 
@@ -383,7 +392,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                     NetworkResponse networkResponse = error.networkResponse;
                     Log.i("Error", networkResponse + "");
                     Toast.makeText(RegistrationActivity.this, networkResponse + "", Toast.LENGTH_SHORT).show();
-                    customProgressBar.dismiss();
+                    dismissProgDialog();
                     error.printStackTrace();
                 }
             }) {
@@ -520,7 +529,17 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    private  void  initItem(Bitmap bitmap){
+    private void showProgDialog(boolean b) {
+        customProgressBar.setCanceledOnTouchOutside(b);
+        customProgressBar.setCancelable(b);
+        customProgressBar.show();
+    }
+
+    private void dismissProgDialog() {
+        if (customProgressBar != null) customProgressBar.dismiss();
+    }
+
+    /*private  void  initItem(Bitmap bitmap){
         try {
 
             String root = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -563,9 +582,9 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         String  key1 = fbid+".jpg";
         TransferObserver observer
                 = transferUtility.upload(
-                Constant.BUCKET+"/"+fbid,     /* The bucket to upload to */
-                key1,    /* The key for the uploaded object */
-                myPath   , CannedAccessControlList.PublicReadWrite  /* The file where the data to upload exists */
+                Constant.BUCKET+"/"+fbid,     *//* The bucket to upload to *//*
+                key1,    *//* The key for the uploaded object *//*
+                myPath   , CannedAccessControlList.PublicReadWrite  *//* The file where the data to upload exists *//*
         );
         Utility.e("OBSERVER KEY",observer.getKey());
         imageKey = fbid + "/" + observer.getKey();
@@ -578,17 +597,17 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                     customProgressBar.dismiss();
                 }
                 if(state.equals(TransferState.FAILED)){
-                /*Toast.makeText(Image_uploade_Activity.this, "State Change" + state,
-                        Toast.LENGTH_SHORT).show();*/
+                *//*Toast.makeText(Image_uploade_Activity.this, "State Change" + state,
+                        Toast.LENGTH_SHORT).show();*//*
                     customProgressBar.dismiss();
                 }
             }
 
             @Override
             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-          /*  int percentage = (int) (bytesCurrent/(bytesTotal>0?bytesTotal:1) * 100);
+          *//*  int percentage = (int) (bytesCurrent/(bytesTotal>0?bytesTotal:1) * 100);
             Toast.makeText(getApplicationContext(), "Progress in %" + percentage,
-                    Toast.LENGTH_SHORT).show();*/
+                    Toast.LENGTH_SHORT).show();*//*
                 Log.v("value","Progresschange");
             }
 
@@ -620,7 +639,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         //Utility.printBigLogcat("Acess " , AccessToken.getCurrentAccessToken().getToken());
         credentialsProvider.setLogins(logins);
         return credentialsProvider;
-    }
+    }*/
 
     @Override
     public void onLocationChanged(Location location) {

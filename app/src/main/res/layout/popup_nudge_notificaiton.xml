@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/llMain"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/txt_dimmer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/black90p"
+            android:text="f \n  f"
+            android:textColor="@color/transparent"
+            android:textSize="@dimen/_300sdp" />
+
+        <TextView
+            android:id="@+id/tv_userName"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_30sdp"
+            android:gravity="center"
+            android:textSize="@dimen/_14sdp"
+            android:textColor="@color/white"/>
+
+
+        <ImageView
+            android:id="@+id/img_cross"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:padding="@dimen/_3sdp"
+            android:src="@drawable/cross_primary"
+            android:visibility="gone" />
+        <!--android:background="@drawable/background_circle_white"-->
+
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:id="@+id/img_profile_pic2"
+            android:layout_width="@dimen/_130sdp"
+            android:layout_height="@dimen/_130sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/_40sdp"
+            android:src="@drawable/image_defult_profile"
+            app:civ_border_color="@color/colorPrimary"
+            app:civ_border_width="@dimen/_3sdp" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/img_left"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_marginLeft="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_85sdp"
+            android:background="@drawable/bg_primary_circle"
+            app:srcCompat="@drawable/ic_icon_arrow" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/img_right"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_85sdp"
+            android:background="@drawable/bg_primary_circle"
+            android:rotationY="180"
+            app:srcCompat="@drawable/ic_icon_arrow" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/img_profile_pic2">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/lr_get_ndge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:orientation="horizontal"
+                    android:showDividers="middle"
+                    android:divider="@drawable/divider_nudge"
+                    android:gravity="center">
+
+                    <com.vanniktech.emoji.EmojiTextView
+                        android:layout_width="@dimen/nudge_"
+                        android:layout_height="@dimen/nudge_"
+                        app:emojiSize="@dimen/nudge_text_size"
+                        android:textColor="@color/white"
+                        android:alpha="1"
+                        android:gravity="center"
+                        android:background="@drawable/circle_white"
+                        />
+                    <com.vanniktech.emoji.EmojiTextView
+                        android:layout_width="@dimen/nudge_"
+                        android:layout_height="@dimen/nudge_"
+                        app:emojiSize="@dimen/nudge_text_size"
+                        android:gravity="center"
+                        android:textColor="@color/white"
+                        android:background="@drawable/circle_white"
+                        />
+                    <com.vanniktech.emoji.EmojiTextView
+                        android:layout_width="@dimen/nudge_"
+                        android:layout_height="@dimen/nudge_"
+                        app:emojiSize="@dimen/nudge_text_size"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        android:background="@drawable/circle_white"
+                        />
+                    <com.vanniktech.emoji.EmojiTextView
+                        android:layout_width="@dimen/nudge_"
+                        android:layout_height="@dimen/nudge_"
+                        app:emojiSize="@dimen/nudge_text_size"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        android:background="@drawable/circle_white"
+                        />
+                </LinearLayout>
+
+
+
+                <TextView
+                    android:id="@+id/tv_nudge"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_30sdp"
+                    android:text="Nudge Back"
+                    android:gravity="center"
+                    android:textSize="@dimen/_14sdp"
+                    android:visibility="gone"
+
+                    android:textColor="@color/white"/>
+
+                <View
+                    android:id="@+id/v_line"
+                    android:layout_width="@dimen/_280sdp"
+                    android:layout_height="@dimen/_1sdp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/center_light"/>
+
+                <LinearLayout
+                    android:id="@+id/lr_send_nudge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/_5sdp"
+                    android:orientation="horizontal"
+                    android:showDividers="middle"
+                    android:divider="@drawable/divider_nudge"
+                    android:gravity="center">
+
+                   <com.vanniktech.emoji.EmojiTextView
+                        android:layout_width="@dimen/nudge_"
+                        android:layout_height="@dimen/nudge_"
+                        app:emojiSize="@dimen/nudge_text_size2"
+                        android:textColor="@color/white"
+                        android:alpha="1"
+                        android:gravity="center"
+                        />
+
+                    <com.vanniktech.emoji.EmojiTextView
+                        android:layout_width="@dimen/nudge_"
+                        android:layout_height="@dimen/nudge_"
+                        app:emojiSize="@dimen/nudge_text_size2"
+                        android:gravity="center"
+                        android:textColor="@color/white"
+                        />
+                    <com.vanniktech.emoji.EmojiTextView
+                        android:layout_width="@dimen/nudge_"
+                        android:layout_height="@dimen/nudge_"
+                        app:emojiSize="@dimen/nudge_text_size2"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        />
+                    <com.vanniktech.emoji.EmojiTextView
+                        android:layout_width="@dimen/nudge_"
+                        android:layout_height="@dimen/nudge_"
+                        app:emojiSize="@dimen/nudge_text_size2"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        />
+                </LinearLayout>
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    app:cardCornerRadius="@dimen/_5sdp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:orientation="vertical">
+                        <LinearLayout
+                            android:layout_width="@dimen/_280sdp"
+                            android:layout_height="@dimen/_25sdp"
+                            android:background="@color/white"
+                            android:layout_gravity="center_horizontal">
+
+                            <android.support.v7.widget.AppCompatImageView
+                                android:id="@+id/zero"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="match_parent"
+                                android:textColor="@color/black"
+                                android:textSize="@dimen/_14sdp"
+                                android:gravity="center"
+                                android:background="@drawable/bg_table"
+                                android:padding="@dimen/nudge_section_padding"
+                                app:srcCompat="@drawable/ic_zero"/>
+
+                            <android.support.v7.widget.AppCompatImageView
+                                android:id="@+id/one"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="match_parent"
+                                android:textColor="@color/black"
+                                android:textSize="@dimen/_14sdp"
+                                android:gravity="center"
+                                android:background="@drawable/bg_table"
+                                android:padding="@dimen/nudge_section_padding"
+                                app:srcCompat="@drawable/ic_one"/>
+                            <android.support.v7.widget.AppCompatImageView
+                                android:id="@+id/two"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="match_parent"
+                                android:textColor="@color/black"
+                                android:textSize="@dimen/_14sdp"
+                                android:gravity="center"
+                                android:background="@drawable/bg_table"
+                                android:padding="@dimen/nudge_section_padding"
+                                app:srcCompat="@drawable/ic_two"/>
+                            <android.support.v7.widget.AppCompatImageView
+                                android:id="@+id/three"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="match_parent"
+                                android:textColor="@color/black"
+                                android:textSize="@dimen/_14sdp"
+                                android:gravity="center"
+                                android:background="@drawable/bg_table"
+                                android:padding="@dimen/nudge_section_padding"
+                                app:srcCompat="@drawable/ic_three"/>
+
+                            <android.support.v7.widget.AppCompatImageView
+                                android:id="@+id/four"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="match_parent"
+                                android:textColor="@color/black"
+                                android:textSize="@dimen/_14sdp"
+                                android:gravity="center"
+                                android:background="@drawable/bg_table"
+                                android:padding="@dimen/nudge_section_padding"
+                                app:srcCompat="@drawable/ic_four"/>
+
+                            <android.support.v7.widget.AppCompatImageView
+                                android:id="@+id/five"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="match_parent"
+                                android:textColor="@color/black"
+                                android:textSize="@dimen/_14sdp"
+                                android:gravity="center"
+                                android:background="@drawable/bg_table"
+                                android:padding="@dimen/nudge_section_padding"
+                                app:srcCompat="@drawable/ic_five"/>
+                        </LinearLayout>
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rclv_emoji"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_width="@dimen/_280sdp"
+                            android:layout_alignParentBottom="true"
+                            android:background="@color/white"
+                            android:scrollbars="horizontal"
+                            android:overScrollMode="never"
+                            android:scrollbarTrackHorizontal="@color/transparent"
+                            android:scrollbarSize="@dimen/_5sdp"
+                            android:layout_height="@dimen/_120sdp"/>
+                        <FrameLayout
+                            android:layout_width="@dimen/_280sdp"
+                            android:layout_height="@dimen/_25sdp"
+                            android:background="@color/white"
+                            android:layout_gravity="center_horizontal">
+                            <LinearLayout
+                                android:id="@+id/lr_indicator"
+                                android:layout_width="match_parent"
+                                android:weightSum="1"
+                                android:layout_height="match_parent"
+                                android:orientation="horizontal"
+                                android:gravity="center"
+                                android:visibility="visible">
+                                <ImageView
+                                    android:id="@+id/iv_indicator"
+                                    android:layout_width="@dimen/_10sdp"
+                                    android:padding="@dimen/_4sdp"
+                                    android:maxHeight="@dimen/_10sdp"
+                                    android:layout_height="@dimen/_10sdp"
+                                    android:src="@drawable/bg_circle_gray_badge"/>
+                            </LinearLayout>
+                            <android.support.v7.widget.AppCompatImageView
+                                android:id="@+id/iv_delete"
+                                android:layout_width="@dimen/_50sdp"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="end|bottom"
+                                app:srcCompat="@drawable/ic_backspace_arrow"/>
+
+
+                        </FrameLayout>
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+
+
+
+                <TextView
+                    android:id="@+id/txt_send"
+                    android:layout_width="@dimen/_280sdp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_margin="@dimen/_5sdp"
+                    android:textSize="@dimen/_14sdp"
+                    android:background="@drawable/bg_send_nudge"
+                    android:text="@string/Nudge"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+                    android:textColor="@color/old_primary"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_20sdp"/>
+
+
+
+            </LinearLayout>
+
+        </ScrollView>
+
+
+    </RelativeLayout>
+
+
+
+</LinearLayout>

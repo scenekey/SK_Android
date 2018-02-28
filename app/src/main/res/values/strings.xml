@@ -1193,6 +1193,6 @@
 
     <string name="default_profile_title"> Default Profile Image </string>
     <string name="default_profile_msg"> This picture is already your default \n profile image please select other </string>
-
+<string name="me">Me</string>
 
 </resources>

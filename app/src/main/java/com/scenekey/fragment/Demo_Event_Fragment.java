@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -42,6 +41,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.scenekey.R;
 import com.scenekey.activity.HomeActivity;
 import com.scenekey.adapter.TryDemo_Adapter;
+import com.scenekey.cus_view.ProfilePopUp_Demo;
 import com.scenekey.helper.Constant;
 import com.scenekey.helper.Permission;
 import com.scenekey.lib_sources.Floting_menuAction.FloatingActionButton;
@@ -50,6 +50,7 @@ import com.scenekey.lib_sources.SwipeCard.Card;
 import com.scenekey.lib_sources.SwipeCard.CardsAdapter;
 import com.scenekey.lib_sources.SwipeCard.SwipeCardView;
 import com.scenekey.listener.StatusBarHide;
+import com.scenekey.model.NotificationData;
 import com.scenekey.model.RoomPerson;
 import com.scenekey.model.UserInfo;
 import com.scenekey.util.Utility;
@@ -77,7 +78,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
 
     private SwipeCardView card_stack_view;
     private ArrayList<Card> cardList;
-    //  private ArrayList<NotificationData> nlist;
+    private ArrayList<NotificationData> nList;
     private CardsAdapter arrayAdapter;
     private boolean liked;
     private ImageView img_edit_i1,img_notif,img_infoget_f2,img_f10_back;
@@ -86,6 +87,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
     private RelativeLayout demoView;
     private TextView btn_got_it;
 
+    private  Utility utility;
     private MapView map_view;
     private GoogleMap googleMap;
     private int currentPosition;
@@ -151,7 +153,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        utility=new Utility(context);
         TextView txt_hide_all_one =  view.findViewById(R.id.txt_hide_all_one);
         TextView txt_hide_all_two =  view.findViewById(R.id.txt_hide_all_two);
         TextView txt_calender_i1 =  view.findViewById(R.id.txt_calender_i1);
@@ -274,7 +276,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
                 break;
             case R.id.fabMenu1_like:
                 menu_blue.close(true);
-                Utility utility=new Utility(context);
+
                 if(!liked){
                     liked=true;
                     fabMenu1.setImageDrawable(getResources().getDrawable(R.drawable.red_heart));
@@ -306,8 +308,11 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
                 menu_blue.close(true);
                 break;
             case R.id.img_notif:
-              /*  if (noNotify > 0 && (nlist != null && nlist.get(noNotify - 1)!= null) ) popup_notification_new(noNotify);
-                else noNotification();*/
+                if (noNotify > 0 && (nList != null && nList.get(noNotify - 1)!= null) ) {
+
+                    popup_notification_new(noNotify);
+                }
+                else noNotification();
                 break;
             case R.id.btn_got_it:
                 demoView.setVisibility(View.GONE);
@@ -448,17 +453,17 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
             adapter.notifyItemInserted(i);
         }
 
-        //Notifaication Data
-        //   if (nlist == null) nlist = new ArrayList<NotificationData>();
-        //nlist.add(new NotificationData(R.drawable.room_3, getResources().getString(R.string.notification5) ,"Amy Jackson"));
+        //Notification Data
+        if (nList == null) nList = new ArrayList<>();
 
-        //nlist.add(new NotificationData(R.drawable.room_1, getResources().getString(R.string.notification4),"Alexander Alex"));
-      /*  nlist.add(new NotificationData(R.drawable.room_1, "\uD83D\uDD31 , \u2665 , \u2705 , \uD83D\uDEB7 ","Alexander Alex"));
-        nlist.add(new NotificationData(R.drawable.room_2, "\uD83D\uDEA4 , \uD83D\uDE83 , \uD83D\uDE96 , \u2708 " , "Alizee French"));
-        nlist.add(new NotificationData(R.drawable.room_3, "\uD83C\uDF37 , \uD83C\uDF3B , \uD83C\uDF1E , \uD83C\uDF3C " ,"Amy Jackson"));
-        nlist.add(new NotificationData(R.drawable.room_4, "\uD83C\uDF81 , \uD83D\uDC9D , \uD83C\uDF85 , \uD83C\uDF89 ","Dahn-mein Siegel"));
-        nlist.add(new NotificationData(R.drawable.room_5, "\uD83D\uDE1C , \uD83D\uDE1D , \uD83D\uDE33 , \uD83D\uDE18 " ,"Darrin Espanto"));
-      */
+        nList.add(new NotificationData(R.drawable.room_1, "\uD83D\uDD31 , \u2665 , \u2705 , \uD83D\uDEB7 ","Alexander Alex"));
+        nList.add(new NotificationData(R.drawable.room_2, "\uD83D\uDEA4 , \uD83D\uDE83 , \uD83D\uDE96 , \u2708 " , "Alizee French"));
+        nList.add(new NotificationData(R.drawable.room_3, "\uD83C\uDF37 , \uD83C\uDF3B , \uD83C\uDF1E , \uD83C\uDF3C " ,"Amy Jackson"));
+        nList.add(new NotificationData(R.drawable.room_4, "\uD83C\uDF81 , \uD83D\uDC9D , \uD83C\uDF85 , \uD83C\uDF89 ","Dahn-mein Siegel"));
+        nList.add(new NotificationData(R.drawable.room_5, "\uD83D\uDE1C , \uD83D\uDE1D , \uD83D\uDE33 , \uD83D\uDE18 " ,"Darrin Espanto"));
+        nList.add(new NotificationData(R.drawable.room_6, "\uD83D\uDEA4 , \uD83D\uDE83 , \uD83D\uDE96 , \u2708 " ,"Erin Dietrich"));
+        nList.add(new NotificationData(R.drawable.room_7, "\uD83D\uDE1C , \uD83D\uDE1D , \uD83D\uDE33 , \uD83D\uDE18 " ,"James Red"));
+        nList.add(new NotificationData(R.drawable.room_8, "\uD83C\uDF81 , \uD83D\uDC9D , \uD83C\uDF85 , \uD83C\uDF89 ","Morgan Freeman"));
 
         card_stack_view.setFlingListener(new SwipeCardView.OnCardFlingListener() {
             @Override
@@ -675,6 +680,61 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         return (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.getDefault())).format(new Date(System.currentTimeMillis()));
     }
 
+    public void noNotification() {
+        utility.showCustomPopup(getString(R.string.noNotification),String.valueOf(R.font.raleway_regular));
+    }
+
+    private void popup_notification_new(final int position){
+        noNotify-=1;
+        setTextBadge();
+        currentPosition = position-1;
+        new ProfilePopUp_Demo(activity,4, getData(currentPosition),View.VISIBLE) {
+            @Override
+            public void onClickView(TextView textView, ProfilePopUp_Demo profilePopUp) {
+                profilePopUp.setText(textView.getText().toString());
+                setTextBadge();
+            }
+
+            @Override
+            public void onSendCLick(TextView textView, ProfilePopUp_Demo profilePopUp, NotificationData obj) {
+            }
+
+            @Override
+            public void onPrevClick(ImageView textView, ProfilePopUp_Demo profilePopUp) {
+                if(currentPosition<5){
+                    currentPosition+=1;
+                    updateData(getData(currentPosition));
+                }
+            }
+
+            @Override
+            public void onNextClick(ImageView textView, ProfilePopUp_Demo profilePopUp) {
+                if(currentPosition>0){
+
+                    currentPosition-=1;
+                    if(currentPosition<noNotify){
+                        noNotify-=1;
+                        setTextBadge();
+                    }
+                    updateData(getData(currentPosition));
+                }
+                if(currentPosition==0){
+                    noNotification();
+                }
+            }
+
+            @Override
+            public void onDismiss(ProfilePopUp_Demo profilePopUp) {
+
+            }
+        }.show();
+    }
+
+
+    public NotificationData getData(int position){
+        return nList.get(position);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         activity.setBBVisibility(View.GONE,TAG);
@@ -689,7 +749,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
                 card.userImage =activity.userInfo().getUserImage();
                 card.date = getCurrentTimeInFormat();
                 cardList.add(0,card);
-              //  activity.setBBvisiblity(View.GONE,TAG);
+                //  activity.setBBvisiblity(View.GONE,TAG);
                 arrayAdapter.notifyDataSetChanged();
                 card_stack_view.restart();
             }

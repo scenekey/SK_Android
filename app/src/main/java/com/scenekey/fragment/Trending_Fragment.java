@@ -37,6 +37,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class Trending_Fragment extends Fragment {
@@ -44,11 +46,14 @@ public class Trending_Fragment extends Fragment {
     private Context context;
     private HomeActivity activity;
 
+
     private  Utility utility;
     private RecyclerView rcViewTrending;
     private String lat="",lng="";
     private Trending_Adapter trendingAdapter;
     private ArrayList<Events> eventsArrayList;
+    public boolean canCallWebservice;
+    private static Timer timerHttp;
     private final String TAG = Trending_Fragment.class.toString();
 
     @Override
@@ -68,6 +73,19 @@ public class Trending_Fragment extends Fragment {
         trendingData();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        canCallWebservice=true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        canCallWebservice = true;
+        if (timerHttp == null) setDataTimer();
+    }
+
     private void trendingData() {
         String[] latLng=  activity.getLatLng();
         lat=latLng[0];
@@ -81,6 +99,7 @@ public class Trending_Fragment extends Fragment {
         else{
             activity.showProgDialog(false,TAG);
             getTrendingData();
+            if (timerHttp == null) setDataTimer();
         }
     }
 
@@ -155,7 +174,7 @@ public class Trending_Fragment extends Fragment {
         }
     }
 
-    private void getTrendingData() {
+    public void getTrendingData() {
 
         if (utility.checkInternetConnection()) {
             StringRequest request = new StringRequest(Request.Method.POST, WebServices.TRENDING, new Response.Listener<String>() {
@@ -281,4 +300,50 @@ public class Trending_Fragment extends Fragment {
         }
     }
 
+   private void setDataTimer() {
+        if(timerHttp == null )timerHttp = new Timer();
+
+        //Set the schedule function and rate
+        //TODO timer changed as required
+        timerHttp.scheduleAtFixedRate(new TimerTask() {
+
+                                          @Override
+                                          public void run() {
+                                              activity.runOnUiThread(new Runnable() {
+                                                  @Override
+                                                  public void run() {
+                                                      Utility.e(TAG,"TimerVolley Trending");
+                                                      try{
+
+                                                          if (canCallWebservice) {
+                                                              getTrendingData();}
+                                                      }catch (Exception e){
+                                                          e.printStackTrace();
+                                                      }
+
+
+                                                  }
+                                              });
+                                          }
+
+                                      },
+                //Set how long before to start calling the TimerTask (in milliseconds)
+                60000,
+                //Set the amount of time between each execution (in milliseconds)
+                60000);
+    }
+
+    @Override
+    public void onPause() {
+        if (timerHttp != null) timerHttp.cancel();
+        timerHttp=null;
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (timerHttp != null) timerHttp.cancel();
+        timerHttp=null;
+        super.onDestroy();
+    }
 }
