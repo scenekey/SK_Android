@@ -3,7 +3,9 @@ package com.scenekey.util;
 import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
+import android.text.TextUtils;
 
+import com.android.volley.Request;
 import com.scenekey.helper.SessionManager;
 import com.crashlytics.android.Crashlytics;
 import com.vanniktech.emoji.EmojiManager;
@@ -42,6 +44,7 @@ public class SceneKey extends Application {
         sessionManager = new SessionManager(instance.getApplicationContext());
         EmojiManager.install(new IosEmojiProvider());
     }
+
 
 
 }

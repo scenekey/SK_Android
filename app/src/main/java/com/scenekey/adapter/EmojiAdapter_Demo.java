@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.scenekey.R;
 import com.scenekey.cus_view.ProfilePopUp_Demo;
+import com.scenekey.util.Utility;
 import com.vanniktech.emoji.EmojiTextView;
 
 /**
@@ -37,12 +38,14 @@ public class EmojiAdapter_Demo extends RecyclerView.Adapter<EmojiAdapter_Demo.Ho
 
 
     @Override
-    public void onBindViewHolder(EmojiAdapter_Demo.Holder holder, int position) {
+    public void onBindViewHolder(EmojiAdapter_Demo.Holder holder, final int position) {
+
         holder.tv_emoji.setText(list [position]);
         holder.tv_emoji.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 profilePopUp.onClickView((TextView) v ,profilePopUp);
+
                 if(addToRecent && profilePopUp.list.size()<=4){
                     profilePopUp.setRecent(profilePopUp.list.size()==4? profilePopUp.list.get(3) :((TextView) v).getText().toString());
                 }
@@ -57,7 +60,7 @@ public class EmojiAdapter_Demo extends RecyclerView.Adapter<EmojiAdapter_Demo.Ho
 
     class Holder extends RecyclerView.ViewHolder{
         EmojiTextView tv_emoji;
-        public Holder(View itemView) {
+        Holder(View itemView) {
             super(itemView);
             tv_emoji =  itemView.findViewById(R.id.tv_emoji);
 

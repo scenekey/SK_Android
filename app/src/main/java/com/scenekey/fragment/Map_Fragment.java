@@ -76,8 +76,8 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
     private ArrayList<Events> eventArrayMarker;
     private Marker lastClick;
 
-    public boolean canCallWebservice;
-    private static Timer timerHttp;
+  //  public boolean canCallWebservice;
+   // private static Timer timerHttp;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -107,15 +107,15 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
     @Override
     public void onStart() {
         super.onStart();
-        canCallWebservice=true;
+      //  canCallWebservice=true;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Utility.e(TAG,"TimerVolley start");
-        canCallWebservice = true;
-        if (timerHttp == null) setDataTimer();
+       // Utility.e(TAG,"TimerVolley start");
+       // canCallWebservice = true;
+       // if (timerHttp == null) setDataTimer();
     }
 
     private void showNearByEventMarker() {
@@ -132,7 +132,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
         else{
             activity.showProgDialog(false,TAG);
             checkEventAvailability();
-            if (timerHttp == null) setDataTimer();
+          //  if (timerHttp == null) setDataTimer();
         }
     }
 
@@ -192,7 +192,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
         utility=new Utility(context);
     }
 
-    private void checkEventAvailability() {
+    public void checkEventAvailability() {
 
         if (utility.checkInternetConnection()) {
             StringRequest request = new StringRequest(Request.Method.POST, WebServices.EVENT_BY_LOCAL, new Response.Listener<String>() {
@@ -556,7 +556,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
         else eventArrayMarker.clear();
     }
 
-    private void setDataTimer() {
+   /* private void setDataTimer() {
         if(timerHttp == null )timerHttp = new Timer();
 
         //Set the schedule function and rate
@@ -585,7 +585,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
                 60000,
                 //Set the amount of time between each execution (in milliseconds)
                 60000);
-    }
+    }*/
 
     @Override
     public boolean onMarkerClick(Marker marker) {
@@ -595,16 +595,16 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
 
     @Override
     public void onPause() {
-        Utility.e(TAG,"TimerVolley cancel");
-        if (timerHttp != null) timerHttp.cancel();
-        timerHttp=null;
+      //  Utility.e(TAG,"TimerVolley cancel");
+      //  if (timerHttp != null) timerHttp.cancel();
+       // timerHttp=null;
         super.onPause();
     }
 
     @Override
     public void onDestroy() {
-        if (timerHttp != null) timerHttp.cancel();
-        timerHttp=null;
+      //  if (timerHttp != null) timerHttp.cancel();
+      //  timerHttp=null;
         super.onDestroy();
     }
 

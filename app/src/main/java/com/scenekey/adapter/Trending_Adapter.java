@@ -1,5 +1,6 @@
 package com.scenekey.adapter;
 
+import android.os.Handler;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import com.scenekey.R;
 import com.scenekey.activity.HomeActivity;
+import com.scenekey.fragment.Event_Fragment;
 import com.scenekey.fragment.Home_No_Event_Fragment;
 import com.scenekey.helper.SortByPoint;
 import com.scenekey.model.Event;
@@ -37,6 +39,10 @@ public class Trending_Adapter extends RecyclerView.Adapter<Trending_Adapter.View
     private ArrayList<Events> eventsArrayList;
     private String[] currentLatLng;
     private boolean clicked;
+
+    private Events object;
+    private  Venue venue;
+    private  Event event;
     //  private int heightA,widthA;
 
     public Trending_Adapter(HomeActivity activity, ArrayList<Events> eventsArrayList,String[] currentLatLng) {
@@ -56,9 +62,9 @@ public class Trending_Adapter extends RecyclerView.Adapter<Trending_Adapter.View
     @Override
     public void onBindViewHolder(Trending_Adapter.ViewHolder holder, int position) {
 
-        Events object = eventsArrayList.get(position);
-        Venue venue = object.getVenue();
-        Event event = object.getEvent();
+        object = eventsArrayList.get(position);
+        venue = object.getVenue();
+        event = object.getEvent();
 
         Collections.sort(eventsArrayList, new SortByPoint());
         try {
@@ -164,31 +170,30 @@ public class Trending_Adapter extends RecyclerView.Adapter<Trending_Adapter.View
         @Override
         public void onClick(final View v) {
             //check
-          /*  v.setClickable(false);
+            v.setClickable(false);
             if (!clicked) {
                 try {
-                    Event_Fragment frg = new Event_Fragment();
-                    frg.setData(event.getEvent_id(),venue.getVenue_name(),object);
-                    activity.addFragment(frg, 0);
+                    Event_Fragment fragment = new Event_Fragment();
+                    fragment.setData(event.event_id,venue.getVenue_name(),object,currentLatLng);
+                    activity.addFragment(fragment, 0);
                 } catch (NullPointerException e){
-
+                    e.printStackTrace();
                 }
                 clicked = true;
             }
             try {
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
+
+                new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         v.setClickable(true);
                         clicked = false;
                     }
-                }, 2000);
+                }, 1000);
             } catch (Exception e) {
                 e.printStackTrace();
-            }*/
+            }
 
-            Utility.showToast(activity,activity.getString(R.string.underDevelopment),0);
         }
     }
 

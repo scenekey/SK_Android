@@ -23,6 +23,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -33,13 +34,20 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.scenekey.R;
+import com.scenekey.aws_service.Aws_Web_Service;
 import com.scenekey.fragment.Add_Fragment;
 import com.scenekey.fragment.Home_No_Event_Fragment;
 import com.scenekey.fragment.Map_Fragment;
@@ -60,6 +68,7 @@ import com.scenekey.model.UserInfo;
 import com.scenekey.util.SceneKey;
 import com.scenekey.util.StatusBarUtil;
 import com.scenekey.util.Utility;
+import com.scenekey.volleymultipart.VolleyMultipartRequest;
 import com.scenekey.volleymultipart.VolleySingleton;
 import com.squareup.picasso.Picasso;
 
@@ -67,6 +76,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -80,7 +90,7 @@ import java.util.Map;
 import static android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
 import static android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE;
 
-public class HomeActivity extends AppCompatActivity implements View.OnClickListener,LocationListener {
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener,LocationListener{
 
     private final String TAG="HomeActivity";
     public Context context=this;
@@ -116,7 +126,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private  LocationManager locationManager;
     private Utility utility;
 
-    public boolean isApiM, isKitKat;
+    public boolean isApiM, isKitKat,statusKey;
     private int position=0;
 
     @Override
@@ -932,6 +942,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     eventsNearbyList.add(events);
                 }
 
+                /*if (distance>Constant.MAXIMUM_DISTANCE){
+                    keyStatus(events.getEvent().event_id);
+                }*/
+
             } catch (Exception e) {
                 e.printStackTrace();
                 //Toast.makeText(this, getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_LONG).show();
@@ -1035,6 +1049,26 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         double distance=(startPoint.distanceTo(endPoint))*0.00062137;
         return new BigDecimal(distance ).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
+
+    public int getDistance(Double[] LL){
+       Utility.e("LAT LONG ", LL[0]+" "+LL[1]+" "+LL[2]+" "+LL[3]  );
+        Location startPoint=new Location("locationA");
+        startPoint.setLatitude(LL[0]);
+        startPoint.setLongitude(LL[1]);
+
+        Location endPoint=new Location("locationA");
+        endPoint.setLatitude(LL[2]);
+        endPoint.setLongitude(LL[3]);
+
+        double distance=startPoint.distanceTo(endPoint);
+
+        return (int)distance;
+    }
+
+    public double phpDistance(Double[] LL) {
+       Utility.e(TAG, " Distance " + 6371000 * (Math.acos(Math.cos(Math.toRadians(LL[0])) * Math.cos(Math.toRadians(LL[2])) * Math.cos(Math.toRadians(LL[3]) - Math.toRadians(LL[1])) + Math.sin(Math.toRadians(LL[0])) * Math.sin(Math.toRadians(LL[2])))) );
+        return 6371000 * (Math.acos(Math.cos(Math.toRadians(LL[0])) * Math.cos(Math.toRadians(LL[2])) * Math.cos(Math.toRadians(LL[3]) - Math.toRadians(LL[1])) + Math.sin(Math.toRadians(LL[0])) * Math.sin(Math.toRadians(LL[2]))));
     }
 
     public double getLatitude() {
@@ -1158,11 +1192,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void hideStatusBar(){
         View decorView = getWindow().getDecorView();
         if (!(SceneKey.sessionManager.isSoftKey()))
-            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE);
         else
-            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         top_status.setVisibility(View.GONE);
     }
+
     public void showStatusBar(){
         getWindow().clearFlags((WindowManager.LayoutParams.FLAG_FULLSCREEN));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -1208,6 +1243,56 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         return (appProcessInfo.importance == IMPORTANCE_FOREGROUND || appProcessInfo.importance == IMPORTANCE_VISIBLE);
     }*/
 
+//TODO message on increment or decrement
+
+    public void incrementKeyPoints(String msg){
+        final int points = Integer.parseInt(userInfo.keyPoints);
+        new Aws_Web_Service() {
+            @Override
+            public okhttp3.Response onResponseUpdate(okhttp3.Response response) {
+                if(response==null) return null;
+                try {
+                    String s = response.body().string();
+                    if(new JSONObject(s).getInt("serverStatus")==2){
+                        Utility.e("Response",s);
+                        userInfo.keyPoints=((points+1)+"");
+                       updateSession(userInfo);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                catch (JSONException e){
+                    e.printStackTrace();
+                }
+                return response;
+            }
+        }.updateKeypoint(points+1,userInfo.userID);
+    }
+
+    public void decrementKeyPoints(final String msg){
+        final int points = Integer.parseInt(userInfo.keyPoints);
+        new Aws_Web_Service() {
+            @Override
+            public okhttp3.Response onResponseUpdate(okhttp3.Response response) {
+                if(response==null) return null;
+                try {
+                    String s = response.body().string();
+                    if(new JSONObject(s).getInt("serverStatus")==2){
+                        utility.showCustomPopup(msg, String.valueOf(R.font.raleway_regular));
+
+                        userInfo.keyPoints=(points <=0?0+"":(points-1)+"");
+                        updateSession(userInfo);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                catch (JSONException e){
+                    e.printStackTrace();
+                }
+                return response;
+            }
+        }.updateKeypoint((points <=0?0:points-1),userInfo.userID);
+    }
 
     /*public common methods end*/
 
@@ -1259,5 +1344,134 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    private void keyStatus(final String event_id){
+
+        if (utility.checkInternetConnection()) {
+
+            VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, WebServices.DEFAULT_IMAGE, new Response.Listener<NetworkResponse>() {
+                @Override
+                public void onResponse(NetworkResponse response) {
+                    String data = new String(response.data);
+                    Log.e("Response", data);
+
+                    try {
+                        JSONObject jsonObject = new JSONObject(data);
+                        String status = jsonObject.getString("status");
+
+                        if (status.equals("not exist")) {
+                             statusKey = false;
+                            keyPointsUpdate();
+                        }else {
+                            statusKey=true;
+                            keyPointsUpdate();
+                        }
+
+                    } catch (Throwable t) {
+                        Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
+                        dismissProgDialog();
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    NetworkResponse networkResponse = error.networkResponse;
+                    Log.i("Error", networkResponse + "");
+                    Utility.showToast(context, networkResponse + "", Toast.LENGTH_SHORT);
+                    dismissProgDialog();
+                    error.printStackTrace();
+                }
+            }) {
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<String, String>();
+
+                    params.put("userid", userInfo.userID);
+                    params.put("eventid", event_id);
+
+                    return params;
+                }
+            };
+
+            multipartRequest.setRetryPolicy(new DefaultRetryPolicy(10000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            VolleySingleton.getInstance(this).addToRequestQueue(multipartRequest);
+        } else {
+           Utility.showToast(context, getString(R.string.internetConnectivityError), Toast.LENGTH_SHORT);
+        }
+    }
+
+    private void keyPointsUpdate(){
+
+        try {
+            RequestQueue requestQueue = Volley.newRequestQueue(context);
+
+            JSONObject jsonBody = new JSONObject();
+            jsonBody.put("method","PUT");
+            jsonBody.put("action","updateKeyPoints");
+            jsonBody.put("userid",userInfo.userID);
+            if (!userInfo.keyPoints.equals("0")) {
+                jsonBody.put("keyPoints", Integer.parseInt(userInfo.keyPoints) - 1);
+            }else {
+                jsonBody.put("keyPoints", 25+"");
+            }
+
+            final String mRequestBody = jsonBody.toString();
+            Utility.e("RequestBody"  , mRequestBody);
+
+            StringRequest stringRequest = new StringRequest(Request.Method.PUT, WebServices.DEFAULT_IMAGE, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Utility.e("server image set", response);
+
+                    userInfo.keyPoints=Integer.parseInt(userInfo.keyPoints)-1+"";
+                    SceneKey.sessionManager.createSession(userInfo);
+
+                    if (userInfo.keyPoints.equals("0")){
+                        userInfo.keyPoints=25+"";
+                        SceneKey.sessionManager.createSession(userInfo);
+                    }
+
+                    dismissProgDialog();
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Utility.e("LOG_VOLLEY E", error.toString());
+                    dismissProgDialog();
+                }
+            }) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/json";
+                }
+
+                @Override
+                public byte[] getBody() throws AuthFailureError {
+                    try {
+                        return mRequestBody == null ? null : mRequestBody.getBytes();
+                    } catch (Exception uee) {
+                        //VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
+                        return null;
+                    }
+                }
+
+                @Override
+                protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                    String responseString = "";
+                    if (response != null) {
+
+                        responseString = new String(response.data);
+                        //Util.printLog("RESPONSE", responseString.toString());
+                    }
+                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                }
+            };
+            stringRequest.setShouldCache(false);
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(30000,1,0));
+            requestQueue.add(stringRequest);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            dismissProgDialog();
+        }
+    }
 
 }

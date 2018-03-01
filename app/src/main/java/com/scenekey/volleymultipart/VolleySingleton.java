@@ -2,6 +2,7 @@ package com.scenekey.volleymultipart;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.util.LruCache;
 
 import com.android.volley.Request;
@@ -20,6 +21,7 @@ public class VolleySingleton {
     private static Context mCtx;
     private RequestQueue mRequestQueue;
     private ImageLoader mImageLoader;
+    private static final String TAG = VolleySingleton.class.getSimpleName();
 
     /**
      * Private constructor, only initialization from getInstance.
@@ -73,16 +75,24 @@ public class VolleySingleton {
         return mRequestQueue;
     }
 
-    /**
-     * Add new request depend on type like string, json object, json array request.
-     *
-     * @param req new request
-     * @param <T> request type
-     */
-    public <T> void addToRequestQueue(Request<T> req) {
+
+
+    public <T> void addToRequestQueue(Request<T> req, String tag) {
+        // set the default tag if tag is empty
+        req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
         getRequestQueue().add(req);
     }
 
+    public <T> void addToRequestQueue(Request<T> req) {
+        req.setTag(TAG);
+        getRequestQueue().add(req);
+    }
+
+    public void cancelPendingRequests(Object tag) {
+        if (mRequestQueue != null) {
+            mRequestQueue.cancelAll(tag);
+        }
+    }
     /**
      * Get image loader.
      *

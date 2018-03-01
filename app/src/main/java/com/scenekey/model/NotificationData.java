@@ -16,6 +16,10 @@ public class NotificationData {
 
     public boolean message;
 
+    public NotificationData(){
+
+    }
+
     public NotificationData(int img, String nudges ) {
         this.img = img;
         this.nudges = nudges;

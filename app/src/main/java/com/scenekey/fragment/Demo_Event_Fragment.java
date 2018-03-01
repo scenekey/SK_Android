@@ -63,7 +63,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
 
-public class Demo_Event_Fragment extends Fragment implements View.OnClickListener,StatusBarHide {
+public class Demo_Event_Fragment extends Fragment implements View.OnClickListener,StatusBarHide  {
 
     private final String TAG = Demo_Event_Fragment.class.toString();
 
@@ -688,7 +688,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         noNotify-=1;
         setTextBadge();
         currentPosition = position-1;
-        new ProfilePopUp_Demo(activity,4, getData(currentPosition),View.VISIBLE) {
+        new ProfilePopUp_Demo(activity,4, getData(currentPosition),1) {
             @Override
             public void onClickView(TextView textView, ProfilePopUp_Demo profilePopUp) {
                 profilePopUp.setText(textView.getText().toString());
@@ -775,4 +775,6 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
     public boolean onStatusBarHide() {
         return false;
     }
+
+
 }

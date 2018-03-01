@@ -144,7 +144,7 @@ public class TryDemo_Adapter extends RecyclerView.Adapter<TryDemo_Adapter.ViewHo
         tv_userName =  popupView.findViewById(R.id.tv_userName);
         TextView txt_bio =  popupView.findViewById(R.id.tv_my_bio);
 
-        tv_userName.setText(activity.getString(R.string.me));
+        tv_userName.setText(activity.userInfo().firstName);
         Utility.e("bio check",activity.userInfo().bio);
         txt_bio.setText(activity.userInfo().bio);
 
@@ -287,7 +287,7 @@ public class TryDemo_Adapter extends RecyclerView.Adapter<TryDemo_Adapter.ViewHo
 
     private void newPopUp(final int value){
         final NotificationData person = demo_event_fragment.getData(value);
-        new ProfilePopUp_Demo(activity, 4, person ,View.VISIBLE) {
+        new ProfilePopUp_Demo(activity, 4, person ,0) {
             @Override
             public void onClickView(TextView textView, ProfilePopUp_Demo profilePopUp) {
                 profilePopUp.setText(textView.getText().toString());
