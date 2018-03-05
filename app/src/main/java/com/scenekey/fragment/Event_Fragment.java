@@ -1,5 +1,6 @@
 package com.scenekey.fragment;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -7,12 +8,13 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,8 +36,15 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.scenekey.R;
 import com.scenekey.activity.HomeActivity;
 import com.scenekey.adapter.DataAdapter;
@@ -79,74 +88,56 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
 
     public final String TAG = Event_Fragment.class.toString();
 
-
-    public boolean canCallWebservice;
-    public boolean inLocation, inTime;
-    String EventId;
-    TextView txt_discipI_f2;
-    public double latitude,longitude;
-
-    private String[] currentLatLng;
-    LinearLayout info_view;
-    RelativeLayout rtlv2_animate_f2;
-    ImageView img_infoget_f2, img_f10_back;
-
-    Boolean isInfoVisible;
-    RecyclerView rclv_grid;
-    ScrollView scrl_all;
-    FloatingActionButton fabMenu2_picture;
-    Handler handler;
-    View popupview;
-    Dialog dialog;
-    int noNotify;
-    int timer;
-    static Timer timerHttp;
-    Timer timerNudge;
-    NotificationData nudge;
-
-    public FloatingActionButton fabMenu1_like;
-
-    private ImageView image_map;
-    private FloatingActionMenu menu_blue;
-    private TextView txt_hide_all_one;
-    private TextView txt_hide_all_two;
-    private TextView txt_calender_i1;
-    public TextView txt_event_name;
-    private TextView txt_discrp;
-    //private TextView txt_address_i1;
-    private TextView txt_room;
-    private RelativeLayout rtlv_top;
-    private TextView txt_f2_badge;
-    private ImageView img_notif;
-    //Tinder Sswipe
-    private SwipeCardView card_stack_view;
-    public ArrayList<Card> cardsList;
-
-    private EventDetails eventDetails;
-    private String venuename;
-    private Events event;
-    LinearLayout no_one;
-    TextView txt_not_started;
-
-    //Demo Screen
-    RelativeLayout demoView;
-    TextView btn_got_it;
-
     private Context context;
     private HomeActivity activity;
     private Utility utility;
 
-    MapView map_view;
+    public Boolean canCallWebservice,isInfoVisible,isPopUpShowing,canGetNotification;
+
+    public Double latitude,longitude;
+    private String eventId,venueName;
+    private String[] currentLatLng;
+    private int currentNudge,noNotify,timer;
+
+    private LinearLayout info_view,no_one;
+    private RelativeLayout rtlv2_animate_f2,rtlv_top,demoView; //Demo Screen
+    private ImageView img_infoget_f2, img_f10_back,image_map,img_notif;
+    public TextView txt_event_name,txt_not_started,txt_discrp,txt_room,txt_f2_badge,txt_calender_i1,
+            txt_hide_all_two,txt_hide_all_one,btn_got_it,txt_discipI_f2;
+
+    private RecyclerView rclv_grid;
+    private ScrollView scrl_all;
+
+    public FloatingActionButton fabMenu1_like,fabMenu2_picture;
+    private FloatingActionMenu menu_blue;
+
+    private Handler handler;
+    private View popupview;
+    private Dialog dialog;
+
+    private static Timer timerHttp;
+    private Timer timerNudge;
+
+    //model
+    private NotificationData nudge;
+    private EventDetails eventDetails;
+    private Events event;
+
+    //Tinder Swipe
+    private SwipeCardView card_stack_view;
+
+    //arrayLists
+    public ArrayList<Card> cardsList;
+    private ArrayList<NotificationData> nudgelist;
+
+    //map data
+    private MapView map_view;
     private GoogleMap googleMap;
 
-    ArrayList<NotificationData> nudgelist;
-    int currentNudge;
-    boolean isPopUpShowing;
-    boolean cangetNotificaiton;
     //ProfilePopUp_Notificaiton popup;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_demo_event, container, false);
@@ -183,6 +174,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         demoView = view.findViewById(R.id.demoView);
         btn_got_it = view.findViewById(R.id.btn_got_it);
         activity.showProgDialog(false, TAG);
+
         menu_blue.setOnMenuToggleListener(new FloatingActionMenu.OnMenuToggleListener() {
             @Override
             public void onMenuToggle(boolean opened) {
@@ -211,18 +203,13 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         return view;
     }
 
-    private UserInfo userInfo() {
-        return activity.userInfo();
-    }
-
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         fabMenu1_like = view.findViewById(R.id.fabMenu1_like);
         ImageView img_edit_i1 = view.findViewById(R.id.img_edit_i1);
         fabMenu2_picture = view.findViewById(R.id.fabMenu2_picture);
-       // RelativeLayout mainlayout = view.findViewById(R.id.mainlayout);
         FloatingActionButton fabMenu3_comment = view.findViewById(R.id.fabMenu3_comment);
         fabMenu1_like.setTextView(new TextView[]{txt_hide_all_one, txt_hide_all_two});
         rtlv_top.getLayoutParams().height = ((HomeActivity.ActivityWidth) * 3 / 4);
@@ -238,11 +225,10 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         // if (timerHttp == null) setDataTimer();
 
         isInfoVisible = false;
-        rclv_grid.hasFixedSize();
+        // rclv_grid.hasFixedSize();
         txt_event_name.setText("");
 
         setOnClick(img_edit_i1,
-
                 btn_got_it,
                 image_map,
                 scrl_all,
@@ -261,8 +247,17 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         info_view.setVisibility(View.GONE);
         nudge = new NotificationData();
 
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                mapAsyncer(latitude,longitude);
+            }
+        });
     }
 
+    private UserInfo userInfo() {
+        return activity.userInfo();
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -272,14 +267,15 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         utility = new Utility(context);
     }
 
-    public Event_Fragment setData(String eventId, String venueName, Events event, String[] currentLatLng) {
-        EventId = eventId;
-        venuename = venueName;
+    public Event_Fragment setData(String eventId, String venueName, Events event, String[] currentLatLng, String[] venuLatLng) {
+        this.eventId = eventId;
+        this.venueName = venueName;
         this.event = event;
         this.currentLatLng = currentLatLng;
+        latitude= Double.valueOf(venuLatLng[0]);
+        longitude= Double.valueOf(venuLatLng[1]);
         return this;
     }
-
 
     @Override
     public void onStart() {
@@ -299,50 +295,13 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         canCallWebservice = true;
     }
 
-    public String getEventId() {
-        return EventId;
-    }
-
-    @Override
-    public void onDestroy() {
-        if (timerHttp != null) timerHttp.cancel();
-        if (timerNudge != null) timerNudge.cancel();
-        timerHttp = null;
-        timerNudge = null;
-        for (Fragment fragment : activity.getSupportFragmentManager().getFragments()) {
-            try {
-                ((Trending_Fragment) fragment).getTrendingData();
-                activity.setTitle(getString(R.string.trending));
-                break;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                ((Map_Fragment) fragment).checkEventAvailability();
-                activity.setTitle(getString(R.string.scene));
-                break;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        super.onDestroy();
-    }
-
     @Override
     public void onResume() {
         super.onResume();
         activity.dismissProgDialog();
         activity.setBBVisibility(View.GONE, TAG);
+        activity.hideStatusBar();
         canCallWebservice = true;
-    }
-
-    @Override
-    public void onDestroyView() {
-        VolleySingleton.getInstance(context).cancelPendingRequests(TAG);
-        activity.showStatusBar();
-        handler.removeCallbacksAndMessages(null);
-        activity.setBBVisibility(View.VISIBLE, 300, TAG);
-        super.onDestroyView();
     }
 
     private void setOnClick(View... views) {
@@ -379,7 +338,11 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_infoget_f2:
-                animateInfo(isInfoVisible);
+                try {
+                    animateInfo(isInfoVisible);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
                 break;
             case R.id.img_f10_back:
                 activity.onBackPressed();
@@ -399,8 +362,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(activity, getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_LONG).show();
-
+                    Utility.showToast(context, getResources().getString(R.string.somethingwentwrong),0);
                 }
 
                 break;
@@ -417,29 +379,28 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(activity, getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_LONG).show();
+                    Utility.showToast(context, getResources().getString(R.string.somethingwentwrong),0);
                 }
 
                 break;
             case R.id.fabMenu3_comment:
                 menu_blue.close(true);
-               /* try {
-
+                try {
                     if(userInfo().makeAdmin.equals(Constant.ADMIN_YES) && activity.checkWithTime(eventDetails.getProfile_rating().getEvent_date() , Double.parseDouble(eventDetails.getProfile_rating().getInterval()))){
                         canCallWebservice = false;
-                        activity.addFragment(new Comment_Fragment().setData(eventDetails.getProfile_rating().getKey_in(), EventId, eventDetails.getProfile_rating().getEvent_date(), eventDetails.getProfile_rating().getEvent_name(), this), 1);
+                        activity.addFragment(new Comment_Fragment().setData(currentLatLng,eventDetails.getProfile_rating().getKey_in(), eventId, eventDetails.getProfile_rating().getEvent_date(), eventDetails.getProfile_rating().getEvent_name(), this), 1);
                     }
                     else  if (activity.getDistance(new Double[]{latitude, longitude, Double.valueOf(currentLatLng[0]), Double.valueOf(currentLatLng[1])}) <= Constant.MAXIMUM_DISTANCE && activity.checkWithTime(eventDetails.getProfile_rating().getEvent_date() , Double.parseDouble(eventDetails.getProfile_rating().getInterval()) )) {
                         canCallWebservice = false;
-                        activity.addFragment(new Comment_Fragment().setData(eventDetails.getProfile_rating().getKey_in(), EventId, eventDetails.getProfile_rating().getEvent_date(), eventDetails.getProfile_rating().getEvent_name(), this), 1);
+                        activity.addFragment(new Comment_Fragment().setData(currentLatLng,eventDetails.getProfile_rating().getKey_in(), eventId, eventDetails.getProfile_rating().getEvent_date(), eventDetails.getProfile_rating().getEvent_name(), this), 1);
 
                     } else {
                         cantJoinDialog();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(activity, getResources().getString(R.string.somethingwentwrong), Toast.LENGTH_LONG).show();
-                }*/
+                    Utility.showToast(context, getResources().getString(R.string.somethingwentwrong),0);
+                }
                 break;
             case R.id.txt_hide_all_two:
                 menu_blue.close(true);
@@ -448,7 +409,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
                 menu_blue.close(true);
                 break;
             case R.id.img_notif:
-               /* cangetNotificaiton = true;
+               /* canGetNotification = true;
                 if (noNotify > 0) getNudges();
                 else noNotification();*/
                 break;
@@ -456,21 +417,20 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
 
                 break;
             case R.id.image_map:
-               /* try {
-                    if(eventDetails.getProfile_rating().getVenue_long() !=null)activity.addFragment(new Map_Fragment_Single().setData(eventDetails.getProfile_rating().getVenue_lat(),eventDetails.getProfile_rating().getVenue_long()),1);
+                try {
+                    if(eventDetails.getProfile_rating().getVenue_long() !=null)activity.addFragment(new SingleMap_Fragment().setData(eventDetails.getProfile_rating().getVenue_lat(),eventDetails.getProfile_rating().getVenue_long()),1);
                 }catch (NullPointerException e){
                     e.printStackTrace();
-                }*/
+                }
                 break;
             case R.id.rtlv_top:
                 break;
-            case R.id.menu_blue:
 
-                break;
             case R.id.btn_got_it:
                 demoView.setVisibility(View.GONE);
                 break;
             case R.id.img_edit_i1:
+                //functionality comment
               /*  try{if(eventDetails.getProfile_rating().getEvent_date() != null){
                     Event_Profile_Rating rating = eventDetails.getProfile_rating();
                     if(rating !=null)activity.addFragment(new Add_Event_Fragment().setData(rating.getVenue_id(), rating.getEvent_date(), rating.getEvent_name(), rating.getInterval(), getEventId(),rating.getVenue_detail(),rating.getDescription(),this),1);}
@@ -479,8 +439,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
                     e.printStackTrace();
                 }*/
                 break;
-            default:
-                break;
+
         }
     }
 
@@ -527,6 +486,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
                         else if (type == 1) sendPicture(bitmap);
                         getAllData();
                     } catch (Exception e) {
+                        e.printStackTrace();
                         activity.dismissProgDialog();
                         Utility.showToast(context, getString(R.string.somethingwentwrong), 0);
                     }
@@ -544,7 +504,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
 
                     params.put("userid", userInfo().userID);
                     params.put("eventname", eventDetails.getProfile_rating().getEvent_name());
-                    params.put("eventid", EventId);
+                    params.put("eventid", eventId);
                     params.put("Eventdate", eventDetails.getProfile_rating().getDate_in_format());
 
                     Utility.e(TAG, " params " + params.toString());
@@ -563,155 +523,126 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
     /***
      * Event like volley
      */
-   private void likeEvent() {
+    private void likeEvent() {
         activity.showProgDialog(false,TAG);
 
-       if (utility.checkInternetConnection()) {
-           StringRequest request = new StringRequest(Request.Method.POST, WebServices.EVENT_LIKE, new Response.Listener<String>() {
-               @Override
-               public void onResponse(String response) {
-                   activity.dismissProgDialog();
-                   // get response
-                   try {
-                       JSONObject object = new JSONObject(response);
-                       if (object.has("success")) if (object.getInt("success") == 1) {
-                           if(object.getString("msg").contains(" liked the event.")){
-                               fabMenu1_like.setImageDrawable(getResources().getDrawable(R.drawable.red_heart));
-                               utility.showCustomPopup("you liked this event.", String.valueOf(R.font.raleway_regular));
+        if (utility.checkInternetConnection()) {
+            StringRequest request = new StringRequest(Request.Method.POST, WebServices.EVENT_LIKE, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    activity.dismissProgDialog();
+                    // get response
+                    try {
+                        JSONObject object = new JSONObject(response);
+                        if (object.has("success")) if (object.getInt("success") == 1) {
+                            if(object.getString("msg").contains(" liked the event.")){
+                                fabMenu1_like.setImageDrawable(getResources().getDrawable(R.drawable.red_heart));
+                                utility.showCustomPopup("you liked this event.", String.valueOf(R.font.raleway_regular));
 
-                               activity.incrementKeyPoints(getString(R.string.kp_like));
-                           }
-                           else if(object.getString("msg").contains("unliked the event.")){
-                               fabMenu1_like.setImageDrawable(getResources().getDrawable(R.drawable.heart));
-                               activity.decrementKeyPoints(getString(R.string.kp_unlike));
-                           }
-                           getAllData();
-                           //{"success":1,"msg":"your have liked the event."}
-                           //{"success":1,"msg":"your have unliked the event."}
-                       }
-                   } catch (JSONException e) {
-                       e.printStackTrace();
-                      Utility.showToast(context, getResources().getString(R.string.somethingwentwrong),0);
-                   }
-               }
-           }, new Response.ErrorListener() {
-               @Override
-               public void onErrorResponse(VolleyError e) {
-                   utility.volleyErrorListner(e);
-                   activity.dismissProgDialog();
-               }
-           }) {
-               @Override
-               public Map<String, String> getParams() {
-                   Map<String, String> params = new HashMap<>();
+                                activity.incrementKeyPoints(getString(R.string.kp_like));
+                            }
+                            else if(object.getString("msg").contains("unliked the event.")){
+                                fabMenu1_like.setImageDrawable(getResources().getDrawable(R.drawable.heart));
+                                activity.decrementKeyPoints(getString(R.string.kp_unlike));
+                            }
+                            getAllData();
+                            //{"success":1,"msg":"your have liked the event."}
+                            //{"success":1,"msg":"your have unliked the event."}
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Utility.showToast(context, getResources().getString(R.string.somethingwentwrong),0);
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError e) {
+                    utility.volleyErrorListner(e);
+                    activity.dismissProgDialog();
+                }
+            }) {
+                @Override
+                public Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<>();
 
-                   params.put("user_id", userInfo().userID);
-                   params.put("event_id", EventId);
+                    params.put("user_id", userInfo().userID);
+                    params.put("event_id", eventId);
 
-                   Utility.e(TAG, " params " + params.toString());
-                   return params;
-               }
-           };
-           VolleySingleton.getInstance(context).addToRequestQueue(request);
-           request.setRetryPolicy(new DefaultRetryPolicy(10000, 0, 1));
-       } else {
-           utility.snackBar(rclv_grid, getString(R.string.internetConnectivityError), 0);
-           activity.dismissProgDialog();
-       }
+                    Utility.e(TAG, " params " + params.toString());
+                    return params;
+                }
+            };
+            VolleySingleton.getInstance(context).addToRequestQueue(request);
+            request.setRetryPolicy(new DefaultRetryPolicy(10000, 0, 1));
+        } else {
+            utility.snackBar(rclv_grid, getString(R.string.internetConnectivityError), 0);
+            activity.dismissProgDialog();
+        }
     }
 
     /**
      * @param bitmap the bitmap return by the activity result
      */
-   private void sendPicture(final Bitmap bitmap) {
+    private void sendPicture(final Bitmap bitmap) {
 
-       if (utility.checkInternetConnection()) {
-           StringRequest request = new StringRequest(Request.Method.POST, WebServices.EVENT_POST_PIC, new Response.Listener<String>() {
-               @Override
-               public void onResponse(String response) {
-                   activity.dismissProgDialog();
-                   // get response
-                   getAllData();
-                   try {
-                       JSONObject respo = new JSONObject(response);
-                       if(respo.getInt("success")==0){
-                           Toast.makeText(getContext(),respo.getString("msg"),Toast.LENGTH_SHORT).show();
-                           activity.incrementKeyPoints(getString(R.string.kp_img_post));
-                       };
-                       Toast.makeText(getContext(),respo.getString("msg"),Toast.LENGTH_SHORT).show();
+        if (utility.checkInternetConnection()) {
+            StringRequest request = new StringRequest(Request.Method.POST, WebServices.EVENT_POST_PIC, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    activity.dismissProgDialog();
+                    // get response
+                    getAllData();
+                    try {
+                        JSONObject respo = new JSONObject(response);
+                        if(respo.getInt("success")==0){
+                            Utility.showToast(context,respo.getString("msg"),0);
+                            activity.incrementKeyPoints(getString(R.string.kp_img_post));
+                        }
+                        Utility.showToast(context,respo.getString("msg"),0);
 
-                   }catch (Exception e){
-                       e.printStackTrace();
-                   }
-               }
-           }, new Response.ErrorListener() {
-               @Override
-               public void onErrorResponse(VolleyError e) {
-                   utility.volleyErrorListner(e);
-                   activity.dismissProgDialog();
-                   getAllData();
-               }
-           }) {
-               @Override
-               public Map<String, String> getParams() {
-                   Map<String, String> params = new HashMap<>();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError e) {
+                    utility.volleyErrorListner(e);
+                    activity.dismissProgDialog();
+                    getAllData();
+                }
+            }) {
+                @Override
+                public Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<>();
 
-                   params.put("user_id", userInfo().userID);
-                   params.put("event_id", EventId);
-                   params.put("location", getLocation()); //TODO location
-                   params.put("image", ImageUtil.encodeTobase64(bitmap));
-                   params.put("ratingtime", getCurrentTimeInFormat());
+                    params.put("user_id", userInfo().userID);
+                    params.put("event_id", eventId);
+                    params.put("location", getLocation()); //TODO location
+                    params.put("image", ImageUtil.encodeTobase64(bitmap));
+                    params.put("ratingtime", activity.getCurrentTimeInFormat());
 
-                   Utility.e(TAG, " params " + params.toString());
-                   return params;
-               }
-           };
-           VolleySingleton.getInstance(context).addToRequestQueue(request);
-           request.setRetryPolicy(new DefaultRetryPolicy(10000, 0, 1));
-       } else {
-           utility.snackBar(rclv_grid, getString(R.string.internetConnectivityError), 0);
-           activity.dismissProgDialog();
-       }
+                    Utility.e(TAG, " params " + params.toString());
+                    return params;
+                }
+            };
+            VolleySingleton.getInstance(context).addToRequestQueue(request);
+            request.setRetryPolicy(new DefaultRetryPolicy(10000, 0, 1));
+        } else {
+            utility.snackBar(rclv_grid, getString(R.string.internetConnectivityError), 0);
+            activity.dismissProgDialog();
+        }
 
 
-    }
-
-    private String getCurrentTimeInFormat() {
-        return (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date(System.currentTimeMillis()));
     }
 
     private String getLocation(){
         String result;
-        if(activity.userInfo().address.length()>1){
-            result =activity.userInfo().address;
+        if(userInfo().address.length()>1){
+            result =userInfo().address;
         }
         else {
-            result = getAddress(Double.parseDouble(currentLatLng[0]), Double.parseDouble(currentLatLng[1]));
-        }
-        return result;
-    }
-
-    private String getAddress(double latitude, double longitude) {
-        String result = null;
-        Geocoder geocoder;
-        List<Address> addresses;
-        geocoder = new Geocoder(activity, Locale.getDefault());
-
-        try {
-            addresses = geocoder.getFromLocation(latitude, longitude, 1);
-
-            String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-            String city = addresses.get(0).getLocality();
-            String addressLine = addresses.get(0).getAddressLine(1);
-            String state = addresses.get(0).getAdminArea();
-            String country = addresses.get(0).getCountryName();
-            String postalCode = addresses.get(0).getPostalCode();
-            String knownName = addresses.get(0).getFeatureName();
-            //result = knownName + " ," + addressLine + " , " + city + "," + state + "," + country + " counter" + counter;// Here 1 represent max location result to returned, by documents it recommended 1 to 5
-            result =  address+","+city + "," + state + "," + country ;// Here 1 represent max location result to returned, by documents it recommended 1 to 5
-        }
-        catch (Exception e){
-            e.printStackTrace();
+            result = activity.getAddress(Double.parseDouble(currentLatLng[0]), Double.parseDouble(currentLatLng[1]));
         }
         return result;
     }
@@ -761,7 +692,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
                 public Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<>();
 
-                    params.put("event_id", getEventId());
+                    params.put("event_id", eventId);
                     params.put("user_id", userInfo().userID);
 
                     Utility.e(TAG, " params " + params.toString());
@@ -786,11 +717,12 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         if (eventDetails == null) eventDetails = new EventDetails();
         try {
             if (obj1.has("eventattendy"))
-           eventDetails.setAttendyJson(obj1.getJSONArray("eventattendy"),this);
+                eventDetails.setAttendyJson(obj1.getJSONArray("eventattendy"),this);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         try {
             if (obj1.has("nudges_count"))
                 eventDetails.setNudges_count(obj1.getString("nudges_count"));
@@ -799,6 +731,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         try {
             if (obj1.has("allTags")) {
                 eventDetails.setTagList(obj1.getJSONArray("allTags"), this);
@@ -848,16 +781,13 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         int width =  activity.ActivityWidth;
         String url = "http://maps.google.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=12&size=" + width + "x" + height + "&sensor=false";
         Utility.e(TAG, "URL" + url + "Lat lin" + latitude + " : " + longitude);
-        Picasso.with(activity).load(url).into(image_map);
+
         try {
-            //mapAsyncer(latitude,longitude);
-
-            inLocation = (activity.phpDistance(new Double[]{latitude, longitude, Double.valueOf(eventDetails.getProfile_rating().getVenue_lat()), Double.valueOf(eventDetails.getProfile_rating().getVenue_long())}) <= Constant.MAXIMUM_DISTANCE);
-
-            inTime = checkWithTime(eventDetails.getProfile_rating().getEvent_date());
-        } catch (Exception e) {
-            Utility.e(TAG," inTime "+e);
+            Picasso.with(activity).load(url).into(image_map);
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
         try {
             setDateTime(eventDetails.getProfile_rating().getEvent_date());
         } catch (Exception e) {
@@ -871,7 +801,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         if(cardsList.size()<=0){
             Card card = new Card();
             card.imageUrl = null;
-            card.text = "Welcome to the "+venuename+"! Join the fun! Share your pics & comments right here!";
+            card.text = "Welcome to the "+ venueName +"! Join the fun! Share your pics & comments right here!";
             cardsList.add(card);
         }
         setCardAdapter(cardsList);
@@ -903,8 +833,9 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
 
         }
     }
-/*
-   private void mapAsyncer(final double lat , final double lng) {
+
+
+    private void mapAsyncer(final double lat , final double lng) {
         map_view.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap mMap) {
@@ -916,7 +847,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
                 googleMap.getUiSettings().setZoomControlsEnabled(false);
                 googleMap.getUiSettings().setZoomGesturesEnabled(false);
                 // For showing a move to my location button
-                if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(HomeActivity.instance, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         if (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                             //callPermission(Constants.TYPE_PERMISSION_FINE_LOCATION);
@@ -938,20 +869,21 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
                         .title(event.getVenue().getVenue_name())
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin)));
                 mr.showInfoWindow();
+
                 CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                 googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                     @Override
                     public void onInfoWindowClick(Marker marker) {
-                        if(eventDetails.getProfile_rating().getVenue_long() !=null)activity.addFragment(new Map_Fragment_Single().setData(eventDetails.getProfile_rating().getVenue_lat(),eventDetails.getProfile_rating().getVenue_long()),1);
-
+                           if(eventDetails.getProfile_rating().getVenue_long() !=null)activity.addFragment(new SingleMap_Fragment().setData(eventDetails.getProfile_rating().getVenue_lat(),eventDetails.getProfile_rating().getVenue_long()),1);
                     }
                 });
+
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
 
-                        if(eventDetails.getProfile_rating().getVenue_long() !=null)activity.addFragment(new Map_Fragment_Single().setData(eventDetails.getProfile_rating().getVenue_lat(),eventDetails.getProfile_rating().getVenue_long()),1);
+                        if(eventDetails.getProfile_rating().getVenue_long() !=null)activity.addFragment(new SingleMap_Fragment().setData(eventDetails.getProfile_rating().getVenue_lat(),eventDetails.getProfile_rating().getVenue_long()),1);
                         marker.showInfoWindow();
 
                         return true;
@@ -960,8 +892,9 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
                 googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(LatLng latLng) {
-                        if(eventDetails.getProfile_rating().getVenue_long() !=null)activity.addFragment(new Map_Fragment_Single().setData(eventDetails.getProfile_rating().getVenue_lat(),eventDetails.getProfile_rating().getVenue_long()),1);
+                        if(eventDetails.getProfile_rating().getVenue_long() !=null)activity.addFragment(new SingleMap_Fragment().setData(eventDetails.getProfile_rating().getVenue_lat(),eventDetails.getProfile_rating().getVenue_long()),1);
                         mr.showInfoWindow();
+
                     }
                 });//TODO check with iphone
 
@@ -979,12 +912,12 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         });
 
 
-    }*/
+    }
 
-   public void addChips(ArrayList<Tags> tag) {
+    public void addChips(ArrayList<Tags> tag) {
         try {
             Grid_multiRow layout =  this.getView().findViewById(R.id.chip_linear);
-           //check
+            //check
             // layout.setAdapter(new GridChipsAdapter(context,tag));
         }
         catch (Exception e){
@@ -1003,10 +936,8 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         Date startTime = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())).parse(dateSplit[0] + " " + dateSplit[1]);
         Date endTime = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.getDefault())).parse(dateSplit[0] + " " + dateSplit[2]);
         long currentTime = java.util.Calendar.getInstance().getTime().getTime();
-        if (currentTime < endTime.getTime() && currentTime > startTime.getTime()) {
-            return true;
-        }
-        return false;
+
+        return currentTime < endTime.getTime() && currentTime > startTime.getTime();
     }
 
     public boolean checkWithTime_No_Attendy(final String date , Double interval) throws ParseException {
@@ -1022,7 +953,6 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         }
         return false;*/
     }
-
 
     /**
      * text badge count from 15 to 0 sec.
@@ -1043,9 +973,9 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         }
     }
 
-   private void setDateTime(String eventDate) throws ParseException {
+    private void setDateTime(String eventDate) throws ParseException {
         String[] dateSplit;
-       Utility.e(TAG, " " + eventDate);
+        Utility.e(TAG, " " + eventDate);
         dateSplit = (eventDate.replace("TO", " ").replace("T", " ")).split(" ");
 
         Date date1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.getDefault()).parse(dateSplit[0] + " " + dateSplit[1]);
@@ -1059,11 +989,11 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
      *
      * @param list
      */
-   public void setRecyclerView(ArrayList<EventAttendy> list) {
+    public void setRecyclerView(ArrayList<EventAttendy> list) {
         if (rclv_grid.getLayoutManager() == null)
             rclv_grid.setLayoutManager(new GridLayoutManager(activity, 3));
         if (rclv_grid.getAdapter() == null) {
-            DataAdapter dataAdapter = new DataAdapter(activity, list, new String[]{getEventId(), userInfo().userID}, this);
+            DataAdapter dataAdapter = new DataAdapter(activity, list, new String[]{eventId, userInfo().userID}, this);
             rclv_grid.setAdapter(dataAdapter);
         } else {
             rclv_grid.getAdapter().notifyDataSetChanged();
@@ -1073,9 +1003,9 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
     }
 
     public void setCardAdapter(ArrayList<Card> cardsList) {
-       Utility.e("Size Card", cardsList.size() + "");
+        Utility.e(TAG+" Size Card", cardsList.size() + "");
         if (card_stack_view.getAdapter() == null) {
-            CardsAdapter arrayAdapter = new CardsAdapter(getContext(), cardsList);
+            CardsAdapter arrayAdapter = new CardsAdapter(context, cardsList);
             card_stack_view.setAdapter(arrayAdapter);
         }
         else {
@@ -1140,7 +1070,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
             if (requestCode == Constant.INTENT_CAMERA && data != null) {
 
                 final Bitmap eventImg = (Bitmap) data.getExtras().get("data");
-               // final Bitmap eventImg = ImageUtil.decodeFile(ImageUtil.getRealPathFromUri(getContext(), Uri.parse(data.toURI())));
+                // final Bitmap eventImg = ImageUtil.decodeFile(ImageUtil.getRealPathFromUri(getContext(), Uri.parse(data.toURI())));
                 //((ImageView)this.getView().findViewById(R.id.iv_test)).setImageBitmap(eventImg);
 
                 if (eventDetails.getProfile_rating().getKey_in().equals(Constant.KEY_NOTEXIST))
@@ -1165,6 +1095,48 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         }
     }
 
+    @Override
+    public void onDestroy() {
+        if (timerHttp != null) timerHttp.cancel();
+        if (timerNudge != null) timerNudge.cancel();
+        timerHttp = null;
+        timerNudge = null;
+        for (Fragment fragment : activity.getSupportFragmentManager().getFragments()) {
+            try {
+                ((Trending_Fragment) fragment).getTrendingData();
+                activity.setTitle(getString(R.string.trending));
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                ((Map_Fragment) fragment).checkEventAvailability();
+                activity.setTitle(getString(R.string.scene));
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                ((Event_Search_Tag_Fragment) fragment).setVisibility();
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        super.onDestroy();
+    }
+
+    @Override
+    public void onDestroyView() {
+        VolleySingleton.getInstance(context).cancelPendingRequests(TAG);
+        activity.showStatusBar();
+        handler.removeCallbacksAndMessages(null);
+        activity.setBBVisibility(View.VISIBLE, 300, TAG);
+        super.onDestroyView();
+    }
 
     @Override
     public boolean onStatusBarHide() {

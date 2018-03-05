@@ -68,16 +68,20 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
 
     private final String TAG = Map_Fragment.class.toString();
     private String lat="",lng="";
+    private boolean clicked;
+
+    private Utility utility;
 
     private MapView mMapView;
-    private Utility utility;
     private GoogleMap googleMap;
+
     private MapInfo_Adapter mapInfoAdapter;
     private ArrayList<Events> eventArrayMarker;
+
     private Marker lastClick;
 
-  //  public boolean canCallWebservice;
-   // private static Timer timerHttp;
+    //  public boolean canCallWebservice;
+    // private static Timer timerHttp;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -107,15 +111,15 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
     @Override
     public void onStart() {
         super.onStart();
-      //  canCallWebservice=true;
+        //  canCallWebservice=true;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-       // Utility.e(TAG,"TimerVolley start");
-       // canCallWebservice = true;
-       // if (timerHttp == null) setDataTimer();
+        // Utility.e(TAG,"TimerVolley start");
+        // canCallWebservice = true;
+        // if (timerHttp == null) setDataTimer();
     }
 
     private void showNearByEventMarker() {
@@ -132,7 +136,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
         else{
             activity.showProgDialog(false,TAG);
             checkEventAvailability();
-          //  if (timerHttp == null) setDataTimer();
+            //  if (timerHttp == null) setDataTimer();
         }
     }
 
@@ -525,12 +529,10 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
             public void onClick(final View v) {
                 v.setClickable(false);
                 try {
-                    Utility.showToast(context,getString(R.string.underDevelopment),0);
-                    //check
-                   /* if (!clicked) {
+                    if (!clicked) {
                         Event_Fragment frg = new Event_Fragment();
-                        frg.setData(event.event_id,events.getVenue().getVenue_name(),events);
-                       activity.addFragment(frg, 0);
+                        frg.setData(event.event_id,events.getVenue().getVenue_name(),events,new String[]{lat,lng},new String[]{events.getVenue().getLatitude(),events.getVenue().getLongitude()});
+                        activity.addFragment(frg, 0);
 
                         clicked = true;
                     }
@@ -540,7 +542,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
                             v.setClickable(true);
                             clicked = false;
                         }
-                    }, 2000);*/
+                    }, 2000);
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -595,16 +597,16 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
 
     @Override
     public void onPause() {
-      //  Utility.e(TAG,"TimerVolley cancel");
-      //  if (timerHttp != null) timerHttp.cancel();
-       // timerHttp=null;
+        //  Utility.e(TAG,"TimerVolley cancel");
+        //  if (timerHttp != null) timerHttp.cancel();
+        // timerHttp=null;
         super.onPause();
     }
 
     @Override
     public void onDestroy() {
-      //  if (timerHttp != null) timerHttp.cancel();
-      //  timerHttp=null;
+        //  if (timerHttp != null) timerHttp.cancel();
+        //  timerHttp=null;
         super.onDestroy();
     }
 

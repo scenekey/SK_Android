@@ -17,7 +17,7 @@ public class NotificationData {
     public boolean message;
 
     public NotificationData(){
-
+//blank constructor
     }
 
     public NotificationData(int img, String nudges ) {

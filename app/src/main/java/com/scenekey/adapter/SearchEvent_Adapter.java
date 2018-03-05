@@ -1,5 +1,6 @@
 package com.scenekey.adapter;
 
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.scenekey.R;
 import com.scenekey.activity.HomeActivity;
+import com.scenekey.fragment.Event_Fragment;
 import com.scenekey.model.Event;
 import com.scenekey.model.Events;
 import com.scenekey.model.Venue;
@@ -48,9 +50,9 @@ public class SearchEvent_Adapter extends RecyclerView.Adapter<SearchEvent_Adapte
 
     @Override
     public void onBindViewHolder(SearchEvent_Adapter.ViewHolder holder, int position) {
-        Events object = eventsArrayList.get(position);
-        Venue venue = object.getVenue();
-        Event event = object.getEvent();
+        final Events object = eventsArrayList.get(position);
+        final Venue venue = object.getVenue();
+        final Event event = object.getEvent();
 
         //Collections.sort(eventsArrayList, new SortByPoint());
         try {
@@ -111,6 +113,35 @@ public class SearchEvent_Adapter extends RecyclerView.Adapter<SearchEvent_Adapte
         //holder.txt_eventAdress.setText(venue.getAddress());
         holder.txt_eventDate.setText(object.timeFormat);
 
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                v.setClickable(false);
+                if (!clicked) {
+                    try {
+                        Event_Fragment frg = new Event_Fragment();
+                        frg.setData(event.event_id,venue.getVenue_name(),object,currentLatLng,new String[]{venue.getLatitude(),venue.getLongitude()});
+                        activity.addFragment(frg, 0);
+                    } catch (NullPointerException e){
+                        e.printStackTrace();
+                    }
+                    clicked = true;
+                }
+                try {
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            v.setClickable(true);
+                            clicked = false;
+                        }
+                    }, 2000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override
@@ -119,7 +150,7 @@ public class SearchEvent_Adapter extends RecyclerView.Adapter<SearchEvent_Adapte
     }
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder  {
         private ImageView img_event,heart;
         private TextView txt_eventName, txt_eventAdress, txt_eventDate, txt_time ,txt_like,txt_gap,txt_gap2 ,txt_eventmile;
         private RelativeLayout rl_main;
@@ -149,39 +180,9 @@ public class SearchEvent_Adapter extends RecyclerView.Adapter<SearchEvent_Adapte
             heightA  = parameters.height = ((HomeActivity.ActivityWidth) * 3 / 4);
             widthA = HomeActivity.ActivityWidth;*/
 
-            itemView.setOnClickListener(this);
         }
 
 
-        @Override
-        public void onClick(final View v) {
-            //check
-          /*  v.setClickable(false);
-            if (!clicked) {
-                try {
-                    Event_Fragment frg = new Event_Fragment();
-                    frg.setData(event.getEvent_id(),venue.getVenue_name(),object);
-                    activity.addFragment(frg, 0);
-                } catch (NullPointerException e){
-
-                }
-                clicked = true;
-            }
-            try {
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        v.setClickable(true);
-                        clicked = false;
-                    }
-                }, 2000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }*/
-
-            Utility.showToast(activity,activity.getString(R.string.underDevelopment),0);
-        }
     }
 
 }

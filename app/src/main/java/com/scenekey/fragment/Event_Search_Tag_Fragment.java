@@ -60,11 +60,9 @@ public class Event_Search_Tag_Fragment extends Fragment implements View.OnClickL
         // activity.setBBVisibility(View.GONE,this.getClass().getSimpleName());
 
         View view= inflater.inflate(R.layout.fragment_event_search_tag,container,false);
-        activity.setBBVisibility(View.GONE,TAG);
-        activity.frm_bottmbar.setVisibility(View.VISIBLE);
-        activity.showStatusBar();
-        return view;
 
+        setVisibility();
+        return view;
     }
 
     @Override
@@ -242,5 +240,11 @@ public class Event_Search_Tag_Fragment extends Fragment implements View.OnClickL
                 activity.onBackPressed();
                 break;
         }
+    }
+
+    public void setVisibility(){
+        activity.setBBVisibility(View.GONE,TAG);
+        activity.frm_bottmbar.setVisibility(View.VISIBLE);
+        activity.showStatusBar();
     }
 }

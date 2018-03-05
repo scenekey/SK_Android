@@ -27,7 +27,8 @@ import java.util.ArrayList;
 //import org.apache.commons.lang3.StringEscapeUtils;
 
 public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
-    private static final String TAG = DataAdapter.class.toString();
+
+    private final String TAG = DataAdapter.class.toString();
     private HomeActivity activity;
 
     private Dialog dialog;
@@ -35,7 +36,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
     private String data[];
     private Event_Fragment fragment;
     private ArrayList<EventAttendy> roomPersons;
-    int count;
+    private int count;
 
 
     public DataAdapter(Activity activity, ArrayList<EventAttendy> list, String[] data, Event_Fragment fragment) {
@@ -53,12 +54,14 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(DataAdapter.ViewHolder viewHolder, int i) {
-        final EventAttendy attendy = roomPersons.get(i);
-        final int position = i;
-        viewHolder.txt_name_gvb1.setText(roomPersons.get(i).username.split("\\s+")[0]);
+         EventAttendy attendy = roomPersons.get(i);
+         int position = i;
+        viewHolder.txt_name_gvb1.setText(attendy.username);   //roomPersons.get(i).username.split("\\s+")[0]
         try {
-            Picasso.with(activity).load(roomPersons.get(i).getUserimage()).placeholder(R.drawable.image_defult_profile).transform(new CircleTransform()).into(viewHolder.img_profile_gvb1);
-        }catch (Exception e){}
+            Picasso.with(activity).load(attendy.getUserimage()).placeholder(R.drawable.image_defult_profile).transform(new CircleTransform()).into(viewHolder.img_profile_gvb1);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         switch (attendy.user_status) {
 
             case "1":
@@ -79,9 +82,9 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
                 break;
         }
         if(attendy.userid.equals(activity.userInfo().userID)){
-            //TOdo new
-           // viewHolder.img_profile_gvb1.setBackgroundResource(R.drawable.bg_red_ring);
-           // viewHolder.txt_name_gvb1.setTextColor(activity.getResources().getColor(R.color.red_ring));
+
+            viewHolder.img_profile_gvb1.setBackgroundResource(R.drawable.bg_red_ring);
+            viewHolder.txt_name_gvb1.setTextColor(activity.getResources().getColor(R.color.red_ring));
         }
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +112,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
         return roomPersons.size();
     }
 
-    void popUpMy(final int position) {
+    private void popUpMy(final int position) {
         final ImageView img_red, img_yellow, img_green, img_p1_profile;
         dialog = new Dialog(activity ,android.R.style.Theme_Translucent);
         final TextView txt_stop, txt_caution, txt_go;
@@ -207,19 +210,12 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
         private TextView txt_name_gvb1;
         private ImageView img_profile_gvb1;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
 
             txt_name_gvb1 =  view.findViewById(R.id.txt_name_gvb1);
             img_profile_gvb1 =  view.findViewById(R.id.img_profile_gvb1);
         }
     }
-
-
-
-
-
-
-
 
 }

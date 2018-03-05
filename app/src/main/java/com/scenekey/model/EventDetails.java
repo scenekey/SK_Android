@@ -107,7 +107,6 @@ public class EventDetails {
 
         fragment.setCardAdapter(fragment.cardsList);
 
-
     }
 
     public void setProfile_ratingJSon(JSONObject JSon,Event_Fragment fragment) throws JSONException {

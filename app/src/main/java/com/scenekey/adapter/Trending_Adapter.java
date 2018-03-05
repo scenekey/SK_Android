@@ -40,9 +40,6 @@ public class Trending_Adapter extends RecyclerView.Adapter<Trending_Adapter.View
     private String[] currentLatLng;
     private boolean clicked;
 
-    private Events object;
-    private  Venue venue;
-    private  Event event;
     //  private int heightA,widthA;
 
     public Trending_Adapter(HomeActivity activity, ArrayList<Events> eventsArrayList,String[] currentLatLng) {
@@ -62,9 +59,9 @@ public class Trending_Adapter extends RecyclerView.Adapter<Trending_Adapter.View
     @Override
     public void onBindViewHolder(Trending_Adapter.ViewHolder holder, int position) {
 
-        object = eventsArrayList.get(position);
-        venue = object.getVenue();
-        event = object.getEvent();
+        final Events  object = eventsArrayList.get(position);
+        final Venue venue = object.getVenue();
+        final Event event = object.getEvent();
 
         Collections.sort(eventsArrayList, new SortByPoint());
         try {
@@ -125,6 +122,35 @@ public class Trending_Adapter extends RecyclerView.Adapter<Trending_Adapter.View
         //holder.txt_eventAdress.setText(venue.getAddress());
         holder.txt_eventDate.setText(object.timeFormat);
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                v.setClickable(false);
+                if (!clicked) {
+                    try {
+                        Event_Fragment fragment = new Event_Fragment();
+                        fragment.setData(event.event_id,venue.getVenue_name(),object,currentLatLng,new String[]{venue.getLatitude(),venue.getLongitude()});
+                        activity.addFragment(fragment, 0);
+                    } catch (NullPointerException e){
+                        e.printStackTrace();
+                    }
+                    clicked = true;
+                }
+                try {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            v.setClickable(true);
+                            clicked = false;
+                        }
+                    }, 1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
     }
 
     @Override
@@ -133,7 +159,7 @@ public class Trending_Adapter extends RecyclerView.Adapter<Trending_Adapter.View
     }
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ViewHolder extends RecyclerView.ViewHolder  {
         private ImageView img_event,heart;
         private TextView txt_eventName, txt_eventAdress, txt_eventDate, txt_time ,txt_like,txt_gap,txt_gap2 ,txt_eventmile;
         private RelativeLayout rl_main;
@@ -163,38 +189,8 @@ public class Trending_Adapter extends RecyclerView.Adapter<Trending_Adapter.View
             heightA  = parameters.height = ((HomeActivity.ActivityWidth) * 3 / 4);
             widthA = HomeActivity.ActivityWidth;*/
 
-            itemView.setOnClickListener(this);
         }
 
-
-        @Override
-        public void onClick(final View v) {
-            //check
-            v.setClickable(false);
-            if (!clicked) {
-                try {
-                    Event_Fragment fragment = new Event_Fragment();
-                    fragment.setData(event.event_id,venue.getVenue_name(),object,currentLatLng);
-                    activity.addFragment(fragment, 0);
-                } catch (NullPointerException e){
-                    e.printStackTrace();
-                }
-                clicked = true;
-            }
-            try {
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        v.setClickable(true);
-                        clicked = false;
-                    }
-                }, 1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
     }
 
 }

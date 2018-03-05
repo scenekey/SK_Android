@@ -1,10 +1,8 @@
 package com.scenekey.activity;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -14,7 +12,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -34,31 +31,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCredentialsProvider;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.facebook.AccessToken;
 import com.scenekey.R;
-import com.scenekey.helper.AWSImage;
+import com.scenekey.aws_service.AWSImage;
 import com.scenekey.helper.Constant;
 import com.scenekey.helper.CustomProgressBar;
 import com.scenekey.helper.Permission;
 import com.scenekey.helper.Pop_Up_Option;
 import com.scenekey.helper.SessionManager;
 import com.scenekey.helper.Validation;
-import com.scenekey.helper.WebServices;
-import com.scenekey.lib_sources.arc_menu.util.Util;
 import com.scenekey.model.UserInfo;
 import com.scenekey.util.Utility;
 import com.scenekey.volleymultipart.VolleyMultipartRequest;
@@ -66,14 +51,10 @@ import com.scenekey.volleymultipart.VolleySingleton;
 
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
-import static com.scenekey.helper.Constant.MY_PERMISSIONS_REQUEST_CAMERA;
 import static com.scenekey.helper.Constant.MY_PERMISSIONS_REQUEST_LOCATION;
 
 public class RegistrationActivity extends AppCompatActivity implements View.OnClickListener ,LocationListener{

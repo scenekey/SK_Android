@@ -160,7 +160,7 @@ public class Search_Fragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    String getSelected() throws InvalidObjectException{
+   private String getSelected() throws InvalidObjectException{
         String result=null;
         StringBuilder s = new StringBuilder();
         for(Tags tags :list){

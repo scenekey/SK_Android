@@ -21,7 +21,7 @@ public class EventAttendy implements Serializable {
 
     public String getUserimage() {
        // return WebServices.USER_IMAGE+userimage;  old
-        return userimage;
+        return (userimage.contains("https:")?userimage: WebServices.USER_IMAGE +userimage);
     }
 
     public void setUserimage(String userimage) {

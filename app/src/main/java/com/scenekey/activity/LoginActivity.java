@@ -12,7 +12,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -46,7 +45,7 @@ import com.facebook.login.LoginResult;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.scenekey.R;
-import com.scenekey.helper.AWSImage;
+import com.scenekey.aws_service.AWSImage;
 import com.scenekey.helper.Constant;
 import com.scenekey.helper.CustomProgressBar;
 import com.scenekey.helper.Permission;
@@ -64,12 +63,9 @@ import com.squareup.picasso.Target;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import static com.scenekey.helper.Constant.REQUEST_ID_MULTIPLE_PERMISSIONS;
 

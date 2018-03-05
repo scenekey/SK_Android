@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -84,6 +86,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -1007,9 +1010,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void showProgDialog(boolean b , String TAG) {
-        customProgressBar.setCanceledOnTouchOutside(b);
-        customProgressBar.setCancelable(b);
-        customProgressBar.show();
+      try {
+          customProgressBar.setCanceledOnTouchOutside(b);
+          customProgressBar.setCancelable(b);
+          customProgressBar.show();
+      }catch (Exception e){
+          e.printStackTrace();
+      }
     }
 
     public void dismissProgDialog() {
@@ -1294,6 +1301,34 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }.updateKeypoint((points <=0?0:points-1),userInfo.userID);
     }
 
+    public String getCurrentTimeInFormat() {
+        return (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.getDefault())).format(new Date(System.currentTimeMillis()));
+    }
+
+    public String getAddress(double latitude, double longitude) {
+        String result = null;
+        Geocoder geocoder;
+        List<Address> addresses;
+        geocoder = new Geocoder(context, Locale.getDefault());
+
+        try {
+            addresses = geocoder.getFromLocation(latitude, longitude, 1);
+
+            String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+            String city = addresses.get(0).getLocality();
+            //  String addressLine = addresses.get(0).getAddressLine(1);
+            String state = addresses.get(0).getAdminArea();
+            String country = addresses.get(0).getCountryName();
+            // String postalCode = addresses.get(0).getPostalCode();
+            // String knownName = addresses.get(0).getFeatureName();
+            //result = knownName + " ," + addressLine + " , " + city + "," + state + "," + country + " counter" + counter;// Here 1 represent max location result to returned, by documents it recommended 1 to 5
+            result =  address+","+city + "," + state + "," + country ;// Here 1 represent max location result to returned, by documents it recommended 1 to 5
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return result;
+    }
     /*public common methods end*/
 
     @Override

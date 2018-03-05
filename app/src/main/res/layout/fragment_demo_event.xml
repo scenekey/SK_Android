@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:background="@color/bg_scenePage"
-    android:orientation="vertical"
-    tools:context="com.scenekey.fragment.Demo_Event_Fragment">
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/rtlv_top"

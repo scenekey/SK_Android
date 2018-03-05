@@ -1,4 +1,4 @@
-package com.scenekey.helper;
+package com.scenekey.aws_service;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,9 +15,26 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.facebook.AccessToken;
+import com.scenekey.helper.Constant;
+import com.scenekey.helper.CustomProgressBar;
+import com.scenekey.helper.WebServices;
+import com.scenekey.model.UserInfo;
 import com.scenekey.util.SceneKey;
 import com.scenekey.util.Utility;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -58,7 +75,7 @@ public class AWSImage {
                 out.flush();
                 out.close();
                 credentialsProvider = getCredentials();
-                uploadFBImage(file,credentialsProvider);
+                uploadImage(file,credentialsProvider);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -70,7 +87,7 @@ public class AWSImage {
 
     }
 
-    private void uploadFBImage(File myPath, CognitoCredentialsProvider credentialsProvider){
+    private void uploadImage(File myPath, CognitoCredentialsProvider credentialsProvider){
         // prog.show();
         AmazonS3Client s3Client;
         s3Client = new AmazonS3Client(credentialsProvider);
@@ -144,6 +161,72 @@ public class AWSImage {
         //Utility.printBigLogcat("Acess " , AccessToken.getCurrentAccessToken().getToken());
         credentialsProvider.setLogins(logins);
         return credentialsProvider;
+    }
+
+    private void setDefaultImageOnServer(final String key, String s){
+
+        try {
+            RequestQueue requestQueue = Volley.newRequestQueue(context);
+
+            JSONObject jsonBody = new JSONObject();
+            jsonBody.put("method","PUT");
+            jsonBody.put("action","updateImage");
+            jsonBody.put("userid", SceneKey.sessionManager.getUserInfo().userID);
+            jsonBody.put("userImage",s);
+
+            final String mRequestBody = jsonBody.toString();
+            Utility.e("RequestBody"  , mRequestBody);
+
+            StringRequest stringRequest = new StringRequest(Request.Method.PUT, WebServices.DEFAULT_IMAGE, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Utility.e("server image set", response);
+                    UserInfo userInfo = SceneKey.sessionManager.getUserInfo();
+                    userInfo.userImage=key;
+                    // Constant.DEF_PROFILE=key;
+                    SceneKey.sessionManager.createSession(userInfo);
+                 //   dismissProgDialog();
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Utility.e("LOG_VOLLEY E", error.toString());
+                   // dismissProgDialog();
+                }
+            }) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/json";
+                }
+
+                @Override
+                public byte[] getBody() throws AuthFailureError {
+                    try {
+                        return mRequestBody == null ? null : mRequestBody.getBytes();
+                    } catch (Exception uee) {
+                        //VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
+                        return null;
+                    }
+                }
+
+                @Override
+                protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                    String responseString = "";
+                    if (response != null) {
+
+                        responseString = new String(response.data);
+                        //Util.printLog("RESPONSE", responseString.toString());
+                    }
+                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                }
+            };
+            stringRequest.setShouldCache(false);
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(30000,1,0));
+            requestQueue.add(stringRequest);
+        } catch (JSONException e) {
+            e.printStackTrace();
+           // dismissProgDialog();
+        }
     }
 
 }

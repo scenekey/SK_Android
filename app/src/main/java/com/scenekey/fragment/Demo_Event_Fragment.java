@@ -71,25 +71,29 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
     private HomeActivity activity;
     private Home_No_Event_Fragment home_no_event;
 
-    private ImageView imageMap;
+    private ImageView imageMap,img_edit_i1,img_notif,img_infoget_f2,img_f10_back;
+    private TextView txt_discrp,txt_room,txt_f2_badge,txt_discipI_f2,btn_got_it;
+
     private FloatingActionButton fabMenu1,fabMenu2,fabMenu3;
     private FloatingActionMenu menu_blue;
-    private TextView txt_discrp,txt_room,txt_f2_badge,txt_discipI_f2;
 
     private SwipeCardView card_stack_view;
+
     private ArrayList<Card> cardList;
     private ArrayList<NotificationData> nList;
+
     private CardsAdapter arrayAdapter;
     private boolean liked;
-    private ImageView img_edit_i1,img_notif,img_infoget_f2,img_f10_back;
+
 
     //Demo Screen
     private RelativeLayout demoView;
-    private TextView btn_got_it;
 
     private  Utility utility;
+
     private MapView map_view;
     private GoogleMap googleMap;
+
     private int currentPosition;
     private double latitude,longitude;
 
@@ -102,7 +106,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
     private Dialog dialog;
     private int noNotify,timer;
     private Timer t;
-    private boolean initialized = false,isInfoVisible;
+    private Boolean initialized = false,isInfoVisible;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -161,7 +165,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         img_notif =  view.findViewById(R.id.img_notif);
         fabMenu1.setTextView(new TextView[]{txt_hide_all_one, txt_hide_all_two});
 
-        setOnClick(
+        setOnClick(imageMap,
                 img_infoget_f2,img_edit_i1,
                 img_f10_back,
                 fabMenu1,
@@ -186,7 +190,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         //TinderSwipe
         cardList = new ArrayList<>();
         getDummyData(cardList);
-        arrayAdapter = new CardsAdapter(getContext(), cardList);
+        arrayAdapter = new CardsAdapter(context, cardList);
         card_stack_view.setAdapter(arrayAdapter);
         noNotify = 5;
 
@@ -195,7 +199,13 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         String date = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Calendar.getInstance().getTime());
         txt_calender_i1.setText(date + " 8:00 AM - 12:00 PM");
         txt_discipI_f2.setText("4975 W Pico Blvd,los angeles ");
-        mapAsyncer(latitude,longitude);
+
+        new Handler().post(new Runnable() {
+           @Override
+           public void run() {
+               mapAsyncer(latitude,longitude);
+           }
+       });
     }
 
     private void setOnClick(View... views) {
@@ -243,7 +253,6 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         rtlv2_animate_f2.setAnimation(animation);
         handler = new Handler();
 
-
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -267,6 +276,15 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
             /*    try {
                     activity.addFragment(new Edit_Event_Demo_Fragmet().setData("1232", new SimpleDateFormat("yyyy-mm-dd").format(Calendar.getInstance().getTime())+"TO8:00:00TO12:0:00",getString(R.string.sample_event) ,4.0+"" , "12",getString(R.string.sample_Address),txt_discipI_f2.getText().toString(),this),1);
                 }catch (NullPointerException e){}*/
+                break;
+
+            case R.id.image_map:
+                try {
+                   activity.addFragment(new SingleMap_Fragment().setData(String.valueOf(latitude),String.valueOf(longitude)),1);
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                }
+            //   Utility.showToast(context,getString(R.string.underDevelopment),0);
                 break;
             case R.id.img_infoget_f2:
                 animateInfo(isInfoVisible);
@@ -309,7 +327,6 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
                 break;
             case R.id.img_notif:
                 if (noNotify > 0 && (nList != null && nList.get(noNotify - 1)!= null) ) {
-
                     popup_notification_new(noNotify);
                 }
                 else noNotification();
@@ -633,15 +650,12 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
-
-
                         marker.showInfoWindow();
 
                         return true;
                     }
                 });
 
-                Handler handler = new Handler();
                 final Marker finalM = m;
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -730,7 +744,6 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
         }.show();
     }
 
-
     public NotificationData getData(int position){
         return nList.get(position);
     }
@@ -775,6 +788,4 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
     public boolean onStatusBarHide() {
         return false;
     }
-
-
 }
