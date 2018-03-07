@@ -6,16 +6,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.location.Address;
-import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -45,9 +46,13 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.scenekey.BuildConfig;
+import com.scenekey.cropper.CropImage;
+import com.scenekey.cropper.CropImageView;
 import com.scenekey.R;
 import com.scenekey.activity.HomeActivity;
 import com.scenekey.adapter.DataAdapter;
+import com.scenekey.adapter.GridChipsAdapter;
 import com.scenekey.cus_view.Grid_multiRow;
 import com.scenekey.helper.Constant;
 import com.scenekey.helper.Permission;
@@ -74,15 +79,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
+import java.util.TimerTask;
 
 public class Event_Fragment extends Fragment implements View.OnClickListener,StatusBarHide {
 
@@ -117,6 +124,8 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
 
     private static Timer timerHttp;
     private Timer timerNudge;
+
+    private   Uri imageUri;
 
     //model
     private NotificationData nudge;
@@ -221,8 +230,8 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
             activity.updateSession(userInfo());
 
         }
-        //check
-        // if (timerHttp == null) setDataTimer();
+
+        if (timerHttp == null) setDataTimer();
 
         isInfoVisible = false;
         // rclv_grid.hasFixedSize();
@@ -267,16 +276,6 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         utility = new Utility(context);
     }
 
-    public Event_Fragment setData(String eventId, String venueName, Events event, String[] currentLatLng, String[] venuLatLng) {
-        this.eventId = eventId;
-        this.venueName = venueName;
-        this.event = event;
-        this.currentLatLng = currentLatLng;
-        latitude= Double.valueOf(venuLatLng[0]);
-        longitude= Double.valueOf(venuLatLng[1]);
-        return this;
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -302,6 +301,14 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         activity.setBBVisibility(View.GONE, TAG);
         activity.hideStatusBar();
         canCallWebservice = true;
+        if (timerHttp == null) setDataTimer();
+    }
+
+    @Override
+    public void onPause() {
+        if (timerHttp != null) timerHttp.cancel();
+        timerHttp=null;
+        super.onPause();
     }
 
     private void setOnClick(View... views) {
@@ -448,13 +455,21 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         if (permission.checkCameraPermission()) callIntent(Constant.INTENT_CAMERA);
     }
 
-    public void callIntent(int caseId) {
+    private void callIntent(int caseId) {
 
         switch (caseId) {
             case Constant.INTENT_CAMERA:
                 try {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+                    File file= new File(Environment.getExternalStorageDirectory().toString()+ File.separator + "image.jpg");
+
+                    if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
+                        imageUri= FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider",file);
+                    }else {
+                        imageUri= Uri.fromFile(file);
+                    }
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
+                    //  intent.putExtra("android.intent.extras.CAMERA_FACING", 1); //for front camera
                     startActivityForResult(intent, Constant.INTENT_CAMERA);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -663,52 +678,6 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
     }
 
     /**
-     * GetALl the data for that event
-     */
-    public void getAllData() {
-
-        if (utility.checkInternetConnection()) {
-            StringRequest request = new StringRequest(Request.Method.POST, WebServices.LISTEVENTFEED, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    activity.dismissProgDialog();
-                    // get response
-                    try {
-                        if (response != null) getResponse(response);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        activity.dismissProgDialog();
-                        Utility.showToast(context, getString(R.string.somethingwentwrong), 0);
-                    }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError e) {
-                    utility.volleyErrorListner(e);
-                    activity.dismissProgDialog();
-                }
-            }) {
-                @Override
-                public Map<String, String> getParams() {
-                    Map<String, String> params = new HashMap<>();
-
-                    params.put("event_id", eventId);
-                    params.put("user_id", userInfo().userID);
-
-                    Utility.e(TAG, " params " + params.toString());
-                    return params;
-                }
-            };
-            VolleySingleton.getInstance(context).addToRequestQueue(request);
-            request.setRetryPolicy(new DefaultRetryPolicy(10000, 0, 1));
-        } else {
-            utility.snackBar(rclv_grid, getString(R.string.internetConnectivityError), 0);
-            activity.dismissProgDialog();
-        }
-
-    }
-
-    /**
      * @param response the responce provided by getAlldata()
      * @throws JSONException
      */
@@ -777,7 +746,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         }catch (JSONException e){
             e.printStackTrace();
         }
-        int height = (int) getResources().getDimension(R.dimen._120sdp);//activity().ActivityWidth;
+        int height = (int) getResources().getDimension(R.dimen._125sdp);//activity().ActivityWidth;
         int width =  activity.ActivityWidth;
         String url = "http://maps.google.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=12&size=" + width + "x" + height + "&sensor=false";
         Utility.e(TAG, "URL" + url + "Lat lin" + latitude + " : " + longitude);
@@ -834,7 +803,6 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         }
     }
 
-
     private void mapAsyncer(final double lat , final double lng) {
         map_view.getMapAsync(new OnMapReadyCallback() {
             @Override
@@ -875,7 +843,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
                 googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                     @Override
                     public void onInfoWindowClick(Marker marker) {
-                           if(eventDetails.getProfile_rating().getVenue_long() !=null)activity.addFragment(new SingleMap_Fragment().setData(eventDetails.getProfile_rating().getVenue_lat(),eventDetails.getProfile_rating().getVenue_long()),1);
+                        if(eventDetails.getProfile_rating().getVenue_long() !=null)activity.addFragment(new SingleMap_Fragment().setData(eventDetails.getProfile_rating().getVenue_lat(),eventDetails.getProfile_rating().getVenue_long()),1);
                     }
                 });
 
@@ -914,33 +882,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
 
     }
 
-    public void addChips(ArrayList<Tags> tag) {
-        try {
-            Grid_multiRow layout =  this.getView().findViewById(R.id.chip_linear);
-            //check
-            // layout.setAdapter(new GridChipsAdapter(context,tag));
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-
-    }
-
-    /**
-     * @param date date of the event check format before use tie
-     * @return
-     * @throws ParseException
-     */
-    private boolean checkWithTime(final String date) throws ParseException {
-        String[] dateSplit = (date.replace("TO", "T")).replace(" ", "T").split("T");
-        Date startTime = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())).parse(dateSplit[0] + " " + dateSplit[1]);
-        Date endTime = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.getDefault())).parse(dateSplit[0] + " " + dateSplit[2]);
-        long currentTime = java.util.Calendar.getInstance().getTime().getTime();
-
-        return currentTime < endTime.getTime() && currentTime > startTime.getTime();
-    }
-
-    public boolean checkWithTime_No_Attendy(final String date , Double interval) throws ParseException {
+    private boolean checkWithTime_No_Attendy(final String date , Double interval) throws ParseException {
 
         return  true; //TODO change time check
        /* String[] dateSplit = (date.replace("TO", "T")).replace(" ", "T").split("T");
@@ -981,6 +923,208 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         Date date1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.getDefault()).parse(dateSplit[0] + " " + dateSplit[1]);
         Date date2 = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.getDefault()).parse(dateSplit[0] + " " + dateSplit[2]));
         txt_calender_i1.setText(new SimpleDateFormat("MMM dd, yyyy hh:mm ",Locale.getDefault()).format(date1)+(date1.getHours()<12?"AM":"PM") + " - " + new SimpleDateFormat("hh:mm ",Locale.getDefault()).format(date2)+(date2.getHours()<12?"AM":"PM"));
+
+    }
+
+    private void setDataTimer() {
+        if(timerHttp == null )timerHttp = new Timer();
+
+        //Set the schedule function and rate
+        //TODO timer changed as required
+        timerHttp.scheduleAtFixedRate(new TimerTask() {
+
+                                          @Override
+                                          public void run() {
+                                              activity.runOnUiThread(new Runnable() {
+                                                  @Override
+                                                  public void run() {
+                                                      Utility.e(TAG,"TimerVolley Event fragment");
+                                                      try{
+                                                          if (canCallWebservice) getAllData();
+                                                      }catch (Exception e){
+                                                          e.printStackTrace();
+                                                      }
+
+
+                                                  }
+                                              });
+                                          }
+
+                                      },
+                //Set how long before to start calling the TimerTask (in milliseconds)
+                60000,
+                //Set the amount of time between each execution (in milliseconds)
+                60000);
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        activity.hideStatusBar();
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == -1) {
+
+
+            if (requestCode == Constant.INTENT_CAMERA) {
+
+                if (imageUri!=null){
+                    // final Bitmap eventImg = (Bitmap) data.getExtras().get("data");
+                  //  Bitmap eventImg = ImageUtil.decodeFile(ImageUtil.getRealPathFromUri(getContext(), imageUri));
+                    //   ((ImageView)this.getView().findViewById(R.id.iv_test)).setImageBitmap(eventImg);
+
+                    CropImage.activity(imageUri).setCropShape(CropImageView.CropShape.RECTANGLE).setMinCropResultSize(160,160).setMaxCropResultSize(3000,2500).setAspectRatio(400, 300).start(context,this);
+
+                }else{
+                  Utility.showToast(context,getString(R.string.somethingwentwrong),0);
+                }
+
+            }else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+
+                CropImage.ActivityResult result= CropImage.getActivityResult(data);
+                try {
+                    if (result != null) {
+                      Bitmap  eventImg = MediaStore.Images.Media.getBitmap(context.getContentResolver(), result.getUri());
+                        if (eventDetails.getProfile_rating().getKey_in().equals(Constant.KEY_NOTEXIST))
+                            addUserIntoEvent(1, eventImg);
+                        else sendPicture(eventImg);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode) {
+
+            case Constant.MY_PERMISSIONS_REQUEST_CAMERA:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    captureImage();
+                } else {
+                    Utility.showToast(context, "permission denied by user ", Toast.LENGTH_LONG);
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        if (timerHttp != null) timerHttp.cancel();
+        if (timerNudge != null) timerNudge.cancel();
+        timerHttp = null;
+        timerNudge = null;
+
+        for (Fragment fragment : activity.getSupportFragmentManager().getFragments()) {
+            try {
+                ((Trending_Fragment) fragment).getTrendingData();
+                activity.setTitle(getString(R.string.trending));
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                ((Map_Fragment) fragment).checkEventAvailability();
+                activity.setTitle(getString(R.string.map));
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                ((Event_Search_Tag_Fragment) fragment).setVisibility();
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        super.onDestroy();
+    }
+
+    @Override
+    public void onDestroyView() {
+        VolleySingleton.getInstance(context).cancelPendingRequests(TAG);
+        activity.showStatusBar();
+        handler.removeCallbacksAndMessages(null);
+        activity.setBBVisibility(View.VISIBLE, 300, TAG);
+        super.onDestroyView();
+    }
+
+    @Override
+    public boolean onStatusBarHide() {
+        return false;
+    }
+
+    /* common methods used somewhere else  */
+
+    public void addChips(ArrayList<Tags> tag) {
+        try {
+            Grid_multiRow layout =  this.getView().findViewById(R.id.chip_linear);
+            layout.setAdapter(new GridChipsAdapter(context,tag));
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    public Event_Fragment setData(String eventId, String venueName, Events event, String[] currentLatLng, String[] venuLatLng) {
+        this.eventId = eventId;
+        this.venueName = venueName;
+        this.event = event;
+        this.currentLatLng = currentLatLng;
+        latitude= Double.valueOf(venuLatLng[0]);
+        longitude= Double.valueOf(venuLatLng[1]);
+        return this;
+    }
+
+    /**
+     * GetALl the data for that event
+     */
+    public void getAllData() {
+
+        if (utility.checkInternetConnection()) {
+            StringRequest request = new StringRequest(Request.Method.POST, WebServices.LISTEVENTFEED, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    activity.dismissProgDialog();
+                    // get response
+                    try {
+                        if (response != null) getResponse(response);
+                        else  Utility.showToast(context, getString(R.string.somethingwentwrong), 0);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError e) {
+                    utility.volleyErrorListner(e);
+                    activity.dismissProgDialog();
+                }
+            }) {
+                @Override
+                public Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<>();
+
+                    params.put("event_id", eventId);
+                    params.put("user_id", userInfo().userID);
+
+                    Utility.e(TAG, " params " + params.toString());
+                    return params;
+                }
+            };
+            VolleySingleton.getInstance(context).addToRequestQueue(request);
+            request.setRetryPolicy(new DefaultRetryPolicy(10000, 0, 1));
+        } else {
+            utility.snackBar(rclv_grid, getString(R.string.internetConnectivityError), 0);
+            activity.dismissProgDialog();
+        }
 
     }
 
@@ -1060,87 +1204,74 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         });
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        activity.hideStatusBar();
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == -1) {
+    public void addNudge(final String attendyId, final String attendyFBID , final String nudge ,final Dialog profilePop) {
 
+        if (utility.checkInternetConnection()) {
+            StringRequest request = new StringRequest(Request.Method.POST, WebServices.ADD_NUDGE, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    activity.dismissProgDialog();
 
-            if (requestCode == Constant.INTENT_CAMERA && data != null) {
+                    utility.showCustomPopup(getResources().getString(R.string.goodNudge), String.valueOf(R.font.raleway_regular));
 
-                final Bitmap eventImg = (Bitmap) data.getExtras().get("data");
-                // final Bitmap eventImg = ImageUtil.decodeFile(ImageUtil.getRealPathFromUri(getContext(), Uri.parse(data.toURI())));
-                //((ImageView)this.getView().findViewById(R.id.iv_test)).setImageBitmap(eventImg);
-
-                if (eventDetails.getProfile_rating().getKey_in().equals(Constant.KEY_NOTEXIST))
-                    addUserIntoEvent(1, eventImg);
-                else sendPicture(eventImg);
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-        switch (requestCode) {
-
-            case Constant.MY_PERMISSIONS_REQUEST_CAMERA:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    captureImage();
-                } else {
-                    Utility.showToast(context, "permission denied by user ", Toast.LENGTH_LONG);
+                    if(dialog!=null) dialog.dismiss();
+                    if(profilePop!=null) profilePop.dismiss();
                 }
-                break;
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError e) {
+                    utility.volleyErrorListner(e);
+                    activity.dismissProgDialog();
+                    if(dialog!=null)dialog.dismiss();
+                   Utility.showToast(getContext(),getString(R.string.somethingwentwrong),0);
+                }
+            }) {
+                @Override
+                public Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<>();
+
+                    params.put("event_id", eventId);
+                    params.put("nudges_to", attendyId);
+                    params.put("nudges_by", userInfo().userID);
+                    params.put("facebook_id", attendyFBID);
+                    params.put("nudges",nudge );
+
+                    Utility.e(TAG, " params " + params.toString());
+                    return params;
+                }
+            };
+            VolleySingleton.getInstance(context).addToRequestQueue(request);
+            request.setRetryPolicy(new DefaultRetryPolicy(10000, 0, 1));
+        } else {
+            utility.snackBar(rclv_grid, getString(R.string.internetConnectivityError), 0);
+            activity.dismissProgDialog();
         }
     }
 
-    @Override
-    public void onDestroy() {
-        if (timerHttp != null) timerHttp.cancel();
-        if (timerNudge != null) timerNudge.cancel();
-        timerHttp = null;
-        timerNudge = null;
-        for (Fragment fragment : activity.getSupportFragmentManager().getFragments()) {
-            try {
-                ((Trending_Fragment) fragment).getTrendingData();
-                activity.setTitle(getString(R.string.trending));
-                break;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                ((Map_Fragment) fragment).checkEventAvailability();
-                activity.setTitle(getString(R.string.scene));
-                break;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    /**
+     * Tost shown at popup of user.
+     */
+    public void cantInteract() {
+        utility.showCustomPopup(getString(R.string.sorryEvent), String.valueOf(R.font.raleway_regular));
+    }
 
-            try {
-                ((Event_Search_Tag_Fragment) fragment).setVisibility();
-                break;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    public boolean check() throws ParseException {
+        boolean result;
+        if(userInfo().makeAdmin.equals(Constant.ADMIN_YES) ){
+            result = true;
+        }
+        else if (activity.getDistance(new Double[]{latitude, longitude, Double.parseDouble(currentLatLng[0]), Double.parseDouble(currentLatLng[1])}) <= Constant.MAXIMUM_DISTANCE && activity.checkWithTime(eventDetails.getProfile_rating().getEvent_date() , Double.parseDouble(eventDetails.getProfile_rating().getInterval()) )) {
+            if (eventDetails.getProfile_rating().getKey_in().equals(Constant.KEY_NOTEXIST)) {
+                result = false ;//addUserIntoEvent(0, null);
+            } else result = true;
+        } else {
+            result = false;
+        }
+        if (eventDetails.getProfile_rating().getKey_in().equals(Constant.KEY_NOTEXIST)) {
+            result = false ;//addUserIntoEvent(0, null);
         }
 
-
-        super.onDestroy();
-    }
-
-    @Override
-    public void onDestroyView() {
-        VolleySingleton.getInstance(context).cancelPendingRequests(TAG);
-        activity.showStatusBar();
-        handler.removeCallbacksAndMessages(null);
-        activity.setBBVisibility(View.VISIBLE, 300, TAG);
-        super.onDestroyView();
-    }
-
-    @Override
-    public boolean onStatusBarHide() {
-        return false;
+        return result;
     }
 }
 

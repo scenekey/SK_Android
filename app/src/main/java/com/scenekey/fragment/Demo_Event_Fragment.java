@@ -681,7 +681,7 @@ public class Demo_Event_Fragment extends Fragment implements View.OnClickListene
             case Constant.INTENT_CAMERA:
                 try {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+                   // intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
                     startActivityForResult(intent, Constant.INTENT_CAMERA);
                 } catch (Exception e) {
                     e.printStackTrace();

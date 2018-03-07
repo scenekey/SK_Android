@@ -15,6 +15,8 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
@@ -39,6 +41,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -50,13 +53,11 @@ import java.util.UUID;
 public class AWSImage {
 
     private Context context;
-    private CustomProgressBar customProgressBar;
     private CognitoCredentialsProvider credentialsProvider;
     private String imageKey;
 
     public AWSImage(Context context){
         this.context=context;
-        customProgressBar = new CustomProgressBar(context);
     }
 
     public void initItem(Bitmap bitmap){
@@ -99,7 +100,7 @@ public class AWSImage {
         TransferUtility transferUtility = new TransferUtility(s3Client, context);
         // String  key1 = fbid+"-"+ System.currentTimeMillis()+".jpg";
 
-        String  key1 = fbid+".jpg";
+        final String  key1 = fbid+".jpg";
         TransferObserver observer
                 = transferUtility.upload(
                 Constant.BUCKET+"/"+fbid,     /* The bucket to upload to */
@@ -115,6 +116,7 @@ public class AWSImage {
                 if(state.equals(TransferState.COMPLETED)){
                     // Constant.DEF_PROFILE= WebServices.USER_IMAGE+imageKey;
                     Utility.e("Image upload","State Change" + state);
+                    setDefaultImageOnServer(WebServices.USER_IMAGE+key1,key1);
                 }
                 if(state.equals(TransferState.FAILED)){
                 /*Toast.makeText(Image_uploade_Activity.this, "State Change" + state,
@@ -228,5 +230,7 @@ public class AWSImage {
            // dismissProgDialog();
         }
     }
+
+
 
 }

@@ -1377,6 +1377,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
 
 
+
     }
 
     private void keyStatus(final String event_id){

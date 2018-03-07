@@ -77,6 +77,21 @@
         <activity android:name=".activity.BioActivity"
             android:screenOrientation="portrait"
             android:theme="@style/MyCustomTheme"/>
+
+        <activity android:name=".cropper.CropImageActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/CropImage"/>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="0445c68fedcc2d2c04d5210e1b5b51dceaf192af" />

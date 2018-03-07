@@ -73,7 +73,7 @@ public class Profile_Adapter extends BaseAdapter {
             holder.img_event =  itemView.findViewById(R.id.img_event);
             holder.rtlv_EE =  itemView.findViewById(R.id.rtlv_EE);
 
-            final Feeds feeds = feedList.get(position);
+             Feeds feeds = feedList.get(position);
 
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) holder.img_event.getLayoutParams();
             layoutParams.height = HomeActivity.ActivityWidth * 3 / 4;
@@ -111,7 +111,7 @@ public class Profile_Adapter extends BaseAdapter {
             } else if (feeds.type.equals(Constant.FEED_TYPE_PICTURE)) {
                 holder.txt_comment.setVisibility(View.GONE);
                 holder.img_event.setVisibility(View.VISIBLE);
-                Picasso.with(context).load(WebServices.BASE_IMAGE_URL + feeds.feed).placeholder(R.drawable.def_scene).into(holder.img_event);
+                Picasso.with(context).load(WebServices.FEED_IMAGE + feeds.feed).placeholder(R.drawable.def_scene).into(holder.img_event);
 
             }
 
@@ -162,7 +162,7 @@ public class Profile_Adapter extends BaseAdapter {
             } else if (feeds.type.equals(Constant.FEED_TYPE_PICTURE)) {
                 holder.txt_comment.setVisibility(View.GONE);
                 holder.img_event.setVisibility(View.VISIBLE);
-                Picasso.with(context).load(WebServices.BASE_IMAGE_URL + feeds.feed).placeholder(R.drawable.scene1).into(holder.img_event);
+                Picasso.with(context).load(WebServices.FEED_IMAGE + feeds.feed).placeholder(R.drawable.scene1).into(holder.img_event);
             }
 
         }

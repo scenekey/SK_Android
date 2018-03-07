@@ -60,6 +60,8 @@ public class EventDetails {
             if (attendyJosn.has("rating")) attendy.rating=(attendyJosn.getInt("rating") + "");
             if (attendyJosn.has("stagename"))
                 attendy.stagename=(attendyJosn.getString("stagename"));
+            if (attendyJosn.has("bio"))
+                attendy.bio=(attendyJosn.getString("bio"));
             if (attendyJosn.has("userimage"))
                 attendy.setUserimage(attendyJosn.getString("userimage"));
             attendyList.add(attendy);

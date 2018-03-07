@@ -62,7 +62,6 @@
                 android:layout_alignParentRight="true"
                 android:textSize="@dimen/_10sdp"
                 android:gravity="end"
-                android:visibility="gone"
                 android:layout_marginLeft="@dimen/_minus8sdp"
                 android:layout_marginRight="@dimen/_7sdp"
                 android:layout_alignLeft="@+id/img_user"

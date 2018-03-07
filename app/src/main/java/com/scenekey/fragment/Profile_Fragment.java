@@ -149,8 +149,8 @@ comment for:- fb and count not show for current scenario
         setClick(view, img_back ,img_setting, img_profile_pic,txt_dimmer,img_cross, img_capture,img_right,img_left);
 
         img_profile_pic2.setVisibility(View.INVISIBLE);
-//attendy.getUserimage()
         Utility.e(TAG,SceneKey.sessionManager.getUserInfo().getUserImage());
+
         Picasso.with(activity).load(SceneKey.sessionManager.getUserInfo().getUserImage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic);
         Picasso.with(activity).load(SceneKey.sessionManager.getUserInfo().getUserImage()).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_profile_pic2);
 
@@ -291,11 +291,11 @@ comment for:- fb and count not show for current scenario
 
             @Override
             public void onAnimationEnd(Animation animation) {
+                StatusBarUtil.setColorNoTranslucent(activity,getResources().getColor(R.color.black70p));
                 txt_dimmer.setVisibility(View.VISIBLE);
                 img_cross.setVisibility(View.VISIBLE);
                 img_right.setVisibility(View.VISIBLE);
                 img_left.setVisibility(View.VISIBLE);
-                StatusBarUtil.setColorNoTranslucent(activity,getResources().getColor(R.color.black70p));
             }
 
             @Override

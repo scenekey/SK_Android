@@ -170,9 +170,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     .setColor(getResources().getColor(R.color.colorPrimary))
                     .setContentTitle(title)
                     .setContentText(messageBody)
-                    .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(),
-                            R.drawable.ic_launcher_foreground))
-                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                   /* .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(),
+                            R.drawable.scenekey_app_ico))*/
+                    .setSmallIcon(R.drawable.scenekey_app_ico)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(messageBody))
                     .setAutoCancel(true)
                     .setSound(defaultSoundUri)
@@ -184,9 +184,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     .setColor(getResources().getColor(R.color.colorPrimary))
                     .setContentTitle(title)
                     .setContentText(messageBody)
-                    .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(),
-                            R.drawable.ic_launcher_foreground))
-                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                   /* .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(),
+                            R.drawable.scenekey_app_ico))*/
+                    .setSmallIcon(R.drawable.scenekey_app_ico)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(messageBody))
                     .setAutoCancel(true)
                     .setSound(defaultSoundUri)
@@ -198,6 +198,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 
+        assert notificationManager != null;
         notificationManager.notify(m, notificationBuilder.build());
    //comment for data not available
           /*  try {

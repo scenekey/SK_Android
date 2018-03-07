@@ -17,6 +17,7 @@ public class EventAttendy implements Serializable {
     public String usertype;
     public String rating;
     public String stagename;
+    public String bio;
     private String userimage;
 
     public String getUserimage() {

@@ -131,6 +131,11 @@ public class TryDemo_Adapter extends RecyclerView.Adapter<TryDemo_Adapter.ViewHo
         final TextView tv_userName ,txt_my_details;
 
         popupView = LayoutInflater.from(activity).inflate(R.layout.custom_my_profile_popup, null);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(popupView);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setCancelable(true);
+
         LinearLayout llMyProfile =  popupView.findViewById(R.id.llMyProfile);
         img_p1_profile =  popupView.findViewById(R.id.img_p1_profile);
         img_green =  popupView.findViewById(R.id.img_green);
@@ -223,17 +228,15 @@ public class TryDemo_Adapter extends RecyclerView.Adapter<TryDemo_Adapter.ViewHo
                 break;
         }
 
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(popupView);
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.setCancelable(true);
+
         Picasso.with(activity).load(roomPersonList.get(8).android_image_url).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_p1_profile);
-        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+
+      /*  WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.copyFrom(dialog.getWindow().getAttributes());
         lp.gravity = Gravity.CENTER;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         lp.width = HomeActivity.ActivityWidth ;
-        dialog.getWindow().setAttributes(lp);
+        dialog.getWindow().setAttributes(lp);*/
 
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
@@ -265,14 +268,6 @@ public class TryDemo_Adapter extends RecyclerView.Adapter<TryDemo_Adapter.ViewHo
         notifyDataSetChanged();
     }
 
-    private void callProfile(RoomPerson attendy , boolean ownProfile) {
-        dialog.dismiss();
-        try {
-            //activity.addFragment(new Demo_Profile_Fragment().setData(attendy, ownProfile), 1);
-        }catch (NullPointerException e){
-            e.printStackTrace();
-        }
-    }
 
     private void callProfile(EventAttendy attendy ,boolean ownProfile) {
         dialog.dismiss();

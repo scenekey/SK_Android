@@ -9,10 +9,10 @@
 
     <ImageView
         android:id="@+id/img_pic"
-        android:layout_width="@dimen/_65sdp"
-        android:layout_height="@dimen/_65sdp"
+        android:layout_width="@dimen/_80sdp"
+        android:layout_height="@dimen/_80sdp"
         android:layout_gravity="center"
-        android:layout_marginTop="@dimen/_2sdp"
+        android:layout_marginTop="@dimen/_5sdp"
         android:background="@drawable/bg_image_upload_plus"
         android:padding="@dimen/_1sdp"
         android:scaleType="fitXY" />
@@ -21,8 +21,8 @@
         android:id="@+id/img_cross"
         android:layout_width="@dimen/_17sdp"
         android:layout_height="@dimen/_17sdp"
-        android:paddingRight="@dimen/_2sdp"
         android:layout_gravity="top|right"
+        android:layout_marginTop="3sp"
         android:src="@drawable/cross_primary" />
 
 

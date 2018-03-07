@@ -508,7 +508,7 @@ public class ImageUploadActivity extends AppCompatActivity implements View.OnCli
                 try{Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     startActivityForResult(intent, Constant.REQUEST_CAMERA);}
                 catch ( Exception e){
-
+e.printStackTrace();
                 }
                 break;
             case Constant.RESULT_LOAD:

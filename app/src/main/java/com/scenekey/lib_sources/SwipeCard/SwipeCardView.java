@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.PointF;
 import android.os.Build;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.Adapter;
 import android.widget.FrameLayout;
 
 import com.scenekey.R;
+import com.scenekey.activity.HomeActivity;
 
 public class SwipeCardView extends BaseFlingAdapterView {
 
@@ -171,11 +173,11 @@ public class SwipeCardView extends BaseFlingAdapterView {
         //Scenekey
 
         if (currentAdapterCount <= MIN_ADAPTER_STACK)
-try{
-    mFlingListener.onAdapterAboutToEmpty(currentAdapterCount);
-}catch (Exception e){
+            try{
+                mFlingListener.onAdapterAboutToEmpty(currentAdapterCount);
+            }catch (Exception e){
 
-}
+            }
         //if(currentAdapterCount <= MIN_ADAPTER_STACK) mFlingListener.onAdapterAboutToEmpty(currentAdapterCount);
     }
 
@@ -321,18 +323,18 @@ try{
 
                     @Override
                     public void leftExit(Object dataObject) {
-                       try {
-                           mFlingListener.onCardExitLeft(dataObject);
-                       }catch (Exception e){
-e.printStackTrace();
-                       }
+                        try {
+                            mFlingListener.onCardExitLeft(dataObject);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override
                     public void rightExit(Object dataObject) {
                         try {mFlingListener.onCardExitRight(dataObject);
                         }catch (Exception e){
-e.printStackTrace();
+                            e.printStackTrace();
                         }
                     }
 
@@ -362,20 +364,29 @@ e.printStackTrace();
 
                     @Override
                     public void topExit(Object dataObject) {
-                       try {
-                           mFlingListener.onCardExitTop(dataObject);
-                       }catch (Exception e){
-                           e.printStackTrace();
-                       }
+                        try {
+                            mFlingListener.onCardExitTop(dataObject);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override
                     public void bottomExit(Object dataObject) {
-                      try {
-                          mFlingListener.onCardExitBottom(dataObject);
-                      }catch (Exception e){
-                          e.printStackTrace();
-                      }
+                        try {
+                            mFlingListener.onCardExitBottom(dataObject);
+
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ((HomeActivity)SwipeCardView.this.getContext() ).hideStatusBar();
+                                }
+                            },200);
+
+
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
                 });
 

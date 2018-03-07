@@ -45,6 +45,8 @@
         android:layout_height="@dimen/_40sdp"
         android:orientation="horizontal"
         android:padding="@dimen/_4sdp"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:weightSum="2">
 
         <TextView

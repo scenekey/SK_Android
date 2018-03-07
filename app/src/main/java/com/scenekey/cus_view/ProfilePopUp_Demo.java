@@ -39,34 +39,36 @@ import java.util.Arrays;
 
 public abstract class ProfilePopUp_Demo extends Dialog implements View.OnClickListener, DialogInterface.OnShowListener, DialogInterface.OnDismissListener {
 
-    private View pop_up_view;
-    private RecyclerView rclv_emoji;
-    private int visibility;
-    private int maxNudes;
-    private ArrayList<String> getList;
-    public ArrayList<String> list;
-    private TextView tv_nudge;
-    private LinearLayout lr_indicator,lr_send_nudge ,lr_get_ndge,linLayEmoji;
-    private ImageView iv_delete ,img_cross;
     private HomeActivity activity;
     private Context context;
-    private ImageView one, two ,three ,four ,five ,zero,iv_indicator,lastSelected,profileImg ;
-    private TextView txt_send ,tv_userName;
+
+    private RecyclerView rclv_emoji;
+
+    private int visibility,maxNudes,lastFillPosition;
+    private ArrayList<String> getList;
+    public ArrayList<String> list;
+
+    private LinearLayout lr_indicator,lr_send_nudge ,lr_get_ndge,linLayEmoji;
+
+    private ImageView iv_indicator,lastSelected,profileImg;
+
+    private TextView tv_nudge,txt_send ,tv_userName;
+
     private SharedPreferences preferences ;
     private String [] recent ;
 
     private NotificationData data;
-    private   int lastFillPosition;
+
     private   boolean isLastFilled;
     private static final int maxsize = 28 ; //Maximum size of recent grid view
 
-    public ProfilePopUp_Demo(@NonNull Activity activity , int maxNudes , NotificationData nudge , int visibility) {
+    protected ProfilePopUp_Demo(@NonNull Activity activity, int maxNudes, NotificationData nudge, int visibility) {
         super(activity, android.R.style.Theme_Translucent);
         this.activity= (HomeActivity) activity;
         this.context = activity;
         this.visibility=visibility;
 
-        pop_up_view = LayoutInflater.from(context).inflate(R.layout.popup_nudge_notificaiton, null);
+        View pop_up_view = LayoutInflater.from(context).inflate(R.layout.popup_nudge_n_notificaiton, null);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.setContentView(pop_up_view);
         this.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation_2;
@@ -77,15 +79,15 @@ public abstract class ProfilePopUp_Demo extends Dialog implements View.OnClickLi
         lr_get_ndge =  pop_up_view.findViewById(R.id.lr_get_ndge);
         linLayEmoji =  pop_up_view.findViewById(R.id.linLayEmoji);
         lr_indicator =  pop_up_view.findViewById(R.id.lr_indicator);
-        iv_delete =  pop_up_view.findViewById(R.id.iv_delete);
+        ImageView iv_delete = pop_up_view.findViewById(R.id.iv_delete);
         iv_indicator =  pop_up_view.findViewById(R.id.iv_indicator);
-        img_cross =  pop_up_view.findViewById(R.id.img_cross);
-        zero    =  pop_up_view.findViewById(R.id.zero);
-        one     =  pop_up_view.findViewById(R.id.one);
-        two     =  pop_up_view.findViewById(R.id. two);
-        three   =  pop_up_view.findViewById(R.id.three);
-        four    =  pop_up_view.findViewById(R.id.four);
-        five    =  pop_up_view.findViewById(R.id.five);
+        ImageView img_cross = pop_up_view.findViewById(R.id.img_cross);
+        ImageView zero = pop_up_view.findViewById(R.id.zero);
+        ImageView one = pop_up_view.findViewById(R.id.one);
+        ImageView two = pop_up_view.findViewById(R.id.two);
+        ImageView three = pop_up_view.findViewById(R.id.three);
+        ImageView four = pop_up_view.findViewById(R.id.four);
+        ImageView five = pop_up_view.findViewById(R.id.five);
         txt_send=  pop_up_view.findViewById(R.id.txt_send);
         tv_userName=  pop_up_view.findViewById(R.id.tv_userName);
         tv_nudge = pop_up_view.findViewById(R.id.tv_nudge);
@@ -124,7 +126,7 @@ public abstract class ProfilePopUp_Demo extends Dialog implements View.OnClickLi
             tv_nudge.setVisibility(View.GONE);
         }
 
-        setClicks(llMain,txt_send,iv_delete , img_cross ,tv_nudge,one, two ,three ,four ,five ,zero ,
+        setClicks(llMain,txt_send, iv_delete, img_cross,tv_nudge, one, two, three, four, five, zero,
                 pop_up_view.findViewById(R.id.img_left),
                 pop_up_view.findViewById(R.id.img_right));
 

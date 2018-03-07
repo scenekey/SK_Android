@@ -23,7 +23,9 @@
             app:bottom_swipe_detect="true"
             app:max_visible="0"
             app:rotation_degrees="15.5"
+            tools:context="com.scenekey.activity.HomeActivity"
             app:top_swipe_detect="true">
+
 
         </com.scenekey.lib_sources.SwipeCard.SwipeCardView>
 
@@ -34,6 +36,7 @@
             android:clickable="false"
             android:onClick="@null"
             android:visibility="visible" />
+
 
         <ImageButton
             android:id="@+id/img_f10_back"
@@ -242,9 +245,9 @@
                     <ImageView
                         android:id="@+id/image_map"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/_120sdp"
+                        android:layout_height="@dimen/_125sdp"
                         android:clickable="false"
-                        android:padding="@dimen/_5sdp"
+                        android:padding="@dimen/_2sdp"
                         android:background="@color/white"
                         android:layout_margin="@dimen/_5sdp"
                         android:scaleType="centerCrop"
@@ -255,7 +258,7 @@
                     <com.google.android.gms.maps.MapView
                         android:id="@+id/map_view"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/_120sdp"
+                        android:layout_height="@dimen/_125sdp"
                         android:background="@color/white"
                         android:layout_margin="@dimen/_5sdp"
                         android:padding="@dimen/_5sdp"
@@ -272,7 +275,7 @@
                         android:background="@color/white80p"
                         android:gravity="center"
                         android:fontFamily="@font/raleway_regular"
-                        android:padding="@dimen/_5sdp"
+                        android:padding="@dimen/_3sdp"
                         android:textSize="@dimen/_8sdp"
                         android:textColor="@color/txt_discrip" />
                 </FrameLayout>
