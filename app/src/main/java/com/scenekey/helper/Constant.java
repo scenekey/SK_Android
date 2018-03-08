@@ -34,6 +34,8 @@ public class Constant {
     public static final String PREF_EMOJI = "pref_emoji";
     public static final String PREF_string = "pref_string";
 
+    public static final String NUDGE_YOUR = "You have been Nudged!!";
+
     public static int DONE_BUTTON_CHECK = 0;
 
     public static String BUCKET = "scenekey-profile-images";

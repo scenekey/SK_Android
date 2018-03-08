@@ -49,10 +49,7 @@
         android:id="@+id/map_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="false" >
-
-
-    </com.google.android.gms.maps.MapView>
+        android:clickable="false" />
 
     <TextView
         android:id="@+id/txt_getDirection"

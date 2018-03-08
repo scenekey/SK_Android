@@ -529,6 +529,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
             public void onClick(final View v) {
                 v.setClickable(false);
                 try {
+                    activity.showProgDialog(false,TAG);
                     if (!clicked) {
                         Event_Fragment frg = new Event_Fragment();
                         frg.setData(event.event_id,events.getVenue().getVenue_name(),events,new String[]{lat,lng},new String[]{events.getVenue().getLatitude(),events.getVenue().getLongitude()});
@@ -544,6 +545,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
                         }
                     }, 2000);
                 }catch (Exception e){
+                    activity.dismissProgDialog();
                     e.printStackTrace();
                 }
 
@@ -553,7 +555,7 @@ public class Map_Fragment extends Fragment implements GoogleMap.OnMarkerClickLis
     }
 
     private void showNoEventDialog() {
-        utility.showCustomPopup(getString(R.string.mapNoevent),String.valueOf(R.font.raleway_regular));
+        utility.showCustomPopup(getString(R.string.mapNoevent),String.valueOf(R.font.arial_regular));
         if (eventArrayMarker == null) eventArrayMarker = new ArrayList<>();
         else eventArrayMarker.clear();
     }

@@ -126,7 +126,6 @@
 
     <string name="whatsHap"> What\'s happening! </string>
 
-
     <!--Alerts / Message-->
     <string name="AlertMsg1"> Please turn on your GPS </string>
     <string name="closeformap"> This will close Scenekey and open google map. \n continue?  </string>
@@ -152,7 +151,6 @@
     <string name="duration"> Duration </string>
     <string name="addtag"> Add Tag </string>
     <string name="noresult"> No result found </string>
-
 
     <string name="monday">Monday</string>
     <string name="tuesday">Tuesday</string>
@@ -217,7 +215,6 @@
     <string name="kp_img_post">_</string>
     <string name="kp_unlike"> You unliked this event. -1 Key Points </string>
 
-
     <string name="unfortunatly"> Hi, unfortunately, there are no events occurring in your area at this time.  Please check back for updates. </string>
     <string name="photo_error"> Opps.  There was a problem saving your photo.  Please try again or contact help@scenekey.com. </string>
     <string name="photo_success"> Photo has been posted successfully. </string>
@@ -232,7 +229,6 @@
         <item name="android:textColor">#A3A3A3</item>
         <item name="android:textSize">@dimen/_14sdp</item>
     </style>
-
 
     <style name="searchText">
         <item name="android:textColorHint">#808080</item>
@@ -431,8 +427,6 @@
         <item>👣</item>
         <item>💭</item>
     </string-array>
-
-
     <string-array name="nature">
         <item>🐶</item>
         <item>🐺</item>
@@ -641,7 +635,6 @@
         <item>🌈</item>
         <item>🌊</item>
     </string-array>
-
     <string-array name="things">
         <item>🎍</item>
         <item>💝</item>
@@ -874,7 +867,6 @@
         <item>🍅</item>
         <item>🌽</item>
     </string-array>
-
     <string-array name="buildings">
         <item>🏠</item>
         <item>🏡</item>
@@ -977,7 +969,6 @@
         <item>🇮🇹</item>
         <item>🇷🇺</item>
     </string-array>
-
     <string-array name="symbool">
         <item>1⃣</item>
         <item>2⃣</item>
@@ -1201,7 +1192,7 @@
     <string name="success_deleted">Photo has successfully\n deleted.</string>
     <string name="ques_deleted">Are you sure you want to \n Delete Photo ? </string>
     <string name="default_deleted_title"> Cannot Delete Default Picture </string>
-    <string name="default_deleted_msg"> Sorry you are unable to delete the \n default profile picture </string>
+    <string name="default_deleted_msg"> Sorry, you are unable to delete the \n default profile picture </string>
 
     <string name="default_profile_title"> Default Profile Image </string>
     <string name="default_profile_msg"> This picture is already your default \n profile image please select other </string>

@@ -20,7 +20,7 @@
         android:paddingLeft="@dimen/_15sdp"
         android:paddingRight="@dimen/_15sdp"
         android:paddingTop="@dimen/_10sdp"
-        android:fontFamily="@font/raleway_regular"
+        android:fontFamily="@font/arial_regular"
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp" />
 

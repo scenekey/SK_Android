@@ -93,6 +93,7 @@
                 android:textColor="@color/black50p"
                 android:layout_width="wrap_content"
                 android:textSize="@dimen/_10sdp"
+                android:fontFamily="@font/raleway_regular"
                 android:layout_height="@dimen/_22sdp"
                 android:gravity="center_vertical"
                 android:layout_alignParentBottom="true"
@@ -304,6 +305,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/txt_no_one"
                     android:textSize="@dimen/_12sdp"
+android:fontFamily="@font/raleway_regular"
                     android:gravity="center"
                     android:visibility="gone"
                     android:text="@string/no_one"/>
@@ -313,6 +315,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/txt_no_one"
+                    android:fontFamily="@font/raleway_regular"
+
                     android:textSize="@dimen/_12sdp"
                     android:gravity="center"
                     android:visibility="gone"
@@ -320,6 +324,8 @@
                 <TextView
                     android:layout_width="@dimen/_300sdp"
                     android:layout_height="@dimen/_50sdp"
+                    android:fontFamily="@font/raleway_regular"
+
                     android:textColor="@color/txt_no_one"
                     android:textSize="@dimen/_12sdp"
                     android:visibility="gone"

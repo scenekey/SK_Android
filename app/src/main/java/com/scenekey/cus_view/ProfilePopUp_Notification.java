@@ -20,48 +20,56 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.scenekey.R;
+
 import com.scenekey.activity.HomeActivity;
-import com.scenekey.adapter.EmojiAdapter;
-import com.scenekey.fragment.Event_Fragment;
+import com.scenekey.adapter.EmojiAdapter_Notification;
 import com.scenekey.helper.Constant;
-import com.scenekey.model.EventAttendy;
+import com.scenekey.model.NotificationData;
 import com.scenekey.util.CircleTransform;
 import com.squareup.picasso.Picasso;
 import com.vanniktech.emoji.EmojiTextView;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+
+//import org.apache.commons.lang3.StringEscapeUtils;
 
 /**
  * Created by mindiii on 11/2/17.
  */
 
-public abstract class ProfilePopUp extends Dialog implements View.OnClickListener, DialogInterface.OnShowListener {
+public abstract class ProfilePopUp_Notification extends Dialog implements View.OnClickListener, DialogInterface.OnShowListener, DialogInterface.OnDismissListener {
 
     private HomeActivity activity;
     private Context context;
 
     private RecyclerView rclv_emoji;
-    private ImageView lastSelected,iv_indicator;
-    private  TextView txt_send;
-    private LinearLayout lr_send_nudge,lr_indicator;
 
-    private int maxNudes,lastFillposition;
-    
+    private int maxNudes;
+
+    private ArrayList<String> getlist;
     public ArrayList<String> list;
-   
+
+    private LinearLayout lr_send_nudge ,lr_get_ndge,lr_indicator,linLayEmoji;
+    private ImageView iv_delete ,img_cross,iv_indicator,lastSelected , profileImg;
+
+    private TextView tv_nudge,txt_send ,tv_userName;
+
     private SharedPreferences preferences ;
     private String[] recent ;
-    
+
+    private NotificationData data;
+    private int lastFillPosition;
     private boolean isLastFilled,isClicked;
- 
     private static final int maxsize = 28 ; //Maximum size of recent grid view
-    
-    protected ProfilePopUp(@NonNull Activity activity, int maxNudes, EventAttendy obj) {
+
+    protected ProfilePopUp_Notification(@NonNull Activity activity, int maxNudes, NotificationData nudge) {
         super(activity, android.R.style.Theme_Translucent);
 
-        this.activity= (HomeActivity) activity;
         this.context=activity;
+        this.activity= (HomeActivity) activity;
 
         View pop_up_view = LayoutInflater.from(context).inflate(R.layout.popup_nudge_n_notificaiton, null);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -69,12 +77,13 @@ public abstract class ProfilePopUp extends Dialog implements View.OnClickListene
         this.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation_2;
         this.setCanceledOnTouchOutside(false);
 
+        LinearLayout llMain =  pop_up_view.findViewById(R.id.llMain);
         rclv_emoji =  pop_up_view.findViewById(R.id.rclv_emoji);
         lr_send_nudge =  pop_up_view.findViewById(R.id.lr_send_nudge);
+        lr_get_ndge =  pop_up_view.findViewById(R.id.lr_get_ndge);
+        linLayEmoji =  pop_up_view.findViewById(R.id.linLayEmoji);
         lr_indicator =  pop_up_view.findViewById(R.id.lr_indicator);
         ImageView iv_delete = pop_up_view.findViewById(R.id.iv_delete);
-        LinearLayout llMain =  pop_up_view.findViewById(R.id.llMain);
-        TextView tv_bio =  pop_up_view.findViewById(R.id.tv_my_bio);
         iv_indicator =  pop_up_view.findViewById(R.id.iv_indicator);
         ImageView img_cross = pop_up_view.findViewById(R.id.img_cross);
         ImageView zero = pop_up_view.findViewById(R.id.zero);
@@ -83,35 +92,58 @@ public abstract class ProfilePopUp extends Dialog implements View.OnClickListene
         ImageView three = pop_up_view.findViewById(R.id.three);
         ImageView four = pop_up_view.findViewById(R.id.four);
         ImageView five = pop_up_view.findViewById(R.id.five);
-        txt_send = pop_up_view.findViewById(R.id.txt_send);
+        txt_send=  pop_up_view.findViewById(R.id.txt_send);
+        tv_userName=  pop_up_view.findViewById(R.id.tv_userName);
+        profileImg =  pop_up_view.findViewById(R.id.img_profile_pic2);
+        tv_nudge = pop_up_view.findViewById(R.id.tv_nudge);
+        TextView tv_bio = pop_up_view.findViewById(R.id.tv_my_bio);
 
-        tv_bio.setText(obj.bio);
+        String name=nudge.username.split("\\s+")[0];
+
+        tv_bio.setText(nudge.bio);
+        Picasso.with(context).load(nudge.getUserImage()).transform(new CircleTransform()).into(profileImg);
+
+
+        txt_send.setText("Nudge "+name);
+        tv_nudge.setText("Nudge "+name+" Back");
+
+        tv_userName.setText(name+" nudged you!");
+        linLayEmoji.setVisibility(View.GONE);
+        lr_get_ndge.setVisibility(View.VISIBLE);
+        txt_send.setVisibility(View.GONE);
+        tv_nudge.setVisibility(View.VISIBLE);
+
         GridLayoutManager layoutManager = new GridLayoutManager(context,4, LinearLayoutManager.HORIZONTAL,false);
 
         rclv_emoji.setLayoutManager(layoutManager);
-
-        rclv_emoji.setAdapter(new EmojiAdapter(context,this));
-
+        rclv_emoji.setAdapter(new EmojiAdapter_Notification(context,this));
         this.maxNudes = maxNudes;
+
         list = new ArrayList<>();
-        setClicks(llMain,iv_delete, img_cross, one, two, three, four, five, zero, txt_send);
-        this.context = context;
+        getlist = new ArrayList<>();
+
+        setClicks(llMain,txt_send, iv_delete, img_cross,tv_nudge, one, two, three, four, five, zero,
+                pop_up_view.findViewById(R.id.img_left),
+                pop_up_view.findViewById(R.id.img_right));
+
         this.setOnShowListener(this);
-        getRecentTask();
-        ((TextView) pop_up_view.findViewById(R.id.tv_userName)).setText(obj.username);
-        try {
-            ImageView profileimg = pop_up_view.findViewById(R.id.img_profile_pic2);
-            Picasso.with(context).load(obj.getUserimage()).transform(new CircleTransform()).into(profileimg);
-        }catch (Exception e){
-            e.printStackTrace();
+        String[] ar = nudge.nudges.split(",");
+        for(String s: ar){
+            getlist.add(StringEscapeUtils.unescapeJava(s));
         }
+
+        setText();
+        getRecentTask();
+
+        this.setOnDismissListener(this);
+        this.data = nudge;
         updateImageView(one);
-        txt_send.setText("Nudge "+obj.username);
     }
 
     private void setClicks(View... views){
         for(View view :views) view.setOnClickListener(this);
     }
+
 
     @Override
     protected void onStart() {
@@ -127,8 +159,6 @@ public abstract class ProfilePopUp extends Dialog implements View.OnClickListene
         updateIndicator();
     }
 
-    public abstract void onClickView(TextView textView , ProfilePopUp profilePopUp);
-    public abstract void onSendCLick(TextView textView , ProfilePopUp profilePopUp);
 
     public void setText(String text){
         if(list.size()< maxNudes){
@@ -141,6 +171,17 @@ public abstract class ProfilePopUp extends Dialog implements View.OnClickListene
         }
     }
 
+    public void setText(){
+
+        int i=0;
+        for(String str : getlist){
+            ((EmojiTextView)lr_get_ndge.getChildAt(i)).setText(StringEscapeUtils.unescapeJava(str.trim()));
+            Log.e("value" ,str);
+            i++;
+            if(i==4)return;
+        }
+    }
+
     @Override
     public void onClick(View v) {
 
@@ -150,6 +191,13 @@ public abstract class ProfilePopUp extends Dialog implements View.OnClickListene
                 this.dismiss();
                 break;
 
+            case R.id.tv_nudge:
+                linLayEmoji.setVisibility(View.VISIBLE);
+                lr_get_ndge.setVisibility(View.GONE);
+                txt_send.setVisibility(View.VISIBLE);
+                tv_nudge.setVisibility(View.GONE);
+                break;
+
             case R.id.iv_delete:
                 delete();
                 break;
@@ -157,42 +205,41 @@ public abstract class ProfilePopUp extends Dialog implements View.OnClickListene
                 this.dismiss();
                 break;
             case R.id.zero:
-                ((EmojiAdapter)rclv_emoji.getAdapter()).setList(-1);
+                ((EmojiAdapter_Notification)rclv_emoji.getAdapter()).setList(-1);
                 rclv_emoji.smoothScrollToPosition(0);
                 updateImageView((ImageView) v);
                 break;
             case R.id.one:
-                ((EmojiAdapter)rclv_emoji.getAdapter()).setList(0);
+                ((EmojiAdapter_Notification)rclv_emoji.getAdapter()).setList(0);
                 rclv_emoji.smoothScrollToPosition(0);
                 updateImageView((ImageView) v);
                 break;
             case R.id.two:
-                ((EmojiAdapter)rclv_emoji.getAdapter()).setList(1);
+                ((EmojiAdapter_Notification)rclv_emoji.getAdapter()).setList(1);
                 rclv_emoji.smoothScrollToPosition(0);
                 updateImageView((ImageView) v);
                 break;
             case R.id.three:
-                ((EmojiAdapter)rclv_emoji.getAdapter()).setList(2);
+                ((EmojiAdapter_Notification)rclv_emoji.getAdapter()).setList(2);
                 rclv_emoji.smoothScrollToPosition(0);
                 updateImageView((ImageView) v);
                 break;
             case R.id.four:
-                ((EmojiAdapter)rclv_emoji.getAdapter()).setList(3);
+                ((EmojiAdapter_Notification)rclv_emoji.getAdapter()).setList(3);
                 rclv_emoji.smoothScrollToPosition(0);
                 updateImageView((ImageView) v);
                 break;
             case R.id.five:
-                ((EmojiAdapter)rclv_emoji.getAdapter()).setList(4);
+                ((EmojiAdapter_Notification)rclv_emoji.getAdapter()).setList(4);
                 rclv_emoji.smoothScrollToPosition(0);
                 updateImageView((ImageView) v);
                 break;
             case R.id.txt_send:
-
                 txt_send.setClickable(false);
                 if (!isClicked) {
                     try {
                         activity.hideStatusBar();
-                        onSendCLick((TextView) v, this);
+                        onSendCLick((TextView) v,this,data);
                     } catch (NullPointerException e){
                         e.printStackTrace();
                     }
@@ -210,6 +257,12 @@ public abstract class ProfilePopUp extends Dialog implements View.OnClickListene
                     e.printStackTrace();
                 }
                 break;
+            case R.id.img_right:
+                onNextClick((ImageView) v,this);
+                break;
+            case R.id.img_left:
+                onPrevClick((ImageView) v,this);
+                break;
         }
 
     }
@@ -223,12 +276,12 @@ public abstract class ProfilePopUp extends Dialog implements View.OnClickListene
         }
     }
 
-   public void updateIndicator(){
-       updateIndicator(0);
+    public void updateIndicator(){
+        updateIndicator(0);
     }
 
     private void updateIndicator(int position){
-        int i =((EmojiAdapter)rclv_emoji.getAdapter()).getIndicatorCount((int) context.getResources().getDimension(R.dimen._240sdp), (int) context.getResources().getDimension(R.dimen._40sdp));
+        int i =((EmojiAdapter_Notification)rclv_emoji.getAdapter()).getIndicatorCount((int) context.getResources().getDimension(R.dimen._240sdp), (int) context.getResources().getDimension(R.dimen._40sdp));
         lr_indicator.setWeightSum(i);
         int padding = (int) context.getResources().getDimension(R.dimen._3sdp);
         for (int j=0;j<i;j++){
@@ -243,13 +296,13 @@ public abstract class ProfilePopUp extends Dialog implements View.OnClickListene
         }
     }
 
+
     @Override
     public void onShow(DialogInterface dialog) {
         updateIndicator();
     }
 
-    public String[] getRecent(){
-
+    public String[]  getRecent(){
         preferences = context.getSharedPreferences(Constant.PREF_EMOJI, Context.MODE_PRIVATE);
         String s = preferences.getString(Constant.PREF_string,"[]");
         String ar [] = new String[maxsize];
@@ -257,7 +310,7 @@ public abstract class ProfilePopUp extends Dialog implements View.OnClickListene
         for(String txt :s.substring(1,s.length()-1).split(",")){
             ar[i] = txt.replace("null","").trim();
             if(txt.trim().isEmpty() && !isLastFilled) {
-                lastFillposition = i;
+                lastFillPosition = i;
                 isLastFilled = true;
             }
             i++;
@@ -271,18 +324,18 @@ public abstract class ProfilePopUp extends Dialog implements View.OnClickListene
             @Override
             protected Void doInBackground(Void... params) {
                 preferences = context.getSharedPreferences(Constant.PREF_EMOJI, Context.MODE_PRIVATE);
-                if(lastFillposition<maxsize){
-                    if(canAddtoList(text))
+                if(lastFillPosition <maxsize){
+                    if(canAddToList(text))
                     {
-                        recent[lastFillposition] = text.trim();
-                        lastFillposition ++;
+                        recent[lastFillPosition] = text.trim();
+                        lastFillPosition++;
                     }
                 }
                 else {
-                    if(canAddtoList(text))
+                    if(canAddToList(text))
                     {
-                    recent[0]= text.trim();
-                    lastFillposition = 1;
+                        recent[0]= text.trim();
+                        lastFillPosition = 1;
                     }
                 }
                 {
@@ -313,37 +366,59 @@ public abstract class ProfilePopUp extends Dialog implements View.OnClickListene
         }.execute();
     }
 
-    private boolean canAddtoList(final String text){
-        try{
-            for(String s :recent){
-                Log.e("Chacked" , s+":"+text);
-                if(s!= null && s.equals(text)) return false;
-            }
-
-        return true;}catch (Exception e){
-            e.printStackTrace();
-            return false;
+    private boolean canAddToList(String text){
+        for(String s :recent){
+            if(s!= null && s.equals(text)) return false;
         }
+        return true;
     }
 
     private void updateImageView(ImageView selected){
-
+        updateIndicator();
         setImage(selected,true);
         if(lastSelected != null)setImage(lastSelected,false);
         lastSelected = selected;
-        updateIndicator();
     }
 
-   private void setImage(ImageView view , boolean isactive){
-        view.setBackgroundResource(isactive?  R.color.old_primary     : R.drawable.bg_table     );
+    private void setImage(ImageView view , boolean isActive){
+        view.setBackgroundResource(isActive?  R.color.old_primary     : R.drawable.bg_table     );
         switch (view.getId()){
-            case R.id.zero: view.setImageResource(isactive?  R.drawable.ic_zero_active     : R.drawable.ic_zero     );    break;
-            case R.id.one:  view.setImageResource(isactive?  R.drawable.ic_one_active      : R.drawable.ic_one      );    break;
-            case R.id.two:  view.setImageResource(isactive?  R.drawable.ic_two_active      : R.drawable.ic_two      );    break;
-            case R.id.three:view.setImageResource(isactive?  R.drawable.ic_three_active    : R.drawable.ic_three    );    break;
-            case R.id.four: view.setImageResource(isactive?  R.drawable.ic_four_car_active : R.drawable.ic_four_car );    break;
-            case R.id.five: view.setImageResource(isactive?  R.drawable.ic_five_active     : R.drawable.ic_five     );    break;
+            case R.id.zero: view.setImageResource(isActive?  R.drawable.ic_zero_active     : R.drawable.ic_zero     );    break;
+            case R.id.one:  view.setImageResource(isActive?  R.drawable.ic_one_active      : R.drawable.ic_one      );    break;
+            case R.id.two:  view.setImageResource(isActive?  R.drawable.ic_two_active      : R.drawable.ic_two      );    break;
+            case R.id.three:view.setImageResource(isActive?  R.drawable.ic_three_active    : R.drawable.ic_three    );    break;
+            case R.id.four: view.setImageResource(isActive?  R.drawable.ic_four_car_active : R.drawable.ic_four_car );    break;
+            case R.id.five: view.setImageResource(isActive?  R.drawable.ic_five_active     : R.drawable.ic_five     );    break;
         }
     }
 
+    public abstract void onClickView(TextView textView , ProfilePopUp_Notification profilePopUp);
+    public abstract void onSendCLick(TextView textView , ProfilePopUp_Notification profilePopUp , final NotificationData obj );
+    public abstract void onPrevClick(ImageView textView , ProfilePopUp_Notification profilePopUp);
+    public abstract void onNextClick(ImageView textView , ProfilePopUp_Notification profilePopUp);
+    public abstract void onDismiss(ProfilePopUp_Notification profilePopUp);
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        onDismiss(this);
+    }
+
+    public void updateData(NotificationData nudge){
+        getlist.clear();
+        this.data = nudge;
+        String[] ar = nudge.nudges.split(",");
+        Log.e("Data" , nudge.nudges);
+        for(String s: ar){
+            getlist.add(StringEscapeUtils.unescapeJava(s));
+
+        }
+        setText();
+        tv_userName.setText(nudge.username);
+        try {
+
+            Picasso.with(context).load(nudge.getUserImage()).transform(new CircleTransform()).into(profileImg);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }

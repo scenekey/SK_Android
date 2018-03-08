@@ -19,6 +19,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +55,7 @@ import com.scenekey.activity.HomeActivity;
 import com.scenekey.adapter.DataAdapter;
 import com.scenekey.adapter.GridChipsAdapter;
 import com.scenekey.cus_view.Grid_multiRow;
+import com.scenekey.cus_view.ProfilePopUp_Notification;
 import com.scenekey.helper.Constant;
 import com.scenekey.helper.Permission;
 import com.scenekey.helper.WebServices;
@@ -75,6 +77,7 @@ import com.scenekey.util.Utility;
 import com.scenekey.volleymultipart.VolleySingleton;
 import com.squareup.picasso.Picasso;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -99,7 +102,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
     private HomeActivity activity;
     private Utility utility;
 
-    public Boolean canCallWebservice,isInfoVisible,isPopUpShowing,canGetNotification;
+    public boolean canCallWebservice,isInfoVisible,isPopUpShowing,canGetNotification;
 
     public Double latitude,longitude;
     private String eventId,venueName;
@@ -109,6 +112,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
     private LinearLayout info_view,no_one;
     private RelativeLayout rtlv2_animate_f2,rtlv_top,demoView; //Demo Screen
     private ImageView img_infoget_f2, img_f10_back,image_map,img_notif;
+
     public TextView txt_event_name,txt_not_started,txt_discrp,txt_room,txt_f2_badge,txt_calender_i1,
             txt_hide_all_two,txt_hide_all_one,btn_got_it,txt_discipI_f2;
 
@@ -127,8 +131,6 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
 
     private   Uri imageUri;
 
-    //model
-    private NotificationData nudge;
     private EventDetails eventDetails;
     private Events event;
 
@@ -137,13 +139,13 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
 
     //arrayLists
     public ArrayList<Card> cardsList;
-    private ArrayList<NotificationData> nudgelist;
+    private ArrayList<NotificationData> nudgeList;
 
     //map data
     private MapView map_view;
     private GoogleMap googleMap;
 
-    //ProfilePopUp_Notificaiton popup;
+    private ProfilePopUp_Notification popup;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -151,6 +153,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_demo_event, container, false);
 
+        activity.showProgDialog(false,TAG);
         //TODO handling on grid adapter click if user is not key in
 
         txt_discipI_f2 = view.findViewById(R.id.txt_discipI_f2);
@@ -182,7 +185,6 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         no_one = view.findViewById(R.id.no_one);
         demoView = view.findViewById(R.id.demoView);
         btn_got_it = view.findViewById(R.id.btn_got_it);
-        activity.showProgDialog(false, TAG);
 
         menu_blue.setOnMenuToggleListener(new FloatingActionMenu.OnMenuToggleListener() {
             @Override
@@ -254,7 +256,6 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
 
         cardsList = new ArrayList<>();
         info_view.setVisibility(View.GONE);
-        nudge = new NotificationData();
 
         new Handler().post(new Runnable() {
             @Override
@@ -262,6 +263,8 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
                 mapAsyncer(latitude,longitude);
             }
         });
+
+        activity.dismissProgDialog();
     }
 
     private UserInfo userInfo() {
@@ -289,7 +292,6 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
                 rtlv2_animate_f2.setBackgroundColor(getResources().getColor(R.color.bg_scenepage));
             }
         }, 2000);
-        activity.dismissProgDialog();
         activity.setBBVisibility(View.GONE, TAG);
         canCallWebservice = true;
     }
@@ -297,7 +299,6 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
     @Override
     public void onResume() {
         super.onResume();
-        activity.dismissProgDialog();
         activity.setBBVisibility(View.GONE, TAG);
         activity.hideStatusBar();
         canCallWebservice = true;
@@ -416,9 +417,10 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
                 menu_blue.close(true);
                 break;
             case R.id.img_notif:
-               /* canGetNotification = true;
+                activity.hideStatusBar();
+                canGetNotification = true;
                 if (noNotify > 0) getNudges();
-                else noNotification();*/
+                else noNotification();
                 break;
             case R.id.txt_event_name:
 
@@ -447,6 +449,81 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
                 }*/
                 break;
 
+        }
+    }
+
+    /***
+     * For getting the nudge at notification popUp and show on it
+     */
+   private void getNudges() {
+        canGetNotification = false;
+
+        if (utility.checkInternetConnection()) {
+            StringRequest request = new StringRequest(Request.Method.POST, WebServices.GET_NUDGE, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    activity.dismissProgDialog();
+                    // get response
+                    try {
+                        JSONObject nudgeJson = new JSONObject(response);
+                        if(nudgeJson.has("success") && nudgeJson.getInt("success")==0) {
+                            Toast.makeText(getContext(),"NO nudge avaialble",Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        NotificationData nudge = new NotificationData();
+                        if (nudgeJson.has("nudges")) nudge.nudges=((nudgeJson.getString("nudges")));
+                        if (nudgeJson.has("user_id")) nudge.user_id=(nudgeJson.getString("user_id"));
+                        if (nudgeJson.has("facebook_id"))
+                            nudge.facebook_id=(nudgeJson.getString("facebook_id"));
+                        if (nudgeJson.has("username"))
+                            nudge.username=(nudgeJson.getString("username"));
+                        if (nudgeJson.has("bio"))
+                            nudge.bio=(nudgeJson.getString("bio"));
+                        if (nudgeJson.has("userimage"))
+                            nudge.userimage=(nudgeJson.getString("userimage"));
+                        if (nudge.nudges.equals(Constant.NUDGE_YOUR)) nudge.message=false;
+                        {
+                            if(nudgeList ==null) nudgeList = new ArrayList<>();
+                            nudgeList.add(nudge);
+                            noNotify-=1;
+                            setTextBadge();
+                        }
+                        if(!isPopUpShowing )popupNotification_New();
+                        else {
+                            currentNudge = nudgeList.size()-1;
+                            popup.updateData(nudgeList.get(currentNudge));
+                        }
+                        canGetNotification = true;
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        canGetNotification = true;
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError e) {
+                    utility.volleyErrorListner(e);
+                    activity.dismissProgDialog();
+                   canGetNotification=true;
+                }
+            }) {
+                @Override
+                public Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<>();
+
+                    params.put("user_id", userInfo().userID);
+                    params.put("event_id", eventId);
+                    params.put("nudges_no", noNotify + "");
+
+                    Utility.e(TAG, " params " + params.toString());
+                    return params;
+                }
+            };
+            VolleySingleton.getInstance(context).addToRequestQueue(request);
+            request.setRetryPolicy(new DefaultRetryPolicy(10000, 0, 1));
+        } else {
+            utility.snackBar(rclv_grid, getString(R.string.internetConnectivityError), 0);
+            activity.dismissProgDialog();
         }
     }
 
@@ -552,7 +629,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
                         if (object.has("success")) if (object.getInt("success") == 1) {
                             if(object.getString("msg").contains(" liked the event.")){
                                 fabMenu1_like.setImageDrawable(getResources().getDrawable(R.drawable.red_heart));
-                                utility.showCustomPopup("you liked this event.", String.valueOf(R.font.raleway_regular));
+                                utility.showCustomPopup("you liked this event.", String.valueOf(R.font.arial_regular));
 
                                 activity.incrementKeyPoints(getString(R.string.kp_like));
                             }
@@ -668,11 +745,11 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
     private void cantJoinDialog() {
 
         if(activity.getDistance(new Double[]{latitude, longitude, Double.valueOf(currentLatLng[0]), Double.valueOf(currentLatLng[1])}) <= Constant.MAXIMUM_DISTANCE) {
-            utility.showCustomPopup(getString(R.string.enotStarted), String.valueOf(R.font.raleway_regular));
+            utility.showCustomPopup(getString(R.string.enotStarted), String.valueOf(R.font.arial_regular));
         }else if(activity.userInfo().makeAdmin.equals(Constant.ADMIN_YES)){
-            utility.showCustomPopup(getString(R.string.enotStarted), String.valueOf(R.font.raleway_regular));
+            utility.showCustomPopup(getString(R.string.enotStarted), String.valueOf(R.font.arial_regular));
         }else  {
-            utility.showCustomPopup(getString(R.string.enotat), String.valueOf(R.font.raleway_regular));
+            utility.showCustomPopup(getString(R.string.enotat), String.valueOf(R.font.arial_regular));
         }
 
     }
@@ -972,7 +1049,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
                   //  Bitmap eventImg = ImageUtil.decodeFile(ImageUtil.getRealPathFromUri(getContext(), imageUri));
                     //   ((ImageView)this.getView().findViewById(R.id.iv_test)).setImageBitmap(eventImg);
 
-                    CropImage.activity(imageUri).setCropShape(CropImageView.CropShape.RECTANGLE).setMinCropResultSize(160,160).setMaxCropResultSize(3000,2500).setAspectRatio(400, 300).start(context,this);
+                    CropImage.activity(imageUri).setCropShape(CropImageView.CropShape.RECTANGLE).setMinCropResultSize(160,160).setMaxCropResultSize(4000,3500).setAspectRatio(400, 300).start(context,this);
 
                 }else{
                   Utility.showToast(context,getString(R.string.somethingwentwrong),0);
@@ -1212,7 +1289,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
                 public void onResponse(String response) {
                     activity.dismissProgDialog();
 
-                    utility.showCustomPopup(getResources().getString(R.string.goodNudge), String.valueOf(R.font.raleway_regular));
+                    utility.showCustomPopup(getResources().getString(R.string.goodNudge), String.valueOf(R.font.arial_regular));
 
                     if(dialog!=null) dialog.dismiss();
                     if(profilePop!=null) profilePop.dismiss();
@@ -1252,7 +1329,7 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
      * Tost shown at popup of user.
      */
     public void cantInteract() {
-        utility.showCustomPopup(getString(R.string.sorryEvent), String.valueOf(R.font.raleway_regular));
+        utility.showCustomPopup(getString(R.string.sorryEvent), String.valueOf(R.font.arial_regular));
     }
 
     public boolean check() throws ParseException {
@@ -1272,6 +1349,59 @@ public class Event_Fragment extends Fragment implements View.OnClickListener,Sta
         }
 
         return result;
+    }
+
+    public void noNotification() {
+        utility.showCustomPopup(getString(R.string.noNotification), String.valueOf(R.font.arial_regular));
+    }
+
+    public void popupNotification_New(){
+        currentNudge = 0;
+        isPopUpShowing = true;
+        popup =  new ProfilePopUp_Notification(activity, 4, nudgeList.get(nudgeList.size()-1)) {
+            @Override
+            public void onClickView(TextView textView, ProfilePopUp_Notification profilePopUp) {
+                profilePopUp.setText(textView.getText().toString());
+            }
+
+            @Override
+            public void onSendCLick(TextView textView, ProfilePopUp_Notification profilePopUp,NotificationData obj) {
+                Log.e("Value " , profilePopUp.list.toString());
+                String s = profilePopUp.list.toString();
+                byte[] ptext = (s= s.substring(1,s.length()-1).replace("","")).getBytes();
+
+                addNudge(obj.user_id, obj.facebook_id , StringEscapeUtils.escapeJava(s).replace(" +","") ,profilePopUp);
+            }
+
+            @Override
+            public void onPrevClick(ImageView textView, ProfilePopUp_Notification profilePopUp) {
+                if(currentNudge>0){
+                    currentNudge-=1;
+                    updateData(nudgeList.get(currentNudge));
+                }
+                else {
+                    Toast.makeText(getContext(),"NO nudge avaialble",Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onNextClick(ImageView textView, ProfilePopUp_Notification profilePopUp) {
+                if(currentNudge==(nudgeList.size()-1) && canGetNotification){
+                    getNudges();
+                }
+                else {
+                    currentNudge+=1;
+                    updateData(nudgeList.get(currentNudge));
+                }
+            }
+
+            @Override
+            public void onDismiss(ProfilePopUp_Notification profilePopUp) {
+                nudgeList.clear();
+                isPopUpShowing = false;
+            }
+        };
+        popup.show();
     }
 }
 

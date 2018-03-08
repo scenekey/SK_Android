@@ -375,15 +375,6 @@ public class SwipeCardView extends BaseFlingAdapterView {
                     public void bottomExit(Object dataObject) {
                         try {
                             mFlingListener.onCardExitBottom(dataObject);
-
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    ((HomeActivity)SwipeCardView.this.getContext() ).hideStatusBar();
-                                }
-                            },200);
-
-
                         }catch (Exception e){
                             e.printStackTrace();
                         }

@@ -28,6 +28,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -40,7 +43,7 @@ import java.io.IOException;
  * Built-in_ activity for image cropping.<br>
  * Use {@link CropImage#activity(Uri)} to create a builder to start this activity.
  */
-public class CropImageActivity extends AppCompatActivity implements CropImageView.OnSetImageUriCompleteListener, CropImageView.OnCropImageCompleteListener {
+public class CropImageActivity extends AppCompatActivity implements CropImageView.OnSetImageUriCompleteListener, CropImageView.OnCropImageCompleteListener, View.OnClickListener {
 
     /**
      * The crop image view library widget used in_ the activity
@@ -64,6 +67,10 @@ public class CropImageActivity extends AppCompatActivity implements CropImageVie
         setContentView(R.layout.crop_image_activity);
 
         mCropImageView =  findViewById(R.id.cropImageView);
+
+        findViewById(R.id.crop_image_menu_rotate_left).setOnClickListener(this);
+        findViewById(R.id.crop_image_menu_rotate_right).setOnClickListener(this);
+        findViewById(R.id.crop_image_menu_crop).setOnClickListener(this);
 
         Intent intent = getIntent();
         mCropImageUri = intent.getParcelableExtra(CropImage.CROP_IMAGE_EXTRA_SOURCE);
@@ -92,7 +99,6 @@ public class CropImageActivity extends AppCompatActivity implements CropImageVie
                     ? mOptions.activityTitle
                     : getResources().getString(R.string.crop_image_activity_title);
             actionBar.setTitle(title);
-            actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 
@@ -108,58 +114,6 @@ public class CropImageActivity extends AppCompatActivity implements CropImageVie
         super.onStop();
         mCropImageView.setOnSetImageUriCompleteListener(null);
         mCropImageView.setOnCropImageCompleteListener(null);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.crop_image_menu, menu);
-
-        if (!mOptions.allowRotation) {
-            menu.removeItem(R.id.crop_image_menu_rotate_left);
-            menu.removeItem(R.id.crop_image_menu_rotate_right);
-        } else if (mOptions.allowCounterRotation) {
-            menu.findItem(R.id.crop_image_menu_rotate_left).setVisible(true);
-        }
-
-        Drawable cropIcon = null;
-        try {
-            cropIcon = ContextCompat.getDrawable(this, R.drawable.crop_image_menu_crop);
-            if (cropIcon != null) {
-                menu.findItem(R.id.crop_image_menu_crop).setIcon(cropIcon);
-            }
-        } catch (Exception e) {
-        }
-
-        if (mOptions.activityMenuIconColor != 0) {
-            updateMenuItemIconColor(menu, R.id.crop_image_menu_rotate_left, mOptions.activityMenuIconColor);
-            updateMenuItemIconColor(menu, R.id.crop_image_menu_rotate_right, mOptions.activityMenuIconColor);
-            if (cropIcon != null) {
-                updateMenuItemIconColor(menu, R.id.crop_image_menu_crop, mOptions.activityMenuIconColor);
-            }
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.crop_image_menu_crop) {
-            cropImage();
-            return true;
-        }
-        if (item.getItemId() == R.id.crop_image_menu_rotate_left) {
-            rotateImage(-mOptions.rotationDegrees);
-            return true;
-        }
-        if (item.getItemId() == R.id.crop_image_menu_rotate_right) {
-            rotateImage(mOptions.rotationDegrees);
-            return true;
-        }
-        if (item.getItemId() == android.R.id.home) {
-            setResultCancel();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -324,6 +278,23 @@ public class CropImageActivity extends AppCompatActivity implements CropImageVie
                 } catch (Exception e) {
                 }
             }
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.crop_image_menu_rotate_left:
+                rotateImage(-mOptions.rotationDegrees);
+                break;
+
+            case R.id.crop_image_menu_rotate_right:
+                rotateImage(mOptions.rotationDegrees);
+                break;
+
+            case R.id.crop_image_menu_crop:
+                cropImage();
+                break;
         }
     }
     //endregion

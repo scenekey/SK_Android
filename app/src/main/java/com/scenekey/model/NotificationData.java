@@ -1,5 +1,7 @@
 package com.scenekey.model;
 
+import com.scenekey.helper.WebServices;
+
 /**
  * Created by mindiii on 28/2/18.
  */
@@ -13,6 +15,7 @@ public class NotificationData {
     public String facebook_id;
     public String username;
     public String userimage;
+    public String bio;
 
     public boolean message;
 
@@ -29,5 +32,9 @@ public class NotificationData {
         this.img = img;
         this.nudges = nudges;
         this.username = username;
+    }
+
+    public String getUserImage() {
+        return (userimage.contains("https:")?userimage: WebServices.USER_IMAGE +userimage);
     }
 }

@@ -231,12 +231,12 @@ public class TryDemo_Adapter extends RecyclerView.Adapter<TryDemo_Adapter.ViewHo
 
         Picasso.with(activity).load(roomPersonList.get(8).android_image_url).transform(new CircleTransform()).placeholder(R.drawable.image_defult_profile).into(img_p1_profile);
 
-      /*  WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.copyFrom(dialog.getWindow().getAttributes());
         lp.gravity = Gravity.CENTER;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         lp.width = HomeActivity.ActivityWidth ;
-        dialog.getWindow().setAttributes(lp);*/
+        dialog.getWindow().setAttributes(lp);
 
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override

@@ -28,6 +28,7 @@ import java.util.ArrayList;
 
 public class SearchEvent_Adapter extends RecyclerView.Adapter<SearchEvent_Adapter.ViewHolder> {
 
+    private String TAG="SearchEvent_Adapter";
     private HomeActivity activity;
     private ArrayList<Events> eventsArrayList;
     private String[] currentLatLng;
@@ -118,17 +119,15 @@ public class SearchEvent_Adapter extends RecyclerView.Adapter<SearchEvent_Adapte
             @Override
             public void onClick(final View v) {
                 v.setClickable(false);
+                try {
                 if (!clicked) {
-                    try {
+
+                        activity.showProgDialog(false,TAG);
                         Event_Fragment frg = new Event_Fragment();
                         frg.setData(event.event_id,venue.getVenue_name(),object,currentLatLng,new String[]{venue.getLatitude(),venue.getLongitude()});
                         activity.addFragment(frg, 0);
-                    } catch (NullPointerException e){
-                        e.printStackTrace();
                     }
                     clicked = true;
-                }
-                try {
 
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -137,9 +136,11 @@ public class SearchEvent_Adapter extends RecyclerView.Adapter<SearchEvent_Adapte
                             clicked = false;
                         }
                     }, 2000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                }catch (NullPointerException e){
+                activity.dismissProgDialog();
+                e.printStackTrace();
+            }
+
             }
         });
     }
@@ -150,7 +151,7 @@ public class SearchEvent_Adapter extends RecyclerView.Adapter<SearchEvent_Adapte
     }
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder  {
+    class ViewHolder extends RecyclerView.ViewHolder  {
         private ImageView img_event,heart;
         private TextView txt_eventName, txt_eventAdress, txt_eventDate, txt_time ,txt_like,txt_gap,txt_gap2 ,txt_eventmile;
         private RelativeLayout rl_main;

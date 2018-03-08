@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="@dimen/_250sdp"
+    android:layout_width="@dimen/_260sdp"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:animateLayoutChanges="true"
@@ -12,9 +12,9 @@
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="1dp"
-        android:layout_marginRight="1dp"
-        android:layout_marginTop="@dimen/_10sdp"
+        android:paddingLeft="@dimen/_12sdp"
+        android:paddingRight="@dimen/_12sdp"
+        android:layout_marginTop="@dimen/_15sdp"
         android:fontFamily="@font/raleway_bold"
         android:gravity="bottom|center"
         android:textColor="@color/black"
@@ -55,7 +55,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:fontFamily="@font/raleway_medium"
-            android:text="OK"
+            android:text="@string/ok"
             android:textColor="@color/blue"
             android:textSize="@dimen/_12sdp" />
 

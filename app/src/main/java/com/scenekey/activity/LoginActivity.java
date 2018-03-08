@@ -16,8 +16,13 @@ import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -98,8 +103,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setStatusBarColor();
         initView();
         utility.checkGpsStatus();
+        sessionManager.setSoftKey(hasSoftKeys(getWindowManager()));
     }
-
 
     @Override
     protected void onStart() {
@@ -714,6 +719,34 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
         Utility.e("Latitude","status");
+    }
+
+    private  boolean hasSoftKeys(WindowManager windowManager){
+        boolean hasSoftwareKeys = true;
+
+
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN_MR1){
+            Display d = windowManager.getDefaultDisplay();
+
+            DisplayMetrics realDisplayMetrics = new DisplayMetrics();
+            d.getRealMetrics(realDisplayMetrics);
+
+            int realHeight = realDisplayMetrics.heightPixels;
+            int realWidth = realDisplayMetrics.widthPixels;
+
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            d.getMetrics(displayMetrics);
+
+            int displayHeight = displayMetrics.heightPixels;
+            int displayWidth = displayMetrics.widthPixels;
+
+            hasSoftwareKeys =  (realWidth - displayWidth) > 0 || (realHeight - displayHeight) > 0;
+        }else{
+            boolean hasMenuKey = ViewConfiguration.get(this).hasPermanentMenuKey();
+            boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+            hasSoftwareKeys = !hasMenuKey && !hasBackKey;
+        }
+        return hasSoftwareKeys;
     }
 
     /* on activity result start */

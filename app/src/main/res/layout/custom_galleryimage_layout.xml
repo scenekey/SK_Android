@@ -16,6 +16,7 @@
         android:layout_height="@dimen/_30sdp"
         android:gravity="center"
         android:text="Select"
+        android:fontFamily="@font/raleway_regular"
         android:textColor="@color/gray2"
         android:textSize="@dimen/_14sdp" />
 
@@ -30,6 +31,7 @@
         android:layout_height="@dimen/_40sdp"
         android:gravity="center"
         android:text="Take photo"
+        android:fontFamily="@font/raleway_regular"
         android:textColor="@color/blueToastTxt"
         android:textSize="@dimen/_15ssp" />
 
@@ -44,6 +46,7 @@
         android:layout_height="@dimen/_40sdp"
         android:gravity="center"
         android:text="Gallery"
+        android:fontFamily="@font/raleway_regular"
         android:textColor="@color/blueToastTxt"
         android:textSize="@dimen/_15ssp" />
 
@@ -62,6 +65,7 @@
         android:background="@drawable/cus_round_all_edgeblack_white"
         android:gravity="center"
         android:text="Cancel"
+        android:fontFamily="@font/raleway_regular"
         android:textColor="@color/blueToastTxt"
         android:textSize="@dimen/_15ssp" />
 

@@ -60,7 +60,7 @@ import java.util.logging.Handler;
 
 //import org.apache.commons.lang3.StringEscapeUtils;
 
-public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> implements View.OnClickListener {
+public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
 
     private final String TAG = DataAdapter.class.toString();
     private HomeActivity activity;
@@ -153,23 +153,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> im
         return roomPersons.size();
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.llMain:
-                dialog.dismiss();
-                activity.hideStatusBar();
-                break;
 
-            case R.id.img_left:
-                setImage(false);
-                break;
-
-            case R.id.img_right:
-                setImage(true);
-                break;
-        }
-    }
 
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -212,10 +196,28 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> im
         txt_bio.setText(activity.userInfo().bio);
 
 
-        llMyProfile.setOnClickListener(this);
+        llMyProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                activity.hideStatusBar();
+            }
+        });
 
-        img_left.setOnClickListener(this);
-        img_right.setOnClickListener(this);
+        img_left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setImage(false);
+            }
+        });
+
+
+        img_right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setImage(true);
+            }
+        });
 
 
         img_green.setOnClickListener(new View.OnClickListener() {
@@ -378,6 +380,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> im
                 String s = profilePopUp.list.toString();
                 byte[] ptext = (s= s.substring(1,s.length()-1).replace("","")).getBytes();
 
+                activity.showProgDialog(false,TAG);
                 fragment.addNudge(obj.userid, obj.userFacebookId , StringEscapeUtils.escapeJava(s).replace(" +",""),profilePopUp);
             }
         }.show();

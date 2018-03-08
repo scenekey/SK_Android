@@ -1196,13 +1196,32 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    public void hideStatusBar(){
+    public void hideStatusBar() {
         View decorView = getWindow().getDecorView();
-        if (!(SceneKey.sessionManager.isSoftKey()))
-            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE);
-        else
-            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-        top_status.setVisibility(View.GONE);
+        if (!(SceneKey.sessionManager.isSoftKey())){
+
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY // hide status bar and nav bar after a short delay, or if the user interacts with the middle of the screen
+        );
+        //decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE);
+    }else {
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY // hide status bar and nav bar after a short delay, or if the user interacts with the middle of the screen
+                    | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            );
+            //decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
+            top_status.setVisibility(View.GONE);
     }
 
     public void showStatusBar(){
@@ -1285,7 +1304,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 try {
                     String s = response.body().string();
                     if(new JSONObject(s).getInt("serverStatus")==2){
-                        utility.showCustomPopup(msg, String.valueOf(R.font.raleway_regular));
+                        utility.showCustomPopup(msg, String.valueOf(R.font.arial_regular));
 
                         userInfo.keyPoints=(points <=0?0+"":(points-1)+"");
                         updateSession(userInfo);

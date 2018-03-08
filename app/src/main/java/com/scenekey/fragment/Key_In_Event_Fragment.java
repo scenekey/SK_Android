@@ -10,7 +10,12 @@ import android.view.ViewGroup;
 
 import com.scenekey.R;
 
+/**
+ * same as event fragment but
+ * */
+
 public class Key_In_Event_Fragment extends Fragment {
+
 
     public boolean canCallWebservice=false;
 
@@ -27,6 +32,5 @@ public class Key_In_Event_Fragment extends Fragment {
         super.onAttach(context);
 
     }
-
 
 }

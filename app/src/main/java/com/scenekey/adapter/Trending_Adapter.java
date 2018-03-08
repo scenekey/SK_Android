@@ -35,6 +35,7 @@ import java.util.List;
 
 public class Trending_Adapter extends RecyclerView.Adapter<Trending_Adapter.ViewHolder> {
 
+    private String TAG="Trending_Adapter";
     private HomeActivity activity;
     private ArrayList<Events> eventsArrayList;
     private String[] currentLatLng;
@@ -127,11 +128,14 @@ public class Trending_Adapter extends RecyclerView.Adapter<Trending_Adapter.View
             public void onClick(final View v) {
                 v.setClickable(false);
                 if (!clicked) {
+
                     try {
+
                         Event_Fragment fragment = new Event_Fragment();
                         fragment.setData(event.event_id,venue.getVenue_name(),object,currentLatLng,new String[]{venue.getLatitude(),venue.getLongitude()});
                         activity.addFragment(fragment, 0);
                     } catch (NullPointerException e){
+                        activity.dismissProgDialog();
                         e.printStackTrace();
                     }
                     clicked = true;

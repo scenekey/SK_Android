@@ -95,7 +95,7 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
 
-    public  boolean hasSoftKeys(WindowManager windowManager){
+    private  boolean hasSoftKeys(WindowManager windowManager){
         boolean hasSoftwareKeys = true;
 
 

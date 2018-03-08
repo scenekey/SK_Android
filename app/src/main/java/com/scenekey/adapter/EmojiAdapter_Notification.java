@@ -8,41 +8,35 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.scenekey.R;
-import com.scenekey.cus_view.ProfilePopUp;
 import com.scenekey.cus_view.ProfilePopUp_Notification;
 import com.vanniktech.emoji.EmojiTextView;
 
 /**
- * Created by mindiii on 7/3/18.
+ * Created by mindiii on 11/2/17.
  */
 
-
-public class EmojiAdapter extends RecyclerView.Adapter<EmojiAdapter.Holder> {
+public class EmojiAdapter_Notification extends RecyclerView.Adapter<EmojiAdapter_Notification.Holder> {
 
     private Context context;
     private String list [];
-    private ProfilePopUp profilePopUp;
+    private ProfilePopUp_Notification profilePopUp;
    private boolean addToRecent;
 
-
-   //for profilePopup
-    public EmojiAdapter(Context context , ProfilePopUp profilePopUp ) {
+    public EmojiAdapter_Notification(Context context , ProfilePopUp_Notification profilePopUp ) {
         this.context = context;
         this.list = context.getResources().getStringArray(R.array.emojiArray);
         this.profilePopUp = profilePopUp;
         addToRecent =  true;
-
     }
 
-
     @Override
-    public EmojiAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public EmojiAdapter_Notification.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new Holder(LayoutInflater.from(context).inflate(R.layout.custom_emoji,null));
     }
 
 
     @Override
-    public void onBindViewHolder(EmojiAdapter.Holder holder, int position) {
+    public void onBindViewHolder(EmojiAdapter_Notification.Holder holder, int position) {
         holder.tv_emoji.setText(list [position]);
         holder.tv_emoji.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,27 +58,27 @@ public class EmojiAdapter extends RecyclerView.Adapter<EmojiAdapter.Holder> {
 
     class Holder extends RecyclerView.ViewHolder{
         EmojiTextView tv_emoji;
-        public Holder(View itemView) {
+        Holder(View itemView) {
             super(itemView);
-            tv_emoji =  itemView.findViewById(R.id.tv_emoji);
+            tv_emoji = (EmojiTextView) itemView.findViewById(R.id.tv_emoji);
 
         }
     }
 
     public int getIndicatorCount(double recyclerWidth,int tv_width){
-        // return (int) ((tv_width*list.length)/(recyclerWidth*4));
+       // return (int) ((tv_width*list.length)/(recyclerWidth*4));
         return  (list.length/28);
 
     }
 
-    public void setList(int i){
-        addToRecent =  true;
+   public void setList(int i){
+       addToRecent =  true;
         switch (i){
-            case 0: this.list = context.getResources().getStringArray(R.array.emojiArray);  break;//one
-            case 1: this.list = context.getResources().getStringArray(R.array.nature);      break;//three
-            case 2: this.list = context.getResources().getStringArray(R.array.things);      break;//two
-            case 3: this.list = context.getResources().getStringArray(R.array.buildings);   break;//four
-            case 4: this.list = context.getResources().getStringArray(R.array.symbool);     break;//five
+            case 0: this.list = context.getResources().getStringArray(R.array.emojiArray);  break;
+            case 1: this.list = context.getResources().getStringArray(R.array.nature);      break;
+            case 2: this.list = context.getResources().getStringArray(R.array.things);      break;
+            case 3: this.list = context.getResources().getStringArray(R.array.buildings);   break;
+            case 4: this.list = context.getResources().getStringArray(R.array.symbool);     break;
             default:this.list = profilePopUp.getRecent(); addToRecent = false ;             break;
         }
         notifyDataSetChanged();
